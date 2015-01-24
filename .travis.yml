@@ -1,0 +1,21 @@
+language: cpp
+
+compiler: gcc
+
+before_install:
+  - sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
+  - sudo add-apt-repository --yes ppa:mandel/chancho
+  - sudo add-apt-repository --yes ppa:boost-latest/ppa
+  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+  - sudo apt-get update
+  - sudo apt-get install cmake doxygen dbus-test-runner google-mock qt5-default qtbase5-dev libboost-program-options-dev libgoogle-glog-dev qtdeclarative5-dev qtdeclarative5-dev-tools qtdeclarative5-test-plugin gcc-4.9 g++-4.9 python-pip
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 50
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 50
+  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 50
+  - sudo pip install cpp-coveralls
+
+script: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=coverage && make -j4 && CTEST_OUTPUT_ON_FAILURE=TRUE make test
+
+after_success:
+  - cd ..
+  - coveralls --build-root "./build" --exclude tests --exclude gmock --exclude-pattern '.*\.h' --exclude-pattern '.*CMake[^\.]*\.c(?:pp)?' --exclude-pattern '.*/moc[^\.]*\.cpp' --exclude-pattern '.*_automoc\.cpp'
