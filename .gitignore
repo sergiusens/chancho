@@ -30,3 +30,13 @@ Makefile*
 #QtCtreator Qml
 *.qmlproject.user
 *.qmlproject.user.*
+
+# ignore clion files
+.idea
+
+# ignore build dir
+build
+
+# ignore editor files
+*~
+*.swp
