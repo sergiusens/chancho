@@ -1,5 +1,5 @@
 set(PRIVATE_TESTS
-    test_example
+    test_category
 )
 
 foreach(test ${PRIVATE_TESTS})
@@ -20,6 +20,7 @@ include_directories(${Qt5Test_INCLUDE_DIRS})
 include_directories(${DBUS_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/src/priv)
 include_directories(${CMAKE_SOURCE_DIR}/tests/common)
 
 link_directories(${NIH_DBUS_LIBDIR})
