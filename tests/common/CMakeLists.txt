@@ -23,6 +23,8 @@ add_library(${TARGET} STATIC
     ${SOURCES}
 )
 
+add_dependencies(${TARGET} GMock)
+
 target_link_libraries(${TARGET}
     ${GLOG_LIBRARIES}
     ${Qt5Core_LIBRARIES}
