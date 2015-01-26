@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Manuel de la Peña <mandel@themacaque.com>
+ * Copyright (c) 2014 Manuel de la Peña <mandel@themacaque.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,23 +20,54 @@
  * THE SOFTWARE.
  */
 
-#include <glog/logging.h>
+#pragma once
 
-#include <QCoreApplication>
+#include <vector>
 
-#include <com/chancho/book.h>
-#include <com/chancho/static_init.h>
+#define DECLARE_STATIC_INIT(ClassName) \
+    static void static_init_func(); \
+    static static_init_helper ClassName##_static_init_helper
 
-namespace chancho = com::chancho;
+#define STATIC_INIT(ClassName) \
+    static_init_helper ClassName::ClassName##_static_init_helper(&ClassName::static_init_func); \
+    void ClassName::static_init_func()
 
-int main(int argc, char *argv[]) {
-    QCoreApplication a(argc, argv);
-    a.setApplicationName("chancho");
+typedef void (*init_func_type)();
 
-    chancho::static_init::execute();
+namespace com {
 
-    chancho::Book book;
-    Q_UNUSED(book);
+namespace chancho {
 
-    return a.exec();
+class static_init {
+ public:
+    static static_init& instance() {
+        static static_init inst;
+        return inst;
+    }
+
+    void add_init_func(init_func_type f) {
+        funcs_.push_back(f);
+    }
+
+    static void execute() {
+        auto& inst = instance();
+        for (auto c : inst.funcs_) c();
+    }
+
+ private:
+    static_init() {
+    }
+
+    std::vector<init_func_type> funcs_;
+};
+
+class static_init_helper {
+ public:
+    static_init_helper(init_func_type f) {
+        static_init::instance().add_init_func(f);
+    }
+};
+
+}
+
 }

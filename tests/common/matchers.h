@@ -20,23 +20,15 @@
  * THE SOFTWARE.
  */
 
-#include <glog/logging.h>
+#pragma once
 
-#include <QCoreApplication>
+#include <gmock/gmock.h>
 
-#include <com/chancho/book.h>
-#include <com/chancho/static_init.h>
+#include <QString>
 
-namespace chancho = com::chancho;
-
-int main(int argc, char *argv[]) {
-    QCoreApplication a(argc, argv);
-    a.setApplicationName("chancho");
-
-    chancho::static_init::execute();
-
-    chancho::Book book;
-    Q_UNUSED(book);
-
-    return a.exec();
+MATCHER_P(QStringEqual, value, "Returns if two QStrings are equal.") {
+    auto argStr = static_cast<QString>(arg);
+    auto valueStr = static_cast<QString>(value);
+    return argStr == valueStr;
 }
+

@@ -20,23 +20,19 @@
  * THE SOFTWARE.
  */
 
-#include <glog/logging.h>
+#include "database_factory.h"
 
-#include <QCoreApplication>
+namespace com {
 
-#include <com/chancho/book.h>
-#include <com/chancho/static_init.h>
+namespace chancho {
 
-namespace chancho = com::chancho;
+namespace system {
 
-int main(int argc, char *argv[]) {
-    QCoreApplication a(argc, argv);
-    a.setApplicationName("chancho");
+QMutex DatabaseFactory::_mutex;
+DatabaseFactory* DatabaseFactory::_instance = nullptr;
 
-    chancho::static_init::execute();
+}
 
-    chancho::Book book;
-    Q_UNUSED(book);
+}
 
-    return a.exec();
 }

@@ -85,24 +85,22 @@ void
 TestCategory::testWasDbStored_data() {
     QTest::addColumn<QString>("name");
     QTest::addColumn<chancho::Category::Type>("type");
-    QTest::addColumn<QVariant>("dbId");
+    QTest::addColumn<QUuid>("dbId");
     QTest::addColumn<bool>("result");
 
-    QTest::newRow("income-obj") << "Bonus" << chancho::Category::Type::INCOME << QVariant() << false;
-    QTest::newRow("expense-obj") << "Restaurant" << chancho::Category::Type::EXPENSE << QVariant(7) << true;
+    QTest::newRow("income-obj") << "Bonus" << chancho::Category::Type::INCOME << QUuid() << false;
+    QTest::newRow("expense-obj") << "Restaurant" << chancho::Category::Type::EXPENSE << QUuid::createUuid() << true;
 }
 
 void
 TestCategory::testWasDbStored() {
     QFETCH(QString, name);
     QFETCH(chancho::Category::Type, type);
-    QFETCH(QVariant, dbId);
+    QFETCH(QUuid, dbId);
     QFETCH(bool, result);
 
     auto category = std::make_shared<PublicSetters>(name, type);
-    if (dbId.isValid()) {
-        category->_dbId = dbId.toInt();
-    }
+    category->_dbId = dbId;
     QCOMPARE(category->wasStoredInDb(), result);
 }
 

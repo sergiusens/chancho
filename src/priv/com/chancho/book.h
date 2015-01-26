@@ -20,23 +20,47 @@
  * THE SOFTWARE.
  */
 
-#include <glog/logging.h>
+#pragma once
 
-#include <QCoreApplication>
+#include <memory>
+#include <set>
 
-#include <com/chancho/book.h>
+#include <QList>
+
 #include <com/chancho/static_init.h>
+#include <com/chancho/system/database.h>
+#include "category.h"
 
-namespace chancho = com::chancho;
+namespace com {
 
-int main(int argc, char *argv[]) {
-    QCoreApplication a(argc, argv);
-    a.setApplicationName("chancho");
+namespace chancho {
 
-    chancho::static_init::execute();
+class Book {
+ public:
+    Book();
+    virtual ~Book();
 
-    chancho::Book book;
-    Q_UNUSED(book);
+    DECLARE_STATIC_INIT(Book);
 
-    return a.exec();
+    virtual void store(CategoryPtr cat);
+    virtual void remove(CategoryPtr cat);
+    virtual QList<CategoryPtr> categories();
+
+    virtual bool isError();
+    virtual QString lastError();
+
+    static double DB_VERSION;
+
+ protected:
+    static std::set<QString> TABLES;
+    static QString databasePath();
+    static void initDatabse();
+
+ protected:
+    std::shared_ptr<system::Database> _db;
+    QString _lastError = QString::null;
+};
+
+}
+
 }

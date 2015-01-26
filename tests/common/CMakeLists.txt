@@ -6,6 +6,10 @@ set(SOURCES
 
 set(HEADERS
         base_testcase.h
+        database.h
+        database_factory.h
+        matchers.h
+        query.h
 )
 
 include_directories(${Qt5Core_INCLUDE_DIRS})

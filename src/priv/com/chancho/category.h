@@ -24,15 +24,19 @@
 
 #include <memory>
 
-#include <boost/optional.hpp>
 #include <QString>
 #include <QMetaType>
+#include <QUuid>
 
 namespace com {
 
 namespace chancho {
 
+class Book;
+
 class Category {
+
+ friend class Book;
 
  public:
     enum class Type {
@@ -54,8 +58,8 @@ class Category {
     bool wasStoredInDb() const;
 
  protected:
-    // optional so that we know if a cateogry was added to the db or not
-    boost::optional<int> _dbId = boost::optional<int>();
+    // optional so that we know if a category was added to the db or not
+    QUuid _dbId;
 };
 
 typedef std::shared_ptr<Category> CategoryPtr;

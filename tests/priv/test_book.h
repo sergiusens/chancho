@@ -20,23 +20,35 @@
  * THE SOFTWARE.
  */
 
-#include <glog/logging.h>
-
-#include <QCoreApplication>
+#pragma once
 
 #include <com/chancho/book.h>
-#include <com/chancho/static_init.h>
+
+#include "base_testcase.h"
 
 namespace chancho = com::chancho;
 
-int main(int argc, char *argv[]) {
-    QCoreApplication a(argc, argv);
-    a.setApplicationName("chancho");
+class PublicBook : public chancho::Book {
+ public:
+    PublicBook() : chancho::Book() {}
 
-    chancho::static_init::execute();
+    using chancho::Book::databasePath;
+    using chancho::Book::initDatabse;
+};
 
-    chancho::Book book;
-    Q_UNUSED(book);
+class TestBook : public BaseTestCase {
+    Q_OBJECT
 
-    return a.exec();
-}
+ public:
+    explicit TestBook(QObject *parent = 0)
+            : BaseTestCase("TestBook", parent) { }
+
+ private slots:
+
+    void init() override;
+    void cleanup() override;
+
+    void testInitDatabase();
+    void testInitDatabaseNoPresentTables();
+    void testInitDatabasePresentTables();
+};

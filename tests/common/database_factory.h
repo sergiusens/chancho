@@ -20,23 +20,36 @@
  * THE SOFTWARE.
  */
 
-#include <glog/logging.h>
+#pragma once
 
-#include <QCoreApplication>
+#include <gmock/gmock.h>
 
-#include <com/chancho/book.h>
-#include <com/chancho/static_init.h>
+#include <com/chancho/system/database_factory.h>
 
-namespace chancho = com::chancho;
+namespace com {
 
-int main(int argc, char *argv[]) {
-    QCoreApplication a(argc, argv);
-    a.setApplicationName("chancho");
+namespace chancho {
 
-    chancho::static_init::execute();
+namespace tests {
 
-    chancho::Book book;
-    Q_UNUSED(book);
+class MockDatabaseFactory : public com::chancho::system::DatabaseFactory {
+ public:
+    MockDatabaseFactory() : com::chancho::system::DatabaseFactory() {}
 
-    return a.exec();
+    MOCK_METHOD2(addDatabase, std::shared_ptr<system::Database>(const QString&, const QString&));
+    MOCK_METHOD2(addDatabase, std::shared_ptr<system::Database>(QSqlDriver*, const QString&));
+    MOCK_METHOD2(cloneDatabase, std::shared_ptr<system::Database>(const system::Database&, const QString&));
+    MOCK_METHOD0(connectionNames, QStringList());
+    MOCK_METHOD1(contains, bool(const QString&));
+    MOCK_METHOD2(database, std::shared_ptr<system::Database>(const QString&, bool));
+    MOCK_METHOD0(drivers, QStringList());
+    MOCK_METHOD1(isDriverAvailable, bool(const QString&));
+    MOCK_METHOD2(registerSqlDriver, void(const QString&, QSqlDriverCreatorBase*));
+    MOCK_METHOD1(removeDatabase, void(const QString&));
+};
+
+}
+
+}
+
 }
