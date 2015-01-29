@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+#include <QFile>
 #include <QFileInfo>
 #include <QStandardPaths>
 
@@ -60,7 +61,7 @@ TestBookMocked::testDatabasePathMissing() {
     auto createdPath = PublicBook::databasePath();
     QVERIFY(!createdPath.isEmpty());
     QFileInfo fi(createdPath);
-    QVERIFY(QFileInfo::exists(fi.path()));
+    QVERIFY(QFile::exists(fi.path()));
     QVERIFY(!fi.exists());
 }
 
