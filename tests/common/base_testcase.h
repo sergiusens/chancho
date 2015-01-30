@@ -76,6 +76,6 @@ class BaseTestCase : public QObject {
     virtual void init();
     virtual void cleanup();
 
- private:
+ protected:
     bool removeDir(const QString& dirName);
 };

@@ -20,10 +20,23 @@
  * THE SOFTWARE.
  */
 
+#include <glog/logging.h>
+
 #include <QCoreApplication>
 
+#include <com/chancho/book.h>
+#include <com/chancho/static_init.h>
+
+namespace chancho = com::chancho;
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
+    a.setApplicationName("chancho");
+
+    chancho::static_init::execute();
+
+    chancho::Book book;
+    Q_UNUSED(book);
+
     return a.exec();
 }

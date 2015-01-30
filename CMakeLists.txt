@@ -42,6 +42,7 @@ include_directories(${GMOCK_INCLUDE_DIR} ${GTEST_INCLUDE_DIR})
 set(CMAKE_AUTOMOC ON)
 
 find_package(Qt5Core REQUIRED)
+find_package(Qt5Sql REQUIRED)
 find_package(Qt5Test REQUIRED)
 find_package(Boost COMPONENTS program_options REQUIRED)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Manuel de la Peña <mandel@themacaque.com>
+ * Copyright (c) 2015 Manuel de la Peña <mandel@themacaque.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,52 +22,24 @@
 
 #pragma once
 
-#include <memory>
+#include <com/chancho/book.h>
 
-#include <QString>
-#include <QMetaType>
-#include <QUuid>
+#include "public_book.h"
+#include "base_testcase.h"
 
-namespace com {
-
-namespace chancho {
-
-class Book;
-
-class Category {
-
- friend class Book;
+class TestBook : public BaseTestCase {
+    Q_OBJECT
 
  public:
-    enum class Type {
-        INCOME,
-        EXPENSE
-    };
+    explicit TestBook(QObject *parent = 0)
+            : BaseTestCase("TestBook", parent) { }
 
-    Category() = default;
-    Category(const QString& n, Category::Type t);
-    Category(const QString& n, Category::Type t, std::shared_ptr<Category> p);
-    Category(const Category& other);
-    virtual ~Category() = default;
+ private slots:
 
- public:
-    QString name = QString::null;
-    Category::Type type;
-    std::shared_ptr<Category> parent;
+    void init() override;
+    void cleanup() override;
 
-    virtual bool wasStoredInDb() const;
-
- protected:
-    // optional so that we know if a category was added to the db or not
-    QUuid _dbId;
+    void testInitDatabase();
+    void testInitDatabaseNoPresentTables();
+    void testInitDatabasePresentTables();
 };
-
-typedef std::shared_ptr<Category> CategoryPtr;
-
-}
-
-}
-
-Q_DECLARE_METATYPE(std::shared_ptr<com::chancho::Category>)
-Q_DECLARE_METATYPE(com::chancho::Category::Type)
-

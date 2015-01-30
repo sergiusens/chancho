@@ -22,52 +22,52 @@
 
 #pragma once
 
-#include <memory>
+#include <vector>
 
-#include <QString>
-#include <QMetaType>
-#include <QUuid>
+#define DECLARE_STATIC_INIT(ClassName) \
+    static void static_init_func(); \
+    static static_init_helper ClassName##_static_init_helper
+
+#define STATIC_INIT(ClassName) \
+    static_init_helper ClassName::ClassName##_static_init_helper(&ClassName::static_init_func); \
+    void ClassName::static_init_func()
+
+typedef void (*init_func_type)();
 
 namespace com {
 
 namespace chancho {
 
-class Book;
-
-class Category {
-
- friend class Book;
-
+class static_init {
  public:
-    enum class Type {
-        INCOME,
-        EXPENSE
-    };
+    static static_init& instance() {
+        static static_init inst;
+        return inst;
+    }
 
-    Category() = default;
-    Category(const QString& n, Category::Type t);
-    Category(const QString& n, Category::Type t, std::shared_ptr<Category> p);
-    Category(const Category& other);
-    virtual ~Category() = default;
+    void add_init_func(init_func_type f) {
+        funcs_.push_back(f);
+    }
 
- public:
-    QString name = QString::null;
-    Category::Type type;
-    std::shared_ptr<Category> parent;
+    static void execute() {
+        auto& inst = instance();
+        for (auto c : inst.funcs_) c();
+    }
 
-    virtual bool wasStoredInDb() const;
+ private:
+    static_init() {
+    }
 
- protected:
-    // optional so that we know if a category was added to the db or not
-    QUuid _dbId;
+    std::vector<init_func_type> funcs_;
 };
 
-typedef std::shared_ptr<Category> CategoryPtr;
+class static_init_helper {
+ public:
+    static_init_helper(init_func_type f) {
+        static_init::instance().add_init_func(f);
+    }
+};
 
 }
 
 }
-
-Q_DECLARE_METATYPE(std::shared_ptr<com::chancho::Category>)
-Q_DECLARE_METATYPE(com::chancho::Category::Type)
-

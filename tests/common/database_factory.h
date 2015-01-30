@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Manuel de la Peña <mandel@themacaque.com>
+ * Copyright (c) 2015 Manuel de la Peña <mandel@themacaque.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,52 +22,34 @@
 
 #pragma once
 
-#include <memory>
+#include <gmock/gmock.h>
 
-#include <QString>
-#include <QMetaType>
-#include <QUuid>
+#include <com/chancho/system/database_factory.h>
 
 namespace com {
 
 namespace chancho {
 
-class Book;
+namespace tests {
 
-class Category {
-
- friend class Book;
-
+class MockDatabaseFactory : public com::chancho::system::DatabaseFactory {
  public:
-    enum class Type {
-        INCOME,
-        EXPENSE
-    };
+    MockDatabaseFactory() : com::chancho::system::DatabaseFactory() {}
 
-    Category() = default;
-    Category(const QString& n, Category::Type t);
-    Category(const QString& n, Category::Type t, std::shared_ptr<Category> p);
-    Category(const Category& other);
-    virtual ~Category() = default;
-
- public:
-    QString name = QString::null;
-    Category::Type type;
-    std::shared_ptr<Category> parent;
-
-    virtual bool wasStoredInDb() const;
-
- protected:
-    // optional so that we know if a category was added to the db or not
-    QUuid _dbId;
+    MOCK_METHOD2(addDatabase, std::shared_ptr<system::Database>(const QString&, const QString&));
+    MOCK_METHOD2(addDatabase, std::shared_ptr<system::Database>(QSqlDriver*, const QString&));
+    MOCK_METHOD2(cloneDatabase, std::shared_ptr<system::Database>(const system::Database&, const QString&));
+    MOCK_METHOD0(connectionNames, QStringList());
+    MOCK_METHOD1(contains, bool(const QString&));
+    MOCK_METHOD2(database, std::shared_ptr<system::Database>(const QString&, bool));
+    MOCK_METHOD0(drivers, QStringList());
+    MOCK_METHOD1(isDriverAvailable, bool(const QString&));
+    MOCK_METHOD2(registerSqlDriver, void(const QString&, QSqlDriverCreatorBase*));
+    MOCK_METHOD1(removeDatabase, void(const QString&));
 };
 
-typedef std::shared_ptr<Category> CategoryPtr;
-
 }
 
 }
 
-Q_DECLARE_METATYPE(std::shared_ptr<com::chancho::Category>)
-Q_DECLARE_METATYPE(com::chancho::Category::Type)
-
+}

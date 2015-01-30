@@ -20,6 +20,8 @@
  * THE SOFTWARE.
  */
 
+#include <glog/logging.h>
+
 #include "category.h"
 
 namespace com {
@@ -45,7 +47,7 @@ Category::Category(const Category& other)
 
 bool
 Category::wasStoredInDb() const {
-    return (_dbId)? true: false;
+    return !_dbId.isNull();
 }
 
 }

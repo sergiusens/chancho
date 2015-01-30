@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Manuel de la Peña <mandel@themacaque.com>
+ * Copyright (c) 2015 Manuel de la Peña <mandel@themacaque.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,52 +22,44 @@
 
 #pragma once
 
-#include <memory>
+#include <com/chancho/book.h>
 
-#include <QString>
-#include <QMetaType>
-#include <QUuid>
+#include "base_testcase.h"
+#include "database_factory.h"
+#include "database.h"
+#include "query.h"
+#include "public_book.h"
+#include "public_category.h"
 
-namespace com {
+namespace chancho = com::chancho;
+namespace tests = com::chancho::tests;
 
-namespace chancho {
-
-class Book;
-
-class Category {
-
- friend class Book;
-
- public:
-    enum class Type {
-        INCOME,
-        EXPENSE
-    };
-
-    Category() = default;
-    Category(const QString& n, Category::Type t);
-    Category(const QString& n, Category::Type t, std::shared_ptr<Category> p);
-    Category(const Category& other);
-    virtual ~Category() = default;
+class TestBookMocked : public BaseTestCase {
+    Q_OBJECT
 
  public:
-    QString name = QString::null;
-    Category::Type type;
-    std::shared_ptr<Category> parent;
+    explicit TestBookMocked(QObject *parent = 0)
+            : BaseTestCase("TestBookMocked", parent) { }
 
-    virtual bool wasStoredInDb() const;
+ private slots:
 
- protected:
-    // optional so that we know if a category was added to the db or not
-    QUuid _dbId;
+    void init() override;
+    void cleanup() override;
+
+    void testDatabasePathMissing();
+
+    void testInitDatbaseMissingTables();
+    void testInitDatbaseMissingTablesError();
+    void testInitDatabasePresentTables_data();
+    void testInitDatabasePresentTables();
+
+    void testStoreCategoryOpenError();
+    void testStoreCategoryExecError();
+
+    void testRemoveCategoryOpenError();
+    void testRemoveCategoryChildsExecError();
+    void testRemoveCategoryDeleteExecError();
+
+ private:
+    tests::MockDatabaseFactory* _dbFactory;
 };
-
-typedef std::shared_ptr<Category> CategoryPtr;
-
-}
-
-}
-
-Q_DECLARE_METATYPE(std::shared_ptr<com::chancho::Category>)
-Q_DECLARE_METATYPE(com::chancho::Category::Type)
-

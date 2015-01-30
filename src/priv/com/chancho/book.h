@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Manuel de la Peña <mandel@themacaque.com>
+ * Copyright (c) 2015 Manuel de la Peña <mandel@themacaque.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,51 +23,44 @@
 #pragma once
 
 #include <memory>
+#include <set>
 
-#include <QString>
-#include <QMetaType>
-#include <QUuid>
+#include <QList>
+
+#include <com/chancho/static_init.h>
+#include <com/chancho/system/database.h>
+#include "category.h"
 
 namespace com {
 
 namespace chancho {
 
-class Book;
-
-class Category {
-
- friend class Book;
-
+class Book {
  public:
-    enum class Type {
-        INCOME,
-        EXPENSE
-    };
+    Book();
+    virtual ~Book();
 
-    Category() = default;
-    Category(const QString& n, Category::Type t);
-    Category(const QString& n, Category::Type t, std::shared_ptr<Category> p);
-    Category(const Category& other);
-    virtual ~Category() = default;
+    DECLARE_STATIC_INIT(Book);
 
- public:
-    QString name = QString::null;
-    Category::Type type;
-    std::shared_ptr<Category> parent;
+    virtual void store(CategoryPtr cat);
+    virtual void remove(CategoryPtr cat);
+    virtual QList<CategoryPtr> categories();
 
-    virtual bool wasStoredInDb() const;
+    virtual bool isError();
+    virtual QString lastError();
+
+    static double DB_VERSION;
 
  protected:
-    // optional so that we know if a category was added to the db or not
-    QUuid _dbId;
+    static std::set<QString> TABLES;
+    static QString databasePath();
+    static void initDatabse();
+
+ protected:
+    std::shared_ptr<system::Database> _db;
+    QString _lastError = QString::null;
 };
 
-typedef std::shared_ptr<Category> CategoryPtr;
-
 }
 
 }
-
-Q_DECLARE_METATYPE(std::shared_ptr<com::chancho::Category>)
-Q_DECLARE_METATYPE(com::chancho::Category::Type)
-

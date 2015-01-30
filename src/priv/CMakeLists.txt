@@ -1,14 +1,22 @@
 set(TARGET chancho-priv)
 
 set(SOURCES
+    com/chancho/book.cpp
     com/chancho/category.cpp
+    com/chancho/system/database_factory.cpp
 )
 
 set(HEADERS
+    com/chancho/book.h
     com/chancho/category.h
+    com/chancho/static_init.h
+    com/chancho/system/database.h
+    com/chancho/system/database_factory.h
+    com/chancho/system/query.h
 )
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
+include_directories(${Qt5Sql_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
@@ -29,4 +37,5 @@ target_link_libraries(${TARGET}
     ${GLOG_LIBRARIES}
     ${Boost_LIBRARIES}
     ${Qt5Core_LIBRARIES}
+    ${Qt5Sql_LIBRARIES}
 )

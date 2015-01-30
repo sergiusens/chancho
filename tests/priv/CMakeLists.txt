@@ -1,21 +1,24 @@
 set(PRIVATE_TESTS
+    test_book
+    test_book_category
+    test_book_mocked
     test_category
 )
 
 foreach(test ${PRIVATE_TESTS})
-        # set the sources per test
-        set(${test}_PRIVATE_SOURCES
-                ${test}.cpp
-        )
+    # set the sources per test
+    set(${test}_PRIVATE_SOURCES
+            ${test}.cpp
+    )
 
-        set(${test}_PRIVATE_HEADERS
-                ${test}.h
-        )
+    set(${test}_PRIVATE_HEADERS
+            ${test}.h
+    )
 
 endforeach(test)
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
-include_directories(${Qt5Network_INCLUDE_DIRS})
+include_directories(${Qt5Sql_INCLUDE_DIRS})
 include_directories(${Qt5Test_INCLUDE_DIRS})
 include_directories(${DBUS_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -27,11 +30,12 @@ link_directories(${NIH_DBUS_LIBDIR})
 link_directories(${GLOG_DBUS_LIBDIR})
 
 set(PRIVATE_TESTS_LIBS
-        ${GLOG_LIBRARIES}
-        ${Qt5Network_LIBRARIES}
-        ${Qt5Test_LIBRARIES}
-        chancho-priv
-        chancho-test-lib
+    ${GLOG_LIBRARIES}
+    ${Qt5Core_LIBRARIES}
+    ${Qt5Sql_LIBRARIES}
+    ${Qt5Test_LIBRARIES}
+    chancho-priv
+    chancho-test-lib
 )
 
 foreach(test ${PRIVATE_TESTS})
