@@ -24,22 +24,12 @@
 
 #include <com/chancho/book.h>
 
-#include "public_book.h"
-#include "base_testcase.h"
+namespace chancho = com::chancho;
 
-class TestBook : public BaseTestCase {
-    Q_OBJECT
-
+class PublicBook : public chancho::Book {
  public:
-    explicit TestBook(QObject *parent = 0)
-            : BaseTestCase("TestBook", parent) { }
+    PublicBook() : chancho::Book() {}
 
- private slots:
-
-    void init() override;
-    void cleanup() override;
-
-    void testInitDatabase();
-    void testInitDatabaseNoPresentTables();
-    void testInitDatabasePresentTables();
+    using chancho::Book::databasePath;
+    using chancho::Book::initDatabse;
 };

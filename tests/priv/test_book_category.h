@@ -24,33 +24,11 @@
 
 #include <com/chancho/book.h>
 
+#include "public_book.h"
+#include "public_category.h"
 #include "base_testcase.h"
 
 namespace chancho = com::chancho;
-
-class PublicCategory : public chancho::Category {
- public:
-    PublicCategory()
-        : chancho::Category() {}
-
-    PublicCategory(const QString& n, Category::Type t)
-        : chancho::Category(n, t) {}
-
-    PublicCategory(const QString& n, Category::Type t, std::shared_ptr<Category> p)
-            : chancho::Category(n, t, p) {}
-
-    virtual ~PublicCategory() = default;
-
-    using chancho::Category::_dbId;
-};
-
-class PublicBook : public chancho::Book {
- public:
-    PublicBook() : chancho::Book() {}
-
-    using chancho::Book::databasePath;
-    using chancho::Book::initDatabse;
-};
 
 class TestBookCategory : public BaseTestCase {
     Q_OBJECT
@@ -74,10 +52,11 @@ class TestBookCategory : public BaseTestCase {
     void testRemoveCategoryNoParent();
     void testRemoveCategoryParent();
     void testRemoveParentCategory();
+    void testRemoveNotAdded();
 
     void testGetCategoriesEmpty();
     void testGetCategoriesNoParents();
     void testGetCategoriesOneLevelParents();
-    void testGetCategoriesSeveralLeveles();
+    void testGetCategoriesSeveralLevels();
 
 };

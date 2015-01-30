@@ -55,7 +55,7 @@ class Category {
     Category::Type type;
     std::shared_ptr<Category> parent;
 
-    bool wasStoredInDb() const;
+    virtual bool wasStoredInDb() const;
 
  protected:
     // optional so that we know if a category was added to the db or not

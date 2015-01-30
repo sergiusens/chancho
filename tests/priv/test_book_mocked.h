@@ -28,17 +28,11 @@
 #include "database_factory.h"
 #include "database.h"
 #include "query.h"
+#include "public_book.h"
+#include "public_category.h"
 
 namespace chancho = com::chancho;
 namespace tests = com::chancho::tests;
-
-class PublicBook : public chancho::Book {
- public:
-    PublicBook() : chancho::Book() {}
-
-    using chancho::Book::databasePath;
-    using chancho::Book::initDatabse;
-};
 
 class TestBookMocked : public BaseTestCase {
     Q_OBJECT
@@ -58,6 +52,13 @@ class TestBookMocked : public BaseTestCase {
     void testInitDatbaseMissingTablesError();
     void testInitDatabasePresentTables_data();
     void testInitDatabasePresentTables();
+
+    void testStoreCategoryOpenError();
+    void testStoreCategoryExecError();
+
+    void testRemoveCategoryOpenError();
+    void testRemoveCategoryChildsExecError();
+    void testRemoveCategoryDeleteExecError();
 
  private:
     tests::MockDatabaseFactory* _dbFactory;

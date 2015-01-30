@@ -364,6 +364,15 @@ TestBookCategory::testRemoveParentCategory() {
 }
 
 void
+TestBookCategory::testRemoveNotAdded() {
+    // ensure that we cannot delete a not present cat
+    auto cat = std::make_shared<chancho::Category>("Not presnet", chancho::Category::Type::INCOME);
+    PublicBook book;
+    book.remove(cat);
+    QVERIFY(book.isError());
+}
+
+void
 TestBookCategory::testGetCategoriesEmpty() {
     PublicBook book;
     auto cats = book.categories();
@@ -456,7 +465,7 @@ TestBookCategory::testGetCategoriesOneLevelParents() {
 }
 
 void
-TestBookCategory::testGetCategoriesSeveralLeveles() {
+TestBookCategory::testGetCategoriesSeveralLevels() {
     // add categories with parents and add a top parent for all
     QString masterName = "Master";
     QString firstParentName = "Salary";

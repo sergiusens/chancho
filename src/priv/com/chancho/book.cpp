@@ -219,6 +219,8 @@ Book::remove(CategoryPtr cat) {
     if (success) {
         DLOG(INFO) << "Commiting transaction";
         _db->commit();
+        // set the _dbId to be a null uuid
+        cat->_dbId = QUuid();
     } else {
         _lastError = _db->lastError().text();
         LOG(ERROR) << "Rolliing back transaction after error: '" << _lastError.toStdString() << "'";
@@ -227,8 +229,6 @@ Book::remove(CategoryPtr cat) {
 
     _db->close();
 
-    // set the _dbId to be a null uuid
-    cat->_dbId = QUuid();
 }
 
 QList<CategoryPtr>

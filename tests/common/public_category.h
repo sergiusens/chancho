@@ -22,24 +22,22 @@
 
 #pragma once
 
-#include <com/chancho/book.h>
+#include <com/chancho/category.h>
 
-#include "public_book.h"
-#include "base_testcase.h"
+namespace chancho = com::chancho;
 
-class TestBook : public BaseTestCase {
-    Q_OBJECT
-
+class PublicCategory : public chancho::Category {
  public:
-    explicit TestBook(QObject *parent = 0)
-            : BaseTestCase("TestBook", parent) { }
+    PublicCategory()
+            : chancho::Category() {}
 
- private slots:
+    PublicCategory(const QString& n, Category::Type t)
+            : chancho::Category(n, t) {}
 
-    void init() override;
-    void cleanup() override;
+    PublicCategory(const QString& n, Category::Type t, std::shared_ptr<Category> p)
+            : chancho::Category(n, t, p) {}
 
-    void testInitDatabase();
-    void testInitDatabaseNoPresentTables();
-    void testInitDatabasePresentTables();
+    virtual ~PublicCategory() = default;
+
+    using chancho::Category::_dbId;
 };
