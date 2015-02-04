@@ -1,12 +1,14 @@
 set(TARGET chancho-priv)
 
 set(SOURCES
+    com/chancho/account.cpp
     com/chancho/book.cpp
     com/chancho/category.cpp
     com/chancho/system/database_factory.cpp
 )
 
 set(HEADERS
+    com/chancho/account.h
     com/chancho/book.h
     com/chancho/category.h
     com/chancho/static_init.h
