@@ -22,27 +22,26 @@
 
 #pragma once
 
-#include <com/chancho/category.h>
+#include <com/chancho/transaction.h>
 
 #include "base_testcase.h"
 
-class TestCategory : public BaseTestCase {
+class TestTransaction : public BaseTestCase {
     Q_OBJECT
 
  public:
-    explicit TestCategory(QObject *parent = 0)
-            : BaseTestCase("TestCategory", parent) { }
+    explicit TestTransaction(QObject *parent = 0)
+            : BaseTestCase("TestTransaction", parent) { }
 
  private slots:
 
     void init() override;
     void cleanup() override;
 
-    void testNameTypeConstructor_data();
-    void testNameTypeConstructor();
-
-    void testNameTypeParentConstrutor_data();
-    void testNameTypeParentConstrutor();
+    void testConstructorWithDate_data();
+    void testConstructorWithDate();
+    void testContrutorCurrentDate_data();
+    void testContrutorCurrentDate();
 
     void testWasDbStored_data();
     void testWasDbStored();

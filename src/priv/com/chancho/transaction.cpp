@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Manuel de la Peña <mandel@themacaque.com>
+ * Copyright (c) 2014 Manuel de la Peña <mandel@themacaque.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,52 @@
  * THE SOFTWARE.
  */
 
-#pragma once
+#include "transaction.h"
 
-#include <com/chancho/category.h>
+namespace com {
 
-#include "base_testcase.h"
+namespace chancho {
 
-class TestCategory : public BaseTestCase {
-    Q_OBJECT
+Transaction::Transaction(const AccountPtr& acc,
+        double a,
+        const CategoryPtr& cat,
+        const QString& cont,
+        const QString& m)
+    : account(acc),
+      amount(a),
+      category(cat),
+      date(QDate::currentDate()),
+      contents(cont),
+      memo(m) {
+}
 
- public:
-    explicit TestCategory(QObject *parent = 0)
-            : BaseTestCase("TestCategory", parent) { }
+Transaction::Transaction(const AccountPtr& acc,
+        double a,
+        const CategoryPtr& cat,
+        const QDate& d,
+        const QString& cont,
+        const QString& m)
+    : account(acc),
+      amount(a),
+      category(cat),
+      date(d),
+      contents(cont),
+      memo(m) {
+}
 
- private slots:
+Category::Type
+Transaction::type() const {
+    if (category) {
+        return category->type;
+    }
+    return Category::Type::EXPENSE;
+}
 
-    void init() override;
-    void cleanup() override;
+bool
+Transaction::wasStoredInDb() const {
+    return !_dbId.isNull();
+}
 
-    void testNameTypeConstructor_data();
-    void testNameTypeConstructor();
+}
 
-    void testNameTypeParentConstrutor_data();
-    void testNameTypeParentConstrutor();
-
-    void testWasDbStored_data();
-    void testWasDbStored();
-};
+}

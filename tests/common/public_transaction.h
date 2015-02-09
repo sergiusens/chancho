@@ -22,28 +22,31 @@
 
 #pragma once
 
-#include <com/chancho/category.h>
+#include <com/chancho/transaction.h>
 
-#include "base_testcase.h"
+namespace chancho = com::chancho;
 
-class TestCategory : public BaseTestCase {
-    Q_OBJECT
-
+class PublicTransaction : public chancho::Transaction {
  public:
-    explicit TestCategory(QObject *parent = 0)
-            : BaseTestCase("TestCategory", parent) { }
+    PublicTransaction()
+            : chancho::Transaction() {}
 
- private slots:
+    PublicTransaction(const chancho::AccountPtr& acc,
+                      double amount,
+                      const chancho::CategoryPtr& cat,
+                      const QString& cont=QString::null,
+                      const QString& memo=QString::null)
+            : chancho::Transaction(acc, amount, cat, cont, memo) {}
 
-    void init() override;
-    void cleanup() override;
+    PublicTransaction(const chancho::AccountPtr& acc,
+                      double amount,
+                      const chancho::CategoryPtr& cat,
+                      const QDate& date,
+                      const QString& cont=QString::null,
+                      const QString& memo=QString::null)
+            : chancho::Transaction(acc, amount, cat, date, cont, memo) {}
 
-    void testNameTypeConstructor_data();
-    void testNameTypeConstructor();
+    virtual ~PublicTransaction() = default;
 
-    void testNameTypeParentConstrutor_data();
-    void testNameTypeParentConstrutor();
-
-    void testWasDbStored_data();
-    void testWasDbStored();
+    using chancho::Transaction::_dbId;
 };

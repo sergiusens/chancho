@@ -12,6 +12,7 @@ set(HEADERS
         public_account.h
         public_book.h
         public_category.h
+        public_transaction.h
         query.h
 )
 

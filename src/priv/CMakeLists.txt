@@ -4,6 +4,7 @@ set(SOURCES
     com/chancho/account.cpp
     com/chancho/book.cpp
     com/chancho/category.cpp
+    com/chancho/transaction.cpp
     com/chancho/system/database_factory.cpp
 )
 
@@ -12,6 +13,7 @@ set(HEADERS
     com/chancho/book.h
     com/chancho/category.h
     com/chancho/static_init.h
+    com/chancho/transaction.h
     com/chancho/system/database.h
     com/chancho/system/database_factory.h
     com/chancho/system/query.h
