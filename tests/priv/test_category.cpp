@@ -21,6 +21,8 @@
  */
 
 #include <QVariant>
+
+#include "public_category.h"
 #include "test_category.h"
 
 namespace chancho = com::chancho;
@@ -99,7 +101,7 @@ TestCategory::testWasDbStored() {
     QFETCH(QUuid, dbId);
     QFETCH(bool, result);
 
-    auto category = std::make_shared<PublicSetters>(name, type);
+    auto category = std::make_shared<PublicCategory>(name, type);
     category->_dbId = dbId;
     QCOMPARE(category->wasStoredInDb(), result);
 }
