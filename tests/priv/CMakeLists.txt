@@ -1,6 +1,7 @@
 set(PRIVATE_TESTS
     test_account
     test_book
+    test_book_account
     test_book_category
     test_book_mocked
     test_category

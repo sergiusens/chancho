@@ -24,48 +24,32 @@
 
 #include <com/chancho/book.h>
 
-#include "base_testcase.h"
-#include "database_factory.h"
-#include "database.h"
-#include "query.h"
+#include "public_account.h"
 #include "public_book.h"
-#include "public_category.h"
+#include "base_testcase.h"
 
 namespace chancho = com::chancho;
-namespace tests = com::chancho::tests;
 
-class TestBookMocked : public BaseTestCase {
+class TestBookAccount : public BaseTestCase {
     Q_OBJECT
 
  public:
-    explicit TestBookMocked(QObject *parent = 0)
-            : BaseTestCase("TestBookMocked", parent) { }
+    explicit TestBookAccount(QObject *parent = 0)
+            : BaseTestCase("TestBookAccount", parent) { }
 
  private slots:
 
     void init() override;
     void cleanup() override;
 
-    void testDatabasePathMissing();
+    void testStoreAccount_data();
+    void testStoreAccount();
+    void testUpdateAccount_data();
+    void testUpdateAccount();
 
-    void testInitDatbaseMissingTables();
-    void testInitDatbaseMissingTablesError();
-    void testInitDatabasePresentTables_data();
-    void testInitDatabasePresentTables();
+    void testRemoveAccount();
+    void testRemoveNotAdded();
 
-    void testStoreCategoryOpenError();
-    void testStoreCategoryExecError();
-
-    void testRemoveCategoryOpenError();
-    void testRemoveCategoryChildsExecError();
-    void testRemoveCategoryDeleteExecError();
-
-    void testStoreAccountsOpenError();
-    void testStoreAccountExecError();
-
-    void testRemoveAccountOpenError();
-    void testRemoveAccountExecError();
-
- private:
-    tests::MockDatabaseFactory* _dbFactory;
+    void testGetAccontsEmpty();
+    void testGetAcconts();
 };
