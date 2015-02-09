@@ -45,4 +45,10 @@ class TestTransaction : public BaseTestCase {
 
     void testWasDbStored_data();
     void testWasDbStored();
+
+    void testType_data();
+    void testType();
+
+    void testTypeMissingCat_data();
+    void testTypeMissingCat();
 };

@@ -147,4 +147,64 @@ TestTransaction::testWasDbStored() {
     QCOMPARE(transaction->wasStoredInDb(), result);
 }
 
+void
+TestTransaction::testType_data() {
+    QTest::addColumn<chancho::AccountPtr>("account");
+    QTest::addColumn<double >("amount");
+    QTest::addColumn<chancho::CategoryPtr>("category");
+    QTest::addColumn<QString>("content");
+    QTest::addColumn<QString>("memo");
+
+    auto firstAccount = std::make_shared<chancho::Account>("Bankia", 23.4);
+    auto secondAccount = std::make_shared<chancho::Account>("BBVA", 9823.22);
+
+    auto firstCategory = std::make_shared<chancho::Category>("Food", chancho::Category::Type::EXPENSE);
+    auto secondCategory = std::make_shared<chancho::Category>("Salary", chancho::Category::Type::INCOME);
+
+    QTest::newRow("income-obj") << firstAccount << 9.0 << firstCategory << "Test content" << "My memo";
+    QTest::newRow("expense-obj") << secondAccount << 2901.2 << secondCategory << "" << "Hello";
+}
+
+void
+TestTransaction::testType() {
+    QFETCH(chancho::AccountPtr, account);
+    QFETCH(double, amount);
+    QFETCH(chancho::CategoryPtr, category);
+    QFETCH(QString, content);
+    QFETCH(QString, memo);
+
+    auto transaction = std::make_shared<PublicTransaction>(account, amount, category, content, memo);
+    QCOMPARE(transaction->type(), category->type);
+}
+
+void
+TestTransaction::testTypeMissingCat_data() {
+    QTest::addColumn<chancho::AccountPtr>("account");
+    QTest::addColumn<double >("amount");
+    QTest::addColumn<chancho::CategoryPtr>("category");
+    QTest::addColumn<QString>("content");
+    QTest::addColumn<QString>("memo");
+
+    auto firstAccount = std::make_shared<chancho::Account>("Bankia", 23.4);
+    auto secondAccount = std::make_shared<chancho::Account>("BBVA", 9823.22);
+
+    chancho::CategoryPtr firstCategory;
+    chancho::CategoryPtr secondCategory;
+
+    QTest::newRow("income-obj") << firstAccount << 9.0 << firstCategory << "Test content" << "My memo";
+    QTest::newRow("expense-obj") << secondAccount << 2901.2 << secondCategory << "" << "Hello";
+}
+
+void
+TestTransaction::testTypeMissingCat() {
+    QFETCH(chancho::AccountPtr, account);
+    QFETCH(double, amount);
+    QFETCH(chancho::CategoryPtr, category);
+    QFETCH(QString, content);
+    QFETCH(QString, memo);
+
+    auto transaction = std::make_shared<PublicTransaction>(account, amount, category, content, memo);
+    QCOMPARE(chancho::Category::Type::EXPENSE, transaction->type());
+}
+
 QTEST_MAIN(TestTransaction)
