@@ -40,17 +40,27 @@ namespace com {
 namespace chancho {
 
 namespace {
+    const double PRECISION = 100.0;
     const QString DATABASE_NAME = "chancho.db";
+    const QString ACCOUNTS_TABLE = "CREATE TABLE IF NOT EXISTS Accounts("\
+        "uuid VARCHAR(40) PRIMARY KEY, "\
+        "name TEXT NOT NULL,"\
+        "memo TEXT NOT NULL,"\
+        "amount INT)";
     const QString CATEGORIES_TABLE = "CREATE TABLE IF NOT EXISTS Categories("\
         "uuid VARCHAR(40) PRIMARY KEY, "\
         "parent VARCHAR(40), "\
         "name TEXT NOT NULL,"\
         "type INT,"\
         "FOREIGN KEY(parent) REFERENCES Categories(uuid))";
+    const QString INSERT_UPDATE_ACCOUNT = "INSERT OR REPLACE INTO Accounts(uuid, name, memo, amount) " \
+            "VALUES (:uuid, :name, :memo, :amount)";
     const QString INSERT_UPDATE_CATEGORY = "INSERT OR REPLACE INTO Categories(uuid, parent, name, type) " \
             "VALUES (:uuid, :parent, :name, :type)";
+    const QString DELETE_ACCOUNT = "DELETE FROM Accounts WHERE uuid=:uuid";
     const QString DELETE_CHILD_CATEGORIES = "DELETE FROM Categories WHERE parent=:uuid";
     const QString DELETE_CATEGORY = "DELETE FROM Categories WHERE uuid=:uuid";
+    const QString SELECT_ALL_ACCOUNTS = "SELECT uuid, name, memo, amount FROM Accounts";
     const QString SELECT_ALL_CATEGORIES = "SELECT uuid, parent, name, type FROM Categories";
     const QString FOREIGN_KEY_SUPPORT = "PRAGMA foreign_keys = ON";
 }
@@ -117,6 +127,7 @@ Book::initDatabse() {
         // create the required tables and indexes
         bool success = true;
         auto query = db->createQuery();
+        success &= query->exec(ACCOUNTS_TABLE);
         success &= query->exec(CATEGORIES_TABLE);
         success &= query->exec(FOREIGN_KEY_SUPPORT);
 
@@ -140,6 +151,42 @@ Book::Book() {
 
 Book::~Book() {
 
+}
+
+void
+Book::store(AccountPtr acc) {
+    bool opened = _db->open();
+
+    if (!opened) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+
+    // if a category is already present in the db the uuid will be present else is null
+    if (acc->_dbId.isNull()) {
+        acc->_dbId = QUuid::createUuid();
+    }
+
+    auto query = _db->createQuery();
+    query->prepare(INSERT_UPDATE_ACCOUNT);
+    query->bindValue(":uuid", acc->_dbId.toString());
+    query->bindValue(":name", acc->name);
+    query->bindValue(":memo", acc->memo);
+
+    auto rounded = acc->amount * PRECISION;
+    auto converted = ceil(rounded);
+    LOG(INFO) << "Amount converted from " << acc->amount << " to " << converted;
+    query->bindValue(":amount", converted);
+
+    // no need to use a transaction since is a single insert
+    auto success = query->exec();
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+    }
+
+    _db->close();
 }
 
 void
@@ -187,6 +234,38 @@ Book::store(CategoryPtr cat) {
 }
 
 void
+Book::remove(AccountPtr acc) {
+    if (acc->_dbId.isNull()) {
+        LOG(ERROR) << "Cannot delete account '" << acc->name.toStdString()
+                << "' with a NULL id";
+        _lastError = "Cannot delete Account that was not added to the db";
+        return;
+    }
+
+    bool opened = _db->open();
+
+    if (!opened) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+
+    auto query = _db->createQuery();
+    query->prepare(DELETE_ACCOUNT);
+    query->bindValue(":uuid", acc->_dbId.toString());
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+    }
+
+    acc->_dbId = QUuid();
+
+    _db->close();
+}
+
+void
 Book::remove(CategoryPtr cat) {
     if (cat->_dbId.isNull()) {
         LOG(ERROR) << "Cannot delete category '" << cat->name.toStdString()
@@ -228,7 +307,33 @@ Book::remove(CategoryPtr cat) {
     }
 
     _db->close();
+}
 
+
+QList<AccountPtr>
+Book::accounts() {
+    QList<AccountPtr> accs;
+
+    bool opened = _db->open();
+
+    if (!opened) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return accs;
+    }
+
+    auto query = _db->createQuery();
+    query->exec(SELECT_ALL_ACCOUNTS);
+
+    while (query->next()) {
+        auto amount = query->value("amount").toInt() / PRECISION;
+        auto current = std::make_shared<Account>(query->value("name").toString(),
+                amount, query->value("memo").toString());
+        current->_dbId = QUuid(query->value("uuid").toString());
+        accs.append(current);
+    }
+
+    return accs;
 }
 
 QList<CategoryPtr>

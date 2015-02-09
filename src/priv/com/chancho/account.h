@@ -24,13 +24,9 @@
 
 #include <memory>
 
-#include <boost/multiprecision/cpp_dec_float.hpp>
-
 #include <QMetaType>
 #include <QString>
 #include <QUuid>
-
-using namespace boost::multiprecision;
 
 namespace com {
 
@@ -41,12 +37,12 @@ class Account {
 
  public:
     Account() = default;
-    Account(const QString& n, cpp_dec_float_50 a=0, const QString& m=QString::null);
+    Account(const QString& n, double a=0, const QString& m=QString::null);
     virtual ~Account() = default;
 
  public:
     QString name = QString::null;
-    cpp_dec_float_50 amount = 0;
+    double amount = 0;
     QString memo = QString::null;
 
     virtual bool wasStoredInDb() const;

@@ -29,6 +29,7 @@
 
 #include <com/chancho/static_init.h>
 #include <com/chancho/system/database.h>
+#include "account.h"
 #include "category.h"
 
 namespace com {
@@ -42,8 +43,11 @@ class Book {
 
     DECLARE_STATIC_INIT(Book);
 
+    virtual void store(AccountPtr acc);
     virtual void store(CategoryPtr cat);
+    virtual void remove(AccountPtr acc);
     virtual void remove(CategoryPtr cat);
+    virtual QList<AccountPtr> accounts();
     virtual QList<CategoryPtr> categories();
 
     virtual bool isError();

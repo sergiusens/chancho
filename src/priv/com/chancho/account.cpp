@@ -26,7 +26,7 @@ namespace com {
 
 namespace chancho {
 
-Account::Account(const QString& n, cpp_dec_float_50 a, const QString& m)
+Account::Account(const QString& n, double a, const QString& m)
     : name(n),
       amount(a),
       memo(m) {

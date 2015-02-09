@@ -22,21 +22,9 @@
 
 #pragma once
 
-#include <boost/multiprecision/cpp_dec_float.hpp>
-
-#include <com/chancho/account.h>
 
 #include "base_testcase.h"
-
-
-class PublicSetters : public com::chancho::Account {
- public:
-    PublicSetters() : com::chancho::Account() {}
-    PublicSetters(const QString& n, cpp_dec_float_50 a=0, const QString& m=QString::null)
-        : com::chancho::Account(n, a, m) {}
-
-    using com::chancho::Account::_dbId;
-};
+#include "public_account.h"
 
 class TestAccount : public BaseTestCase {
     Q_OBJECT

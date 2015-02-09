@@ -48,7 +48,7 @@ void
 TestAccount::testNameConstructor() {
     QFETCH(QString, name);
 
-    auto account = std::make_shared<PublicSetters>(name);
+    auto account = std::make_shared<PublicAccount>(name);
     QCOMPARE(account->name, name);
 }
 
@@ -66,7 +66,7 @@ TestAccount::testNameAmountConstructor() {
     QFETCH(QString, name);
     QFETCH(double, amount);
 
-    auto account = std::make_shared<PublicSetters>(name, amount);
+    auto account = std::make_shared<PublicAccount>(name, amount);
     QCOMPARE(account->name, name);
     QVERIFY(account->amount == amount);
 }
@@ -87,7 +87,7 @@ TestAccount::testNameAmountMemo() {
     QFETCH(double, amount);
     QFETCH(QString, memo);
 
-    auto account = std::make_shared<PublicSetters>(name, amount, memo);
+    auto account = std::make_shared<PublicAccount>(name, amount, memo);
     QCOMPARE(account->name, name);
     QVERIFY(account->amount == amount);
     QCOMPARE(account->memo, memo);
@@ -109,7 +109,7 @@ TestAccount::testWasDbStored() {
     QFETCH(QUuid, dbId);
     QFETCH(bool, result);
 
-    auto account = std::make_shared<PublicSetters>(name);
+    auto account = std::make_shared<PublicAccount>(name);
     account->_dbId = dbId;
     QCOMPARE(account->wasStoredInDb(), result);
 }

@@ -22,50 +22,13 @@
 
 #pragma once
 
-#include <com/chancho/book.h>
+#include <com/chancho/account.h>
 
-#include "base_testcase.h"
-#include "database_factory.h"
-#include "database.h"
-#include "query.h"
-#include "public_book.h"
-#include "public_category.h"
-
-namespace chancho = com::chancho;
-namespace tests = com::chancho::tests;
-
-class TestBookMocked : public BaseTestCase {
-    Q_OBJECT
-
+class PublicAccount : public com::chancho::Account {
  public:
-    explicit TestBookMocked(QObject *parent = 0)
-            : BaseTestCase("TestBookMocked", parent) { }
+    PublicAccount() : com::chancho::Account() {}
+    PublicAccount(const QString& n, double a=0, const QString& m=QString::null)
+            : com::chancho::Account(n, a, m) {}
 
- private slots:
-
-    void init() override;
-    void cleanup() override;
-
-    void testDatabasePathMissing();
-
-    void testInitDatbaseMissingTables();
-    void testInitDatbaseMissingTablesError();
-    void testInitDatabasePresentTables_data();
-    void testInitDatabasePresentTables();
-
-    void testStoreCategoryOpenError();
-    void testStoreCategoryExecError();
-
-    void testRemoveCategoryOpenError();
-    void testRemoveCategoryChildsExecError();
-    void testRemoveCategoryDeleteExecError();
-
-    void testStoreAccountsOpenError();
-    void testStoreAccountExecError();
-
-    void testRemoveAccountOpenError();
-    void testRemoveAccountExecError();
-
- private:
-    tests::MockDatabaseFactory* _dbFactory;
+    using com::chancho::Account::_dbId;
 };
