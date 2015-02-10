@@ -25,15 +25,56 @@
 #include <memory>
 
 #include <glog/logging.h>
+#include <sqlite3.h>
 
 #include <QSqlDatabase>
+#include <QSqlDriver>
 #include <QSqlError>
 #include <QSqlIndex>
 #include <QSqlQuery>
 #include <QString>
 #include <QStringList>
+#include <QtCore/qcoreevent.h>
 
 #include "query.h"
+
+namespace {
+
+static void addStringNumbers(sqlite3_context *context, int argc, sqlite3_value **argv) {
+    DLOG(INFO) << __PRETTY_FUNCTION__;
+    if (argc == 2) {
+        auto first = reinterpret_cast<const char*>(sqlite3_value_text(argv[0]));
+        auto second = reinterpret_cast<const char*>(sqlite3_value_text(argv[1]));
+        if (first && second) {
+            auto firstAmount = QString::fromUtf8(first).toDouble();
+            auto secondAmount = QString::fromUtf8(second).toDouble();
+            auto result = QString::number(firstAmount + secondAmount);
+            sqlite3_result_text(context, result.toStdString().c_str(), -1, SQLITE_TRANSIENT);
+            return;
+        }
+    }
+}
+
+static void subtractStringNumbers(sqlite3_context *context, int argc, sqlite3_value **argv) {
+    DLOG(INFO) << __PRETTY_FUNCTION__;
+    if (argc == 2) {
+        auto first = reinterpret_cast<const char*>(sqlite3_value_text(argv[0]));
+        auto second = reinterpret_cast<const char*>(sqlite3_value_text(argv[1]));
+        if (first && second) {
+            auto firstAmount = QString::fromUtf8(first).toDouble();
+            auto secondAmount = QString::fromUtf8(second).toDouble();
+            auto result = QString::number(firstAmount - secondAmount);
+            sqlite3_result_text(context, result.toStdString().c_str(), -1, SQLITE_TRANSIENT);
+            return;
+        }
+    }
+}
+
+static void trace(void*, const char* query ) {
+    DLOG(INFO) << "SQlite: " << query;
+}
+
+}
 
 namespace com {
 
@@ -105,7 +146,17 @@ class Database {
     }
 
     virtual bool open() {
-        return _db.open();
+        auto opened = _db.open();
+        if (!opened) {
+            return opened;
+        } else {
+            bool extensionsAdded = addSqlite3Extensions();
+            if (!extensionsAdded) {
+                _db.close();
+                return extensionsAdded;
+            }
+        }
+        return opened;
     }
 
     virtual bool open(const QString& user, const QString& password) {
@@ -172,9 +223,59 @@ class Database {
         return _db.userName();
     }
 
+    virtual bool addSqlite3Extensions() {
+        DLOG(INFO) << __PRETTY_FUNCTION__;
+        // Get handle to the driver and check it is both valid and refers to SQLite3.
+        auto v = _db.driver()->handle();
+        if (!v.isValid() || qstrcmp(v.typeName(), "sqlite3*") != 0) {
+            LOG(INFO) << "Cannot get a sqlite3 handle to the driver.";
+            return false;
+        }
+
+        // Create a handler and attach functions.
+        auto handler = *static_cast<sqlite3**>(v.data());
+        if (!handler) {
+            LOG(INFO) << "Cannot get a sqlite3 handler.";
+            return false;
+        }
+
+        // Check validity of the state.
+        if (!_db.isValid()) {
+            LOG(INFO) << "Cannot create SQLite custom functions: db object is not valid.";
+            return false;
+        }
+
+        if (!_db.isOpen()) {
+            LOG(INFO) << "Cannot create SQLite custom functions: db object is not open.";
+            return false;
+        }
+
+        auto added = sqlite3_create_function(handler, "AddStringNumbers", 2, SQLITE_UTF8 | SQLITE_DETERMINISTIC, nullptr, &addStringNumbers, nullptr, nullptr);
+        if (added == SQLITE_OK) {
+            DLOG(INFO) << "AddStringNumbers added";
+        } else {
+            LOG(WARNING) << "Cannot create SQLite functions: AddStringNumbers";
+            return false;
+        }
+        added = sqlite3_create_function(handler, "SubtractStringNumbers", 2, SQLITE_UTF8 | SQLITE_DETERMINISTIC, nullptr, &subtractStringNumbers, nullptr, nullptr);
+        if (added == SQLITE_OK) {
+            DLOG(INFO) << "SubtractStringNumbers added";
+        } else {
+            LOG(WARNING) << "Cannot create SQLite functions: SubtractStringNumbers";
+            return false;
+        }
+
+
+        sqlite3_trace(handler, trace, NULL);
+
+        return true;
+    }
+
  protected:
     QSqlDatabase _db;
 };
+
+typedef std::shared_ptr<Database> DatabasePtr;
 
 }
 

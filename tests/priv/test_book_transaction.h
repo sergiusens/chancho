@@ -22,26 +22,50 @@
 
 #pragma once
 
-#include <com/chancho/category.h>
+#include <com/chancho/book.h>
+
+#include "public_book.h"
+#include "public_transaction.h"
+#include "base_testcase.h"
 
 namespace chancho = com::chancho;
 
-class PublicCategory : public chancho::Category {
+class TestBookTransaction : public BaseTestCase {
+    Q_OBJECT
+
  public:
-    PublicCategory()
-            : chancho::Category() {}
+    explicit TestBookTransaction(QObject *parent = 0)
+            : BaseTestCase("TestBookTransaction", parent) { }
 
-    PublicCategory(const QString& n, Category::Type t)
-            : chancho::Category(n, t) {}
+ private slots:
 
-    PublicCategory(const QString& n, Category::Type t, std::shared_ptr<Category> p)
-            : chancho::Category(n, t, p) {}
+    void init() override;
+    void cleanup() override;
 
-    virtual ~PublicCategory() = default;
+    void testStoreTransaction_data();
+    void testStoreTransaction();
 
-    using chancho::Category::_dbId;
+    void testUpdateTransaction_data();
+    void testUpdateTransaction();
+
+    void testStoreTransactionNoAccount();
+    void testStoreTransactionNoCategory();
+
+    void testRemoveTransaction_data();
+    void testRemoveTransaction();
+
+    void testTransactionsMonth_data();
+    void testTransactionsMonth();
+
+    void testTransactionsCategory_data();
+    void testTransactionsCategory();
+
+    void testTransactionsCategoryAndMonth_data();
+    void testTransactionsCategoryAndMonth();
+
+    void testTransactionsAccount_data();
+    void testTransactionsAccount();
+
+   void testDeleteAccountTransactions_data();
+    void testDeleteAccountTransactions();
 };
-
-typedef std::shared_ptr<PublicCategory> PublicCategoryPtr;
-
-Q_DECLARE_METATYPE(std::shared_ptr<PublicCategory>)

@@ -32,6 +32,7 @@
 
 #include "matchers.h"
 #include "public_account.h"
+#include "public_transaction.h"
 #include "test_book_mocked.h"
 
 using ::testing::_;
@@ -84,7 +85,7 @@ TestBookMocked::testInitDatbaseMissingTables() {
         .WillOnce(Return(db));
 
     EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
-            .Times(1);
+        .Times(1);
 
     EXPECT_CALL(*db.get(), open())
         .Times(1)
@@ -103,7 +104,7 @@ TestBookMocked::testInitDatbaseMissingTables() {
         .WillOnce(Return(query));
 
     EXPECT_CALL(*query.get(), exec(Matcher<const QString&>(_)))
-        .Times(3)
+        .Times(12)
         .WillRepeatedly(Return(true));
 
     EXPECT_CALL(*db.get(), commit())
@@ -153,7 +154,17 @@ TestBookMocked::testInitDatbaseMissingTablesError() {
         .WillOnce(Return(query));
 
     EXPECT_CALL(*query.get(), exec(Matcher<const QString&>(_)))
-        .Times(3)
+        .Times(12)
+        .WillOnce(Return(true))
+        .WillOnce(Return(true))
+        .WillOnce(Return(true))
+        .WillOnce(Return(true))
+        .WillOnce(Return(true))
+        .WillOnce(Return(true))
+        .WillOnce(Return(true))
+        .WillOnce(Return(true))
+        .WillOnce(Return(true))
+        .WillOnce(Return(true))
         .WillOnce(Return(true))
         .WillOnce(Return(false));
 
@@ -697,6 +708,733 @@ TestBookMocked::testRemoveAccountExecError() {
     book.remove(acc);
     QVERIFY(book.isError());
     QCOMPARE(error.text(), book.lastError());
+
+    // verify expectations
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+    QVERIFY(Mock::VerifyAndClearExpectations(query.get()));
+}
+
+void
+TestBookMocked::testAccountsOpenError() {
+    QSqlError error("Testing driver error", "Text error");
+    auto db = std::make_shared<tests::MockDatabase>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    PublicBook book;
+
+    auto accounts = book.accounts();
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+    QCOMPARE(accounts.count(), 0);
+
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+}
+
+void
+TestBookMocked::testAccountsExecError() {
+    QSqlError error("Driver error");
+    auto db = std::make_shared<tests::MockDatabase>();
+    auto query = std::make_shared<tests::MockQuery>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory,
+            addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*db.get(), createQuery())
+            .Times(1)
+            .WillOnce(Return(query));
+
+    EXPECT_CALL(*query.get(), exec(_))
+            .Times(1)
+            .WillOnce(Return(false));
+
+    // delete query expectations
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    EXPECT_CALL(*db.get(), close())
+            .Times(1);
+
+    PublicBook book;
+    auto accounts = book.accounts();
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+    QCOMPARE(accounts.count(), 0);
+
+    // verify expectations
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+    QVERIFY(Mock::VerifyAndClearExpectations(query.get()));
+}
+
+void
+TestBookMocked::testCategoriesOpenError() {
+    QSqlError error("Testing driver error", "Text error");
+    auto db = std::make_shared<tests::MockDatabase>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    PublicBook book;
+
+    auto categories = book.categories();
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+    QCOMPARE(categories.count(), 0);
+
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+}
+
+void
+TestBookMocked::testCategoriesExecError() {
+    QSqlError error("Driver error");
+    auto db = std::make_shared<tests::MockDatabase>();
+    auto query = std::make_shared<tests::MockQuery>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory,
+            addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*db.get(), createQuery())
+            .Times(1)
+            .WillOnce(Return(query));
+
+    EXPECT_CALL(*query.get(), exec(_))
+            .Times(1)
+            .WillOnce(Return(false));
+
+    // delete query expectations
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    EXPECT_CALL(*db.get(), close())
+            .Times(1);
+
+    PublicBook book;
+    auto categories = book.categories();
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+    QCOMPARE(categories.count(), 0);
+
+    // verify expectations
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+    QVERIFY(Mock::VerifyAndClearExpectations(query.get()));
+}
+
+void
+TestBookMocked::testStoreTransactionOpenError() {
+    QSqlError error("Testing driver error", "Text error");
+    auto db = std::make_shared<tests::MockDatabase>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    auto acc = std::make_shared<PublicAccount>("Bankia", 232.32, "Savings");
+    acc->_dbId = QUuid::createUuid();
+
+    auto cat = std::make_shared<PublicCategory>("Testing cate", chancho::Category::Type::INCOME);
+    cat->_dbId = QUuid::createUuid();
+
+    auto tran = std::make_shared<chancho::Transaction>(acc, 34.4, cat);
+
+    PublicBook book;
+    book.store(tran);
+
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+}
+
+void
+TestBookMocked::testStoreTransactionExecError() {
+    QSqlError error("Driver error");
+    auto db = std::make_shared<tests::MockDatabase>();
+    auto query = std::make_shared<tests::MockQuery>();
+
+    // set db interaction expectations
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory,
+            addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*db.get(), createQuery())
+            .Times(1)
+            .WillOnce(Return(query));
+
+    EXPECT_CALL(*query.get(), prepare(_))
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*query.get(),
+            bindValue(Matcher<const QString&>(_), Matcher<const QVariant&>(_), Matcher<QFlags<QSql::ParamTypeFlag>>(_)))
+            .Times(AnyNumber());
+
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    EXPECT_CALL(*query.get(), exec())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    EXPECT_CALL(*db.get(), close())
+            .Times(1);
+
+    auto acc = std::make_shared<PublicAccount>("Bankia", 232.32, "Savings");
+    acc->_dbId = QUuid::createUuid();
+
+    auto cat = std::make_shared<PublicCategory>("Testing cate", chancho::Category::Type::INCOME);
+    cat->_dbId = QUuid::createUuid();
+
+    auto tran = std::make_shared<chancho::Transaction>(acc, 34.4, cat);
+
+    PublicBook book;
+    book.store(tran);
+
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+
+    // verify expectations
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+    QVERIFY(Mock::VerifyAndClearExpectations(query.get()));
+}
+
+void
+TestBookMocked::testRemoveTransactionOpenError() {
+    QSqlError error("Testing driver error", "Text error");
+    auto db = std::make_shared<tests::MockDatabase>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    auto acc = std::make_shared<PublicAccount>("Bankia", 232.32, "Savings");
+    acc->_dbId = QUuid::createUuid();
+
+    auto cat = std::make_shared<PublicCategory>("Testing cate", chancho::Category::Type::INCOME);
+    cat->_dbId = QUuid::createUuid();
+
+    auto tran = std::make_shared<PublicTransaction>(acc, 34.4, cat);
+    tran->_dbId = QUuid::createUuid();
+
+    PublicBook book;
+
+    book.remove(tran);
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+    QVERIFY(Mock::VerifyAndClearExpectations(tran.get()));
+}
+
+void
+TestBookMocked::testRemoveTransactionExecError() {
+    QSqlError error("Driver error");
+    auto db = std::make_shared<tests::MockDatabase>();
+    auto query = std::make_shared<tests::MockQuery>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory,
+            addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*db.get(), createQuery())
+            .Times(1)
+            .WillOnce(Return(query));
+
+    EXPECT_CALL(*query.get(), prepare(_))
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*query.get(),
+            bindValue(Matcher<const QString&>(_), Matcher<const QVariant&>(_), Matcher<QFlags<QSql::ParamTypeFlag>>(_)))
+            .Times(AnyNumber());
+
+    EXPECT_CALL(*query.get(), exec())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    // delete query expectations
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    EXPECT_CALL(*db.get(), close())
+            .Times(1);
+
+    auto acc = std::make_shared<PublicAccount>("Bankia", 232.32, "Savings");
+    acc->_dbId = QUuid::createUuid();
+
+    auto cat = std::make_shared<PublicCategory>("Testing cate", chancho::Category::Type::INCOME);
+    cat->_dbId = QUuid::createUuid();
+
+    auto tran = std::make_shared<PublicTransaction>(acc, 34.4, cat);
+    tran->_dbId = QUuid::createUuid();
+
+    PublicBook book;
+    book.remove(tran);
+
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+
+    // verify expectations
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+    QVERIFY(Mock::VerifyAndClearExpectations(query.get()));
+}
+
+void
+TestBookMocked::testTransactionsMonthOpenError() {
+    QSqlError error("Testing driver error", "Text error");
+    auto db = std::make_shared<tests::MockDatabase>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    PublicBook book;
+    book.transactions(2, 2014);
+
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+}
+
+void
+TestBookMocked::testTransactionsMonthExecError() {
+    QSqlError error("Driver error");
+    auto db = std::make_shared<tests::MockDatabase>();
+    auto query = std::make_shared<tests::MockQuery>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory,
+            addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*db.get(), createQuery())
+            .Times(1)
+            .WillOnce(Return(query));
+
+    EXPECT_CALL(*query.get(), prepare(_))
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*query.get(),
+            bindValue(Matcher<const QString&>(_), Matcher<const QVariant&>(_), Matcher<QFlags<QSql::ParamTypeFlag>>(_)))
+            .Times(AnyNumber());
+
+    EXPECT_CALL(*query.get(), exec())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    // delete query expectations
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    EXPECT_CALL(*db.get(), close())
+            .Times(1);
+
+    PublicBook book;
+    auto trans = book.transactions(2, 2015);
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+    QCOMPARE(trans.count(), 0);
+
+    // verify expectations
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+    QVERIFY(Mock::VerifyAndClearExpectations(query.get()));
+}
+
+void
+TestBookMocked::testTransactionsCategoryOpenError() {
+    QSqlError error("Testing driver error", "Text error");
+    auto db = std::make_shared<tests::MockDatabase>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    auto cat = std::make_shared<PublicCategory>("Testing cate", chancho::Category::Type::INCOME);
+    cat->_dbId = QUuid::createUuid();
+
+    PublicBook book;
+    book.transactions(cat);
+
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+}
+
+void
+TestBookMocked::testTransactionsCategoryExecError() {
+    QSqlError error("Driver error");
+    auto db = std::make_shared<tests::MockDatabase>();
+    auto query = std::make_shared<tests::MockQuery>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory,
+            addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*db.get(), createQuery())
+            .Times(1)
+            .WillOnce(Return(query));
+
+    EXPECT_CALL(*query.get(), prepare(_))
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*query.get(),
+            bindValue(Matcher<const QString&>(_), Matcher<const QVariant&>(_), Matcher<QFlags<QSql::ParamTypeFlag>>(_)))
+            .Times(AnyNumber());
+
+    EXPECT_CALL(*query.get(), exec())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    // delete query expectations
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    EXPECT_CALL(*db.get(), close())
+            .Times(1);
+
+    auto cat = std::make_shared<PublicCategory>("Testing cate", chancho::Category::Type::INCOME);
+    cat->_dbId = QUuid::createUuid();
+
+    PublicBook book;
+    auto trans = book.transactions(cat);
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+    QCOMPARE(trans.count(), 0);
+
+    // verify expectations
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+    QVERIFY(Mock::VerifyAndClearExpectations(query.get()));
+}
+
+void
+TestBookMocked::testTransactionsCategoryMonthOpenError() {
+    QSqlError error("Testing driver error", "Text error");
+    auto db = std::make_shared<tests::MockDatabase>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    auto cat = std::make_shared<PublicCategory>("Testing cate", chancho::Category::Type::INCOME);
+    cat->_dbId = QUuid::createUuid();
+
+    PublicBook book;
+    book.transactions(cat, 2, 2015);
+
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+}
+
+void
+TestBookMocked::testTransactionsCategoryMonthExecError() {
+    QSqlError error("Driver error");
+    auto db = std::make_shared<tests::MockDatabase>();
+    auto query = std::make_shared<tests::MockQuery>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory,
+            addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*db.get(), createQuery())
+            .Times(1)
+            .WillOnce(Return(query));
+
+    EXPECT_CALL(*query.get(), prepare(_))
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*query.get(),
+            bindValue(Matcher<const QString&>(_), Matcher<const QVariant&>(_), Matcher<QFlags<QSql::ParamTypeFlag>>(_)))
+            .Times(AnyNumber());
+
+    EXPECT_CALL(*query.get(), exec())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    // delete query expectations
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    EXPECT_CALL(*db.get(), close())
+            .Times(1);
+
+    auto cat = std::make_shared<PublicCategory>("Testing cate", chancho::Category::Type::INCOME);
+    cat->_dbId = QUuid::createUuid();
+
+    PublicBook book;
+    auto trans = book.transactions(cat, 1, 2015);
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+    QCOMPARE(trans.count(), 0);
+
+    // verify expectations
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+    QVERIFY(Mock::VerifyAndClearExpectations(query.get()));
+}
+
+void
+TestBookMocked::testTransactionsAccountOpenError() {
+    QSqlError error("Testing driver error", "Text error");
+    auto db = std::make_shared<tests::MockDatabase>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    auto acc = std::make_shared<PublicAccount>("Bankia", 232.32, "Savings");
+    acc->_dbId = QUuid::createUuid();
+
+    PublicBook book;
+    book.transactions(acc);
+
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+}
+
+void
+TestBookMocked::testTransactionsAccountExecError() {
+    QSqlError error("Driver error");
+    auto db = std::make_shared<tests::MockDatabase>();
+    auto query = std::make_shared<tests::MockQuery>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory,
+            addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*db.get(), createQuery())
+            .Times(1)
+            .WillOnce(Return(query));
+
+    EXPECT_CALL(*query.get(), prepare(_))
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*query.get(),
+            bindValue(Matcher<const QString&>(_), Matcher<const QVariant&>(_), Matcher<QFlags<QSql::ParamTypeFlag>>(_)))
+            .Times(AnyNumber());
+
+    EXPECT_CALL(*query.get(), exec())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    // delete query expectations
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    EXPECT_CALL(*db.get(), close())
+            .Times(1);
+
+    auto acc = std::make_shared<PublicAccount>("Bankia", 232.32, "Savings");
+    acc->_dbId = QUuid::createUuid();
+
+    PublicBook book;
+    auto trans = book.transactions(acc);
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+    QCOMPARE(trans.count(), 0);
 
     // verify expectations
     QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));

@@ -66,6 +66,30 @@ class TestBookMocked : public BaseTestCase {
     void testRemoveAccountOpenError();
     void testRemoveAccountExecError();
 
+    void testAccountsOpenError();
+    void testAccountsExecError();
+
+    void testCategoriesOpenError();
+    void testCategoriesExecError();
+
+    void testStoreTransactionOpenError();
+    void testStoreTransactionExecError();
+
+    void testRemoveTransactionOpenError();
+    void testRemoveTransactionExecError();
+
+    void testTransactionsMonthOpenError();
+    void testTransactionsMonthExecError();
+
+    void testTransactionsCategoryOpenError();
+    void testTransactionsCategoryExecError();
+
+    void testTransactionsCategoryMonthOpenError();
+    void testTransactionsCategoryMonthExecError();
+
+    void testTransactionsAccountOpenError();
+    void testTransactionsAccountExecError();
+
  private:
     tests::MockDatabaseFactory* _dbFactory;
 };
