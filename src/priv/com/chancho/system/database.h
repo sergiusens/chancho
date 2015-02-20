@@ -250,14 +250,14 @@ class Database {
             return false;
         }
 
-        auto added = sqlite3_create_function(handler, "AddStringNumbers", 2, SQLITE_UTF8 | SQLITE_DETERMINISTIC, nullptr, &addStringNumbers, nullptr, nullptr);
+        auto added = sqlite3_create_function(handler, "AddStringNumbers", 2, SQLITE_UTF8, nullptr, &addStringNumbers, nullptr, nullptr);
         if (added == SQLITE_OK) {
             DLOG(INFO) << "AddStringNumbers added";
         } else {
             LOG(WARNING) << "Cannot create SQLite functions: AddStringNumbers";
             return false;
         }
-        added = sqlite3_create_function(handler, "SubtractStringNumbers", 2, SQLITE_UTF8 | SQLITE_DETERMINISTIC, nullptr, &subtractStringNumbers, nullptr, nullptr);
+        added = sqlite3_create_function(handler, "SubtractStringNumbers", 2, SQLITE_UTF8, nullptr, &subtractStringNumbers, nullptr, nullptr);
         if (added == SQLITE_OK) {
             DLOG(INFO) << "SubtractStringNumbers added";
         } else {
