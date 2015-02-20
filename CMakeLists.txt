@@ -48,6 +48,7 @@ find_package(Boost COMPONENTS program_options REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GLOG REQUIRED libglog)
+pkg_check_modules(SQLITE3 REQUIRED sqlite3)
 
 enable_testing()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -std=c++11 -Werror -O2 -Wall -W -D_REENTRANT -fPIC -Wextra")

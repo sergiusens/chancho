@@ -42,4 +42,5 @@ target_link_libraries(${TARGET}
     ${Boost_LIBRARIES}
     ${Qt5Core_LIBRARIES}
     ${Qt5Sql_LIBRARIES}
+    ${SQLITE3_LIBRARIES}
 )

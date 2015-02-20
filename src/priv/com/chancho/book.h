@@ -31,6 +31,8 @@
 #include <com/chancho/system/database.h>
 #include "account.h"
 #include "category.h"
+#include "transaction.h"
+
 
 namespace com {
 
@@ -45,10 +47,16 @@ class Book {
 
     virtual void store(AccountPtr acc);
     virtual void store(CategoryPtr cat);
+    virtual void store(TransactionPtr tran);
     virtual void remove(AccountPtr acc);
     virtual void remove(CategoryPtr cat);
+    virtual void remove(TransactionPtr tran);
     virtual QList<AccountPtr> accounts();
     virtual QList<CategoryPtr> categories();
+    virtual QList<TransactionPtr> transactions(int moth, int year);
+    virtual QList<TransactionPtr> transactions(CategoryPtr cat);
+    virtual QList<TransactionPtr> transactions(CategoryPtr cat, int month, int year);
+    virtual QList<TransactionPtr> transactions(AccountPtr acc);
 
     virtual bool isError();
     virtual QString lastError();
@@ -59,6 +67,9 @@ class Book {
     static std::set<QString> TABLES;
     static QString databasePath();
     static void initDatabse();
+
+ private:
+   QList<TransactionPtr> parseTransactions(std::shared_ptr<system::Query> query);
 
  protected:
     std::shared_ptr<system::Database> _db;

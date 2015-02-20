@@ -66,6 +66,7 @@ class MockDatabase : public com::chancho::system::Database {
     MOCK_CONST_METHOD1(tables, QStringList(QSql::TableType type));
     MOCK_METHOD0(transaction, bool());
     MOCK_CONST_METHOD0(userName, QString());
+    MOCK_METHOD0(addSqlite3Extensions, bool());
 };
 
 }

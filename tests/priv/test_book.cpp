@@ -62,7 +62,7 @@ TestBook::testInitDatabase() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
-    QCOMPARE(tables.count(), 2);
+    QCOMPARE(tables.count(), 3);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
     db->close();
@@ -93,7 +93,7 @@ TestBook::testInitDatabaseNoPresentTables() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
-    QCOMPARE(tables.count(), 2);
+    QCOMPARE(tables.count(), 3);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
     db->close();
@@ -119,7 +119,7 @@ TestBook::testInitDatabasePresentTables() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
-    QCOMPARE(tables.count(), 2);
+    QCOMPARE(tables.count(), 3);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
     db->close();

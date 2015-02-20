@@ -92,7 +92,7 @@ TestBookAccount::testStoreAccount() {
     QVERIFY(success);
     QVERIFY(query->next());
     QCOMPARE(query->value("name").toString(), account->name);
-    QCOMPARE(query->value("amount").toInt(), static_cast<int>(ceil(100.0 * account->amount)));
+    QCOMPARE(query->value("amount").toString(), QString::number(account->amount));
     QCOMPARE(query->value("memo").toString(), account->memo);
 
     db->close();
@@ -150,7 +150,7 @@ TestBookAccount::testUpdateAccount() {
     QVERIFY(success);
     QVERIFY(query->next());
     QCOMPARE(query->value("name").toString(), newName);  // test against new name to be 100% sure
-    QCOMPARE(query->value("amount").toInt(), static_cast<int>(ceil(100.0 * account->amount)));
+    QCOMPARE(query->value("amount").toString(), QString::number(account->amount));
     QCOMPARE(query->value("memo").toString(), newMemo);
 
     db->close();

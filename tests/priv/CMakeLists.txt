@@ -4,6 +4,7 @@ set(PRIVATE_TESTS
     test_book_account
     test_book_category
     test_book_mocked
+    test_book_transaction
     test_category
     test_transaction
 )

@@ -32,3 +32,7 @@ class PublicAccount : public com::chancho::Account {
 
     using com::chancho::Account::_dbId;
 };
+
+typedef std::shared_ptr<PublicAccount> PublicAccountPtr;
+
+Q_DECLARE_METATYPE(std::shared_ptr<PublicAccount>)

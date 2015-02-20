@@ -37,6 +37,8 @@ namespace chancho {
 
 class Transaction {
 
+ friend class Book;
+
  public:
     Transaction() = default;
     Transaction(const AccountPtr& acc,
@@ -71,7 +73,7 @@ class Transaction {
 
 };
 
-typedef std::shared_ptr<Category> TransactionPtr;
+typedef std::shared_ptr<Transaction> TransactionPtr;
 
 }
 
