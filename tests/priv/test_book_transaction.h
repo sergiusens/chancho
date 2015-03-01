@@ -57,6 +57,33 @@ class TestBookTransaction : public BaseTestCase {
     void testTransactionsMonth_data();
     void testTransactionsMonth();
 
+    void testTransactionsMonthCount_data();
+    void testTransactionsMonthCount();
+
+    void testTransactionsMonthLimited_data();
+    void testTransactionsMonthLimited();
+
+    void testTransactionsDay_data();
+    void testTransactionsDay();
+
+    void testTransactionsDayCount_data();
+    void testTransactionsDayCount();
+
+    void testTransactionsDayLimited_data();
+    void testTransactionsDayLimited();
+
+    void testGetMonthsWithTransactions_data();
+    void testGetMonthsWithTransactions();
+
+    void testGetMonthsWithTransactionsCount_data();
+    void testGetMonthsWithTransactionsCount();
+
+    void testGetDaysWithTransactions_data();
+    void testGetDaysWithTransactions();
+
+    void testGetDaysWithTransactionsCount_data();
+    void testGetDaysWithTransactionsCount();
+
     void testTransactionsCategory_data();
     void testTransactionsCategory();
 
@@ -66,6 +93,6 @@ class TestBookTransaction : public BaseTestCase {
     void testTransactionsAccount_data();
     void testTransactionsAccount();
 
-   void testDeleteAccountTransactions_data();
+    void testDeleteAccountTransactions_data();
     void testDeleteAccountTransactions();
 };

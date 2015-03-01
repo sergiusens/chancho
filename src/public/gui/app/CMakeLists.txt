@@ -1,0 +1,55 @@
+project(chancho-main-app)
+
+set(TARGET chancho-app)
+
+include_directories(${CMAKE_BINARY_DIR})
+include_directories(${Qt5Core_INCLUDE_DIRS})
+include_directories(${Qt5Gui_INCLUDE_DIRS})
+include_directories(${Qt5Quick_INCLUDE_DIRS})
+include_directories(${Qt5Qml_INCLUDE_DIRS})
+include_directories(${Qt5Sql_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/src/priv)
+include_directories(${CMAKE_SOURCE_DIR}/src/public/gui/lib)
+
+set(HEADERS
+)
+
+set(SOURCES
+    main.cpp
+)
+
+set(QML_SOURCES
+    qml/MainWindow.qml
+    qml/components/BillingPerDay.qml
+    qml/components/BillingPerDayHeader.qml
+    qml/components/DateHeaderComponent.qml
+    qml/components/NewEntry.qml
+    qml/components/PageWithBottomEdge.qml
+    qml/components/TransactionComponent.qml
+)
+
+qt5_add_resources(chancho-app-resources ui.qrc)
+
+add_executable(${TARGET}
+    ${HEADERS}
+    ${SOURCES}
+    ${QML_SOURCES}
+    ${chancho-app-resources}
+)
+
+add_dependencies(${TARGET} chancho-app-priv)
+
+qt5_use_modules(${TARGET} Gui Core Qml Quick DBus Sql)
+
+target_link_libraries(${TARGET}
+    ${GLOG_LIBRARIES}
+    ${Qt5Core_LIBRARIES}
+    ${Qt5Sql_LIBRARIES}
+    chancho-priv
+    chancho-app-priv
+)
+
+install(TARGETS ${CHANCHO_APP_BIN}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
