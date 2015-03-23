@@ -30,6 +30,7 @@
 #include <QStandardPaths>
 #include <QVariant>
 
+#include <com/chancho/system/database_lock.h>
 #include <com/chancho/system/database_factory.h>
 #include <QtSql/qsqlquerymodel.h>
 
@@ -81,6 +82,7 @@ namespace {
         "DELETE FROM Transactions WHERE account=old.uuid; "\
         "END";
     const QString TRANSACTION_MONTH_INDEX = "CREATE INDEX transaction_month_index ON Transactions(year, month);";
+    const QString TRANSACTION_DAY_INDEX = "CREATE INDEX transaction_day_index ON Transactions(day, year, month);";
     const QString TRANSACTION_CATEGORY_INDEX = "CREATE INDEX transaction_category_index ON Transactions(category);";
     const QString TRANSACTION_CATEGORY_MONTH_INDEX = "CREATE INDEX transaction_category_month_index ON Transactions(category, year, month);";
     const QString TRANSACTION_ACCOUNT_INDEX = "CREATE INDEX transaction_account_index ON Transactions(account);";
@@ -102,6 +104,22 @@ namespace {
         "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.month=:month AND t.year=:year ORDER BY t.year, t.month";
+    const QString SELECT_TRANSACTIONS_MONTH_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
+        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
+        "WHERE t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset" ;
+    const QString SELECT_TRANSACTIONS_MONTH_COUNT = "SELECT count(uuid) FROM Transactions "\
+        "WHERE month=:month AND year=:year";
+    const QString SELECT_TRANSACTIONS_DAY = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
+        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
+        "WHERE t.day=:day AND t.month=:month AND t.year=:year ORDER BY t.day, t.year, t.month";
+    const QString SELECT_TRANSACTIONS_DAY_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
+        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
+        "WHERE t.day=:day AND t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset" ;
+    const QString SELECT_TRANSACTIONS_DAY_COUNT = "SELECT count(uuid) FROM Transactions "\
+        "WHERE day=:day AND month=:month AND year=:year";
     const QString SELECT_TRANSACTIONS_CATEGORY = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
         "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
@@ -114,6 +132,17 @@ namespace {
         "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.account=:account ORDER BY t.year, t.month";
+    const QString SELECT_MONTHS_WITH_TRANSACTIONS = "SELECT DISTINCT month FROM Transactions WHERE year=:year "\
+        "ORDER BY month DESC";
+    const QString SELECT_MONTHS_WITH_TRANSACTIONS_LIMIT = "SELECT DISTINCT month FROM Transactions WHERE year=:year "\
+            "ORDER BY month DESC LIMIT :limit OFFSET :offset";
+    const QString SELECT_MONTHS_WITH_TRANSACTIONS_COUNT = "SELECT COUNT(DISTINCT month) FROM Transactions WHERE year=:year";
+    const QString SELECT_DAYS_WITH_TRANSACTIONS = "SELECT DISTINCT day FROM Transactions "\
+        "WHERE year=:year AND month=:month ORDER BY day DESC";
+    const QString SELECT_DAYS_WITH_TRANSACTIONS_LIMIT = "SELECT DISTINCT day FROM Transactions "\
+        "WHERE year=:year AND month=:month ORDER BY day DESC LIMIT :limit OFFSET :offset";
+    const QString SELECT_DAYS_WITH_TRANSACTIONS_COUNT = "SELECT COUNT(DISTINCT day) FROM Transactions "\
+        "WHERE year=:year AND month=:month";
     const QString FOREIGN_KEY_SUPPORT = "PRAGMA foreign_keys = ON";
 
 }
@@ -150,8 +179,8 @@ Book::initDatabse() {
     db = system::DatabaseFactory::instance()->addDatabase("QSQLITE", "BOOKS");
     db->setDatabaseName(dbPath);
 
-    auto opened = db->open();
-    if (!opened) {
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(db);
+    if (!dbLock.opened()) {
         LOG(ERROR) << "Could not open database to initialize it " << db->lastError().text().toStdString();
         return;
     }
@@ -189,6 +218,7 @@ Book::initDatabse() {
         success &= query->exec(TRANSACTION_DELETE_TRIGGER);
         success &= query->exec(ACCOUNT_DELETE_TRIGGER);
         success &= query->exec(TRANSACTION_MONTH_INDEX);
+        success &= query->exec(TRANSACTION_DAY_INDEX);
         success &= query->exec(TRANSACTION_CATEGORY_INDEX);
         success &= query->exec(TRANSACTION_CATEGORY_MONTH_INDEX);
         success &= query->exec(TRANSACTION_ACCOUNT_INDEX);
@@ -201,7 +231,6 @@ Book::initDatabse() {
         if (!success)
             LOG(ERROR) << "Could not create the chancho db " << db->lastError().text().toStdString();
     }
-    db->close();
 }
 
 
@@ -217,9 +246,10 @@ Book::~Book() {
 
 void
 Book::store(AccountPtr acc) {
-    bool opened = _db->open();
+    std::lock_guard<std::mutex> lock(_accountsMutex);
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
-    if (!opened) {
+    if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
         return;
@@ -245,8 +275,6 @@ Book::store(AccountPtr acc) {
         LOG(ERROR) << _lastError.toStdString();
         acc->_dbId = QUuid();
     }
-
-    _db->close();
 }
 
 void
@@ -257,9 +285,10 @@ Book::store(CategoryPtr cat) {
         store(cat->parent);
     }
 
-    bool opened = _db->open();
+    std::lock_guard<std::mutex> lock(_categoriesMutex);
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
-    if (!opened) {
+    if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
         return;
@@ -290,8 +319,6 @@ Book::store(CategoryPtr cat) {
         LOG(ERROR) << _lastError.toStdString();
         cat->_dbId = QUuid();
     }
-
-    _db->close();
 }
 
 void
@@ -309,10 +336,10 @@ Book::store(TransactionPtr tran) {
         return;
     }
 
+    std::lock_guard<std::mutex> lock(_transactionMutex);
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
-    bool opened = _db->open();
-
-    if (!opened) {
+    if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
         return;
@@ -358,12 +385,11 @@ Book::store(TransactionPtr tran) {
         LOG(INFO) << _lastError.toStdString();
         tran->_dbId = QUuid();
     }
-
-    _db->close();
 }
 
 void
 Book::remove(AccountPtr acc) {
+    std::lock_guard<std::mutex> lock(_accountsMutex);
     if (acc->_dbId.isNull()) {
         LOG(ERROR) << "Cannot delete account '" << acc->name.toStdString()
                 << "' with a NULL id";
@@ -371,9 +397,9 @@ Book::remove(AccountPtr acc) {
         return;
     }
 
-    bool opened = _db->open();
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
-    if (!opened) {
+    if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
         return;
@@ -390,12 +416,11 @@ Book::remove(AccountPtr acc) {
     }
 
     acc->_dbId = QUuid();
-
-    _db->close();
 }
 
 void
 Book::remove(CategoryPtr cat) {
+    std::lock_guard<std::mutex> lock(_categoriesMutex);
     if (cat->_dbId.isNull()) {
         LOG(ERROR) << "Cannot delete category '" << cat->name.toStdString()
                 << "' with a NULL id";
@@ -403,9 +428,9 @@ Book::remove(CategoryPtr cat) {
         return;
     }
 
-    bool opened = _db->open();
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
-    if (!opened) {
+    if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
         return;
@@ -434,21 +459,20 @@ Book::remove(CategoryPtr cat) {
         LOG(ERROR) << "Rolliing back transaction after error: '" << _lastError.toStdString() << "'";
         _db->rollback();
     }
-
-    _db->close();
 }
 
 void
 Book::remove(TransactionPtr tran) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
     if (tran->_dbId.isNull()) {
         LOG(ERROR) << "Cannot delete transaction with a NULL id";
         _lastError = "Cannot delete Account that was not added to the db";
         return;
     }
 
-    bool opened = _db->open();
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
-    if (!opened) {
+    if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
         return;
@@ -465,17 +489,16 @@ Book::remove(TransactionPtr tran) {
     }
 
     tran->_dbId = QUuid();
-
-    _db->close();
 }
 
 QList<AccountPtr>
 Book::accounts() {
+    std::lock_guard<std::mutex> lock(_accountsMutex);
     QList<AccountPtr> accs;
 
-    bool opened = _db->open();
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
-    if (!opened) {
+    if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
         return accs;
@@ -486,7 +509,6 @@ Book::accounts() {
     if (!sucess) {
         _lastError = _db->lastError().text();
         LOG(INFO) << "Error retrieving the accounts " << _lastError.toStdString();
-        _db->close();
         return accs;
     }
 
@@ -507,19 +529,18 @@ Book::accounts() {
         accs.append(current);
     }
 
-    _db->close();
-
     return accs;
 }
 
 QList<CategoryPtr>
 Book::categories() {
+    std::lock_guard<std::mutex> lock(_categoriesMutex);
     QMap<QUuid, QList<QUuid>> parentChildMap;
     QMap<QUuid, CategoryPtr> catsMap;
 
-    bool opened = _db->open();
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
-    if (!opened) {
+    if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
         QList<CategoryPtr> cats;
@@ -532,7 +553,6 @@ Book::categories() {
     if (!sucess) {
         _lastError = _db->lastError().text();
         LOG(INFO) << "Error retrieving the categories " << _lastError.toStdString();
-        _db->close();
         QList<CategoryPtr> cats;
         return cats;
     }
@@ -588,9 +608,6 @@ Book::categories() {
             catsMap[childId]->parent = catsMap[parentId];
         }
     }
-
-    _db->close();
-
     return catsMap.values();
 }
 
@@ -656,112 +673,192 @@ Book::parseTransactions(std::shared_ptr<system::Query> query) {
 }
 
 QList<TransactionPtr>
-Book::transactions(int moth, int year) {
+Book::transactions(int year, int month, boost::optional<int> day, boost::optional<int> limit,
+        boost::optional<int> offset) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
     QList<TransactionPtr> trans;
-    bool opened = _db->open();
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
-    if (!opened) {
+    if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
         return trans;
     }
 
-    // SELECT_TRANSACTIONS_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, t.year, t.contents, t.memo,
-    //         c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
-    //         INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
-    //         WHERE t.month=:month AND t.year=:year";
     auto query = _db->createQuery();
-    query->prepare(SELECT_TRANSACTIONS_MONTH);
-    query->bindValue(":month", moth);
-    query->bindValue(":year", year);
+    if (day) {
+        if (limit) {
+            // SELECT_TRANSACTIONS_DAY_LIMIT = SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
+            //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+            //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
+            //     WHERE t.day=:day AND t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset
+            query->prepare(SELECT_TRANSACTIONS_DAY_LIMIT);
+            query->bindValue(":month", month);
+            query->bindValue(":year", year);
+            query->bindValue(":day", *day);
+            query->bindValue(":limit", *limit);
+            if (offset) {
+                query->bindValue(":offset", *offset);
+            } else {
+                query->bindValue(":offset", 0);
+            }
+        } else {
+            // SELECT_TRANSACTIONS_DAY = SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
+            //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+            //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
+            //     WHERE t.day=:day AND t.month=:month AND t.year=:year ORDER BY t.day, t.year, t.month
+            query->prepare(SELECT_TRANSACTIONS_DAY);
+            query->bindValue(":month", month);
+            query->bindValue(":year", year);
+            query->bindValue(":day", *day);
+        }
+    } else {
+        if (limit) {
+            // SELECT_TRANSACTIONS_MONTH_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
+            //    t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+            //    INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
+            //    WHERE t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset
+            query->prepare(SELECT_TRANSACTIONS_MONTH_LIMIT);
+            query->bindValue(":month", month);
+            query->bindValue(":year", year);
+            query->bindValue(":limit", *limit);
+            if (offset) {
+                query->bindValue(":offset", *offset);
+            } else {
+                query->bindValue(":offset", 0);
+            }
 
+        } else {
+            // SELECT_TRANSACTIONS_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, t.year, t.contents, t.memo,
+            //         c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+            //         INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
+            //         WHERE t.month=:month AND t.year=:year";
+            query->prepare(SELECT_TRANSACTIONS_MONTH);
+            query->bindValue(":month", month);
+            query->bindValue(":year", year);
+        }
+    }
     // executes the query and parses the result
     trans = parseTransactions(query);
-
-    _db->close();
-
     return trans;
+
 }
 
-QList<TransactionPtr>
-Book::transactions(CategoryPtr cat) {
-    QList<TransactionPtr> trans;
+int
+Book::numberOfTransactions(int month, int year) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
+    int count = -1;
 
-    if (!cat->wasStoredInDb()) {
-        LOG(INFO) << "Returning empty list because category was not stored.";
-        return  trans;
-    }
-    bool opened = _db->open();
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
-    if (!opened) {
+    if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
-        return trans;
+        return count;
     }
 
-
-    // SELECT_TRANSACTIONS_CATEGORY = SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-    //    t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
-    //    INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
-    //    WHERE t.category=:category;
     auto query = _db->createQuery();
-    query->prepare(SELECT_TRANSACTIONS_CATEGORY);
-    query->bindValue(":category", cat->_dbId.toString());
-
-    // executes the query and parses the result
-    trans = parseTransactions(query);
-
-    _db->close();
-
-    return trans;
-}
-
-QList<TransactionPtr>
-Book::transactions(CategoryPtr cat, int month, int year) {
-    QList<TransactionPtr> trans;
-
-    if (!cat->wasStoredInDb()) {
-        LOG(INFO) << "Returning empty list because category was not stored.";
-        return  trans;
-    }
-    bool opened = _db->open();
-
-    if (!opened) {
-        _lastError = _db->lastError().text();
-        LOG(ERROR) << _lastError.toStdString();
-        return trans;
-    }
-
-
-    // SELECT_TRANSACTIONS_CATEGORY_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-    //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
-    //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
-    //     WHERE t.category=:category AND t.month=:month AND t.year=:year
-    auto query = _db->createQuery();
-    query->prepare(SELECT_TRANSACTIONS_CATEGORY_MONTH);
-    query->bindValue(":category", cat->_dbId.toString());
+    query->prepare(SELECT_TRANSACTIONS_MONTH_COUNT);
     query->bindValue(":month", month);
     query->bindValue(":year", year);
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the transactions count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
+}
+
+int
+Book::numberOfTransactions(int day, int month, int year) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
+    int count = -1;
+
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << "Error opening database " << _lastError.toStdString();
+        LOG(ERROR) << QSqlDatabase::drivers().join(" ").toStdString();
+        return count;
+    }
+
+    auto query = _db->createQuery();
+    query->prepare(SELECT_TRANSACTIONS_DAY_COUNT);
+    query->bindValue(":day", day);
+    query->bindValue(":month", month);
+    query->bindValue(":year", year);
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the transactions count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
+}
+
+QList<TransactionPtr>
+Book::transactions(CategoryPtr cat, boost::optional<int> month, boost::optional<int> year) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
+    QList<TransactionPtr> trans;
+
+    if (!cat->wasStoredInDb()) {
+        LOG(INFO) << "Returning empty list because category was not stored.";
+        return  trans;
+    }
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return trans;
+    }
+
+    auto query = _db->createQuery();
+
+    if (month && year) {
+        // SELECT_TRANSACTIONS_CATEGORY_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
+        //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+        //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
+        //     WHERE t.category=:category AND t.month=:month AND t.year=:year
+        query->prepare(SELECT_TRANSACTIONS_CATEGORY_MONTH);
+        query->bindValue(":category", cat->_dbId.toString());
+        query->bindValue(":month", *month);
+        query->bindValue(":year", *year);
+    } else {
+        // SELECT_TRANSACTIONS_CATEGORY = SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
+        //    t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+        //    INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
+        //    WHERE t.category=:category;
+        query->prepare(SELECT_TRANSACTIONS_CATEGORY);
+        query->bindValue(":category", cat->_dbId.toString());
+    }
 
     // executes the query and parses the result
     trans = parseTransactions(query);
-
-    _db->close();
 
     return trans;
 }
 
 QList<TransactionPtr>
 Book::transactions(AccountPtr acc) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
     QList<TransactionPtr> trans;
 
     if (!acc->wasStoredInDb()) {
         LOG(INFO) << "Returning empty list because account was not stored.";
         return  trans;
     }
-    bool opened = _db->open();
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
-    if (!opened) {
+    if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
         return trans;
@@ -779,9 +876,152 @@ Book::transactions(AccountPtr acc) {
     // executes the query and parses the result
     trans = parseTransactions(query);
 
-    _db->close();
-
     return trans;
+}
+
+QList<int>
+Book::monthsWithTransactions(int year, boost::optional<int> limit, boost::optional<int> offset) {
+    QList<int> result;
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return result;
+    }
+
+    // SELECT_MONTHS_WITH_TRANSACTIONS = "SELECT DISTINCT month FROM Transactions WHERE year=:year
+    //     ORDER BY month DESC";
+    auto query = _db->createQuery();
+    // if limit is present, use it, else just get all of the transactions
+    if(limit) {
+        query->prepare(SELECT_MONTHS_WITH_TRANSACTIONS_LIMIT);
+        query->bindValue(":year", year);
+        query->bindValue(":limit", *limit);
+        if(offset) {
+            query->bindValue(":offset", *offset);
+        } else {
+            query->bindValue(":offset", 0);
+        }
+    } else {
+        query->prepare(SELECT_MONTHS_WITH_TRANSACTIONS);
+        query->bindValue(":year", year);
+    }
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the montsh with transactions" << _lastError.toStdString();
+    }
+    while (query->next()) {
+        result.append(query->value(0).toInt());
+    }
+
+    return result;
+}
+
+int
+Book::numberOfMonthsWithTransactions(int year) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
+    int count = -1;
+
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return count;
+    }
+
+    // SELECT_MONTHS_WITH_TRANSACTIONS_COUNT = SELECT count(DISTINCT month) FROM Transactions WHERE year=:year
+    auto query = _db->createQuery();
+    query->prepare(SELECT_MONTHS_WITH_TRANSACTIONS_COUNT);
+    query->bindValue(":year", year);
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the months count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
+}
+
+QList<int>
+Book::daysWithTransactions(int month, int year, boost::optional<int> limit, boost::optional<int> offset) {
+    QList<int> result;
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return result;
+    }
+
+    auto query = _db->createQuery();
+    if (limit) {
+        // SELECT_DAYS_WITH_TRANSACTIONS_LIMIT = "SELECT DISTINCT day FROM Transactions
+        //    WHERE year=:year AND month=:month ORDER BY day DESC LIMIT :limit OFFSET :offset
+        query->prepare(SELECT_DAYS_WITH_TRANSACTIONS_LIMIT);
+        query->bindValue(":month", month);
+        query->bindValue(":year", year);
+        query->bindValue(":limit", *limit);
+
+        if (offset) {
+            query->bindValue(":offset", *offset);
+        } else {
+            query->bindValue(":offset", 0);
+        }
+    } else {
+        // SELECT_DAYS_WITH_TRANSACTIONS = "SELECT DISTINCT day FROM Transactions
+        //    WHERE year=:year AND month=:month ORDER BY day;
+        query->prepare(SELECT_DAYS_WITH_TRANSACTIONS );
+        query->bindValue(":month", month);
+        query->bindValue(":year", year);
+    }
+
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the montsh with transactions" << _lastError.toStdString();
+    }
+    while (query->next()) {
+        result.append(query->value(0).toInt());
+    }
+
+    return result;
+}
+
+int
+Book::numberOfDaysWithTransactions(int month, int year) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
+    int count = -1;
+
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return count;
+    }
+
+    // SELECT_DAYS_WITH_TRANSACTIONS_COUNT = SELECT COUNT(DISTINCT day) FROM Transactions
+    //    WHERE year=:year AND month=:month
+    auto query = _db->createQuery();
+    query->prepare(SELECT_DAYS_WITH_TRANSACTIONS_COUNT);
+    query->bindValue(":month", month);
+    query->bindValue(":year", year);
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the months count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
 }
 
 bool

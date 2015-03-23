@@ -6,6 +6,7 @@ set(SOURCES
 
 set(HEADERS
         base_testcase.h
+        book.h
         database.h
         database_factory.h
         matchers.h

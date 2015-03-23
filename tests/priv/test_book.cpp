@@ -25,7 +25,6 @@
 
 #include <com/chancho/system/database.h>
 #include <com/chancho/system/database_factory.h>
-#include <QtSql/qsqltablemodel.h>
 #include "test_book.h"
 
 void

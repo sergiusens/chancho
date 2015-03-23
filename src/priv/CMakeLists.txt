@@ -16,6 +16,7 @@ set(HEADERS
     com/chancho/transaction.h
     com/chancho/system/database.h
     com/chancho/system/database_factory.h
+    com/chancho/system/database_lock.h
     com/chancho/system/query.h
 )
 
