@@ -20,32 +20,36 @@
  * THE SOFTWARE.
  */
 
-#include "book_model.h"
+#pragma once
 
-namespace com {
+#include <memory>
 
-namespace chancho {
+#include <com/chancho/qml/models/accounts.h>
 
-BookModel::BookModel(QObject* parent)
-    : QObject(parent),
-      _book(std::make_shared<Book>()) {
-}
+#include "book.h"
+#include "base_testcase.h"
+#include "public_accounts_model.h"
 
-BookModel::BookModel(BookPtr book, QObject* parent)
-    : QObject(parent),
-      _book(book) {
-}
+class TestAccountsModel : public BaseTestCase {
+    Q_OBJECT
 
-QObject*
-BookModel::dayModel(int day, int month, int year) {
-    return new DayModel(day, month, year, _book);
-}
+ public:
+    explicit TestAccountsModel(QObject *parent = 0)
+            : BaseTestCase("TestAccountsModel", parent) { }
 
-QObject*
-BookModel::monthModel(int month, int year) {
-    return new MonthModel(month, year, _book);
-}
+ private slots:
 
-}
+    void init() override;
+    void cleanup() override;
 
-}
+    void testRowCount();
+    void testRowCountError();
+
+    void testDataNotValidIndex();
+    void testDataOutOfIndex();
+    void testDataBookError();
+    void testDataNoData();
+    void testDataGetAccount();
+
+};
+

@@ -166,6 +166,7 @@ TestBookMocked::testInitDatbaseMissingTablesError() {
         .WillOnce(Return(true))
         .WillOnce(Return(true))
         .WillOnce(Return(true))
+        .WillOnce(Return(true))
         .WillOnce(Return(false));
 
     EXPECT_CALL(*db.get(), commit())
@@ -770,7 +771,11 @@ TestBookMocked::testAccountsExecError() {
             .Times(1)
             .WillOnce(Return(query));
 
-    EXPECT_CALL(*query.get(), exec(_))
+    EXPECT_CALL(*query.get(), prepare(_))
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*query.get(), exec())
             .Times(1)
             .WillOnce(Return(false));
 
@@ -849,7 +854,11 @@ TestBookMocked::testCategoriesExecError() {
             .Times(1)
             .WillOnce(Return(query));
 
-    EXPECT_CALL(*query.get(), exec(_))
+    EXPECT_CALL(*query.get(), prepare(_))
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*query.get(), exec())
             .Times(1)
             .WillOnce(Return(false));
 

@@ -33,6 +33,8 @@
 #include <com/chancho/system/database_lock.h>
 #include <com/chancho/system/database_factory.h>
 #include <QtSql/qsqlquerymodel.h>
+#include <QtGui/qimage.h>
+#include <QtCore/qsocketnotifier.h>
 
 #include "book.h"
 
@@ -99,7 +101,18 @@ namespace {
     const QString DELETE_CATEGORY = "DELETE FROM Categories WHERE uuid=:uuid";
     const QString DELETE_TRANSACTION = "DELETE FROM Transactions WHERE uuid=:uuid";
     const QString SELECT_ALL_ACCOUNTS = "SELECT uuid, name, memo, amount FROM Accounts ORDER BY name ASC";
+    const QString SELECT_ALL_ACCOUNTS_LIMIT = "SELECT uuid, name, memo, amount FROM Accounts ORDER BY name ASC "\
+        "LIMIT :limit OFFSET :offset";
+    const QString SELECT_ACCOUNTS_COUNT = "SELECT count(*) FROM Accounts";
     const QString SELECT_ALL_CATEGORIES = "SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC";
+    const QString SELECT_ALL_CATEGORIES_LIMIT = "SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC "\
+        "LIMIT :limit OFFSET :offset";
+    const QString SELECT_ALL_CATEGORIES_TYPE = "SELECT uuid, parent, name, type FROM Categories WHERE type=:type "\
+        "ORDER BY name ASC";
+    const QString SELECT_ALL_CATEGORIES_TYPE_LIMIT = "SELECT uuid, parent, name, type FROM Categories "
+        "WHERE type=:type ORDER BY name ASC LIMIT :limit OFFSET :offset";
+    const QString SELECT_CATEGORIES_COUNT = "SELECT count(*) FROM Categories";
+    const QString SELECT_CATEGORIES_COUNT_TYPE = "SELECT count(*) FROM Categories WHERE type=:type";
     const QString SELECT_TRANSACTIONS_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
         "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
@@ -492,7 +505,7 @@ Book::remove(TransactionPtr tran) {
 }
 
 QList<AccountPtr>
-Book::accounts() {
+Book::accounts(boost::optional<int> limit, boost::optional<int> offset) {
     std::lock_guard<std::mutex> lock(_accountsMutex);
     QList<AccountPtr> accs;
 
@@ -505,15 +518,29 @@ Book::accounts() {
     }
 
     auto query = _db->createQuery();
-    auto sucess = query->exec(SELECT_ALL_ACCOUNTS);
+    if (limit) {
+        // SELECT_ALL_ACCOUNTS_LIMIT = "SELECT uuid, name, memo, amount FROM Accounts ORDER BY name ASC
+        // LIMIT :limit OFFSET :offset
+        query->prepare(SELECT_ALL_ACCOUNTS_LIMIT);
+        query->bindValue(":limit", *limit);
+
+        if (offset) {
+            query->bindValue(":offset", *offset);
+        } else {
+            query->bindValue(":offset", 0);
+        }
+    } else {
+        // SELECT_ALL_ACCOUNTS = "SELECT uuid, name, memo, amount FROM Accounts";
+        query->prepare(SELECT_ALL_ACCOUNTS);
+    }
+
+    auto sucess = query->exec();
     if (!sucess) {
         _lastError = _db->lastError().text();
         LOG(INFO) << "Error retrieving the accounts " << _lastError.toStdString();
         return accs;
     }
 
-    // SELECT_ALL_ACCOUNTS = "SELECT uuid, name, memo, amount FROM Accounts";
-    // therefore:
     // index 0 => uuid
     // index 1 => name
     // index 2 => memo
@@ -532,8 +559,37 @@ Book::accounts() {
     return accs;
 }
 
+int
+Book::numberOfAccounts() {
+    std::lock_guard<std::mutex> lock(_accountsMutex);
+    int count = -1;
+
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return count;
+    }
+
+    auto query = _db->createQuery();
+    // SELECT_ACCOUNTS_COUNT = "SELECT count(*) FROM Accounts";
+    query->prepare(SELECT_ACCOUNTS_COUNT);
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the transactions count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
+}
+
+
 QList<CategoryPtr>
-Book::categories() {
+Book::categories(boost::optional<Category::Type> type, boost::optional<int> limit, boost::optional<int> offset) {
     std::lock_guard<std::mutex> lock(_categoriesMutex);
     QMap<QUuid, QList<QUuid>> parentChildMap;
     QMap<QUuid, CategoryPtr> catsMap;
@@ -548,9 +604,46 @@ Book::categories() {
     }
 
     auto query = _db->createQuery();
-    auto sucess = query->exec(SELECT_ALL_CATEGORIES);
 
-    if (!sucess) {
+    if (type) {
+        if (limit) {
+            // SELECT_ALL_CATEGORIES_TYPE_LIMIT = "SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
+            //     WHERE type=:type LIMIT :limit OFFSET :offset
+            query->prepare(SELECT_ALL_CATEGORIES_TYPE_LIMIT);
+            query->bindValue(":type", static_cast<int>(*type));
+            query->bindValue(":limit", *limit);
+
+            if (offset) {
+                query->bindValue(":offset", *offset);
+            } else {
+                query->bindValue(":offset", 0);
+            }
+        } else {
+            // SELECT_ALL_CATEGORIES_TYPE = SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
+            // WHERE type=:type
+            query->prepare(SELECT_ALL_CATEGORIES_TYPE);
+            query->bindValue(":type", static_cast<int>(*type));
+        }
+    } else {
+        if (limit) {
+            // SELECT_ALL_CATEGORIES_LIMIT = SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
+            //     LIMIT :limit OFFSET :offset;
+            query->prepare(SELECT_ALL_CATEGORIES_LIMIT);
+            query->bindValue(":limit", *limit);
+
+            if (offset) {
+                query->bindValue(":offset", *offset);
+            } else {
+                query->bindValue(":offset", 0);
+            }
+        } else {
+            query->prepare(SELECT_ALL_CATEGORIES);
+        }
+    }
+
+    auto success = query->exec();
+
+    if (!success) {
         _lastError = _db->lastError().text();
         LOG(INFO) << "Error retrieving the categories " << _lastError.toStdString();
         QList<CategoryPtr> cats;
@@ -609,6 +702,42 @@ Book::categories() {
         }
     }
     return catsMap.values();
+}
+
+int
+Book::numberOfCategories(boost::optional<Category::Type> type) {
+    std::lock_guard<std::mutex> lock(_categoriesMutex);
+    int count = -1;
+
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return count;
+    }
+
+    auto query = _db->createQuery();
+
+    if (type) {
+        // SELECT_CATEGORIES_COUNT_TYPE = SELECT count(*) FROM Categories WHERE type=:type;
+        query->prepare(SELECT_CATEGORIES_COUNT_TYPE);
+        query->bindValue(":type", static_cast<int>(*type));
+    } else {
+        // SELECT_CATEGORIES_COUNT = "SELECT count(*) FROM Categories";
+        query->prepare(SELECT_CATEGORIES_COUNT);
+    }
+
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the transactions count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
 }
 
 QList<TransactionPtr>

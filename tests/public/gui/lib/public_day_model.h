@@ -23,7 +23,7 @@
 #pragma once
 
 #include <com/chancho/book.h>
-#include <com/chancho/day_model.h>
+#include <com/chancho/qml/models/day.h>
 
 namespace com {
 
@@ -31,13 +31,13 @@ namespace chancho {
 
 namespace tests {
 
-class PublicDayModel : public com::chancho::DayModel {
+class PublicDayModel : public com::chancho::qml::models::Day {
  public:
     PublicDayModel(BookPtr book, QObject* parent=0)
-            : com::chancho::DayModel(book, parent) {}
+            : com::chancho::qml::models::Day(book, parent) {}
 
     PublicDayModel(int day, int month, int year, BookPtr book, QObject* parent=0)
-            : com::chancho::DayModel(day, month, year, book, parent) {}
+            : com::chancho::qml::models::Day(day, month, year, book, parent) {}
 };
 
 }

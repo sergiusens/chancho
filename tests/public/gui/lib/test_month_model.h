@@ -24,7 +24,7 @@
 
 #include <memory>
 
-#include <com/chancho/month_model.h>
+#include <com/chancho/qml/models/month.h>
 
 #include "book.h"
 #include "base_testcase.h"

@@ -21,7 +21,6 @@
  */
 
 #include <QSignalSpy>
-#include <QtGui/qaccessible.h>
 #include "test_month_model.h"
 
 using ::testing::_;

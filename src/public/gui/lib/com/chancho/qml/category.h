@@ -22,46 +22,59 @@
 
 #pragma once
 
-#include <memory>
+#include <QObject>
 
-#include <com/chancho/qml/models/day.h>
+#include <com/chancho/category.h>
+#include "com/chancho/qml/book.h"
 
-#include "book.h"
-#include "base_testcase.h"
-#include "public_day_model.h"
+namespace com {
 
-class TestDayModel : public BaseTestCase {
+namespace chancho {
+
+namespace qml {
+
+class Book;
+
+namespace models {
+
+class Categories;
+
+}
+
+class Category : public QObject {
     Q_OBJECT
+    Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(com::chancho::qml::Book::TransactionType type READ getType WRITE setType NOTIFY typeChanged)
+
+    friend class models::Categories;
+    friend class qml::Book;
 
  public:
-    explicit TestDayModel(QObject *parent = 0)
-            : BaseTestCase("TestDayModel", parent) { }
+    explicit Category(QObject* parent=0);
+    Category(QString name, qml::Book::TransactionType type, QObject* parent =0);
 
- private slots:
+    QString getName() const;
+    void setName(QString name);
 
-    void init() override;
-    void cleanup() override;
+    com::chancho::qml::Book::TransactionType getType() const;
+    void setType(com::chancho::qml::Book::TransactionType type);
 
-    void testRowCountInvalidModel();
-    void testRowCount();
-    void testRowCountError();
+ signals:
+    void nameChanged(QString);
+    void typeChanged(com::chancho::qml::Book::TransactionType type);
 
-    void testDataNotValidIndex();
-    void testDataOutOfIndex();
-    void testDataBookError();
-    void testDataNoData();
-    void testDataGetTransaction();
+ protected:
+    Category(CategoryPtr cat, QObject* parent=0);
 
-    void testGetDay();
-    void testSetDayNoSignal();
-    void testSetDaySignal();
+    CategoryPtr getCategory() const;
 
-    void testGetMonth();
-    void testSetMonthNoSignal();
-    void testSetMonthSignal();
-
-    void testGetYear();
-    void testSetYearNoSignal();
-    void testSetYearSignal();
+ private:
+    CategoryPtr _cat;
 };
+
+}
+
+}
+
+}
 

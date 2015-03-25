@@ -22,30 +22,63 @@
 
 #pragma once
 
-#include <QObject>
+#include <QAbstractListModel>
+#include <QModelIndex>
 
 #include <com/chancho/book.h>
-
-#include "day_model.h"
-#include "month_model.h"
 
 namespace com {
 
 namespace chancho {
 
-class BookModel : public QObject {
+namespace qml {
+
+class Book;
+
+namespace models {
+
+class Month : public QAbstractListModel {
     Q_OBJECT
+    Q_PROPERTY(int month READ getMonth WRITE setMonth NOTIFY monthChanged)
+    Q_PROPERTY(int year READ getYear WRITE setYear NOTIFY yearChanged)
+
+    friend class com::chancho::qml::Book;
 
  public:
-    explicit BookModel(QObject* parent=0);
-    explicit BookModel(BookPtr book, QObject* parent=0);
+    explicit Month(QObject* parent = 0);
+    Month(int month, int year, QObject* parent = 0);
+    virtual ~Month();
 
-    Q_INVOKABLE QObject* dayModel(int day, int month, int year);
-    Q_INVOKABLE QObject* monthModel(int month, int year);
+    // methods to override to allow the model to be used from qml
+    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+    QVariant data(int row, int role) const;
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
+    int getMonth() const;
+    void setMonth(int month);
+
+    int getYear() const;
+    void setYear(int year);
+
+ protected:
+    Month(BookPtr book, QObject* parent = 0);
+    Month(int month, int year, BookPtr book, QObject* parent = 0);
+
+ signals:
+    void monthChanged(int month);
+    void yearChanged(int year);
 
  private:
+    int _month = -1;
+    int _year = -1;
     BookPtr _book;
+
 };
+
+}
+
+}
 
 }
 

@@ -22,46 +22,52 @@
 
 #pragma once
 
-#include <memory>
+#include <QAbstractListModel>
+#include <QModelIndex>
 
-#include <com/chancho/qml/models/day.h>
+#include <com/chancho/book.h>
 
-#include "book.h"
-#include "base_testcase.h"
-#include "public_day_model.h"
+namespace com {
 
-class TestDayModel : public BaseTestCase {
+namespace chancho {
+
+namespace qml {
+
+class Book;
+
+namespace models {
+
+class Accounts : public QAbstractListModel {
     Q_OBJECT
 
+    friend class com::chancho::qml::Book;
+
  public:
-    explicit TestDayModel(QObject *parent = 0)
-            : BaseTestCase("TestDayModel", parent) { }
+    explicit Accounts(QObject* parent = 0);
+    virtual ~Accounts();
 
- private slots:
+    // methods to override to allow the model to be used from qml
+    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+    QVariant data(int row, int role) const;
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    void init() override;
-    void cleanup() override;
+    Q_INVOKABLE QVariant get(int row) {
+        return data(row, Qt::DisplayRole);
+    }
 
-    void testRowCountInvalidModel();
-    void testRowCount();
-    void testRowCountError();
+ protected:
+    Accounts(BookPtr book, QObject* parent = 0);
 
-    void testDataNotValidIndex();
-    void testDataOutOfIndex();
-    void testDataBookError();
-    void testDataNoData();
-    void testDataGetTransaction();
+ private:
+    BookPtr _book;
 
-    void testGetDay();
-    void testSetDayNoSignal();
-    void testSetDaySignal();
-
-    void testGetMonth();
-    void testSetMonthNoSignal();
-    void testSetMonthSignal();
-
-    void testGetYear();
-    void testSetYearNoSignal();
-    void testSetYearSignal();
 };
 
+}
+
+}
+
+}
+
+}

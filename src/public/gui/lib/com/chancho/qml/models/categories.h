@@ -22,26 +22,34 @@
 
 #pragma once
 
+#include <boost/optional.hpp>
+
 #include <QAbstractListModel>
 #include <QModelIndex>
 
 #include <com/chancho/book.h>
+#include "com/chancho/qml/category.h"
 
 namespace com {
 
 namespace chancho {
 
-class MonthModel : public QAbstractListModel {
-    Q_OBJECT
-    Q_PROPERTY(int month READ getMonth WRITE setMonth NOTIFY monthChanged)
-    Q_PROPERTY(int year READ getYear WRITE setYear NOTIFY yearChanged)
+namespace qml {
 
-    friend class BookModel;
+class Book;
+
+namespace models {
+
+class Categories : public QAbstractListModel {
+    Q_OBJECT
+    Q_PROPERTY(com::chancho::qml::Book::TransactionType categoryType READ getType WRITE setType NOTIFY typeChanged)
+
+    friend class qml::Book;
 
  public:
-    explicit MonthModel(QObject* parent = 0);
-    MonthModel(int month, int year, QObject* parent = 0);
-    virtual ~MonthModel();
+    explicit Categories(QObject* parent = 0);
+    explicit Categories(qml::Book::TransactionType type, QObject* parent = 0);
+    virtual ~Categories();
 
     // methods to override to allow the model to be used from qml
     int rowCount(const QModelIndex & parent = QModelIndex()) const override;
@@ -49,23 +57,22 @@ class MonthModel : public QAbstractListModel {
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    int getMonth() const;
-    void setMonth(int month);
+    Q_INVOKABLE QVariant get(int row) {
+        return data(row, Qt::DisplayRole);
+    }
 
-    int getYear() const;
-    void setYear(int year);
-
- protected:
-    MonthModel(BookPtr book, QObject* parent = 0);
-    MonthModel(int month, int year, BookPtr book, QObject* parent = 0);
+    qml::Book::TransactionType getType() const;
+    void setType(qml::Book::TransactionType type);
 
  signals:
-    void monthChanged(int month);
-    void yearChanged(int year);
+    void typeChanged(qml::Book::TransactionType type);
+
+ protected:
+    Categories(BookPtr book, QObject* parent = 0);
+    Categories(qml::Book::TransactionType type, BookPtr book, QObject* parent = 0);
 
  private:
-    int _month = -1;
-    int _year = -1;
+    boost::optional<qml::Book::TransactionType> _type = boost::optional<qml::Book::TransactionType>();
     BookPtr _book;
 
 };
@@ -73,3 +80,8 @@ class MonthModel : public QAbstractListModel {
 }
 
 }
+
+}
+
+}
+

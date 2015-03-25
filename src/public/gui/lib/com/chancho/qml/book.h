@@ -22,46 +22,44 @@
 
 #pragma once
 
-#include <memory>
+#include <QObject>
 
-#include <com/chancho/qml/models/day.h>
+#include <com/chancho/book.h>
 
-#include "book.h"
-#include "base_testcase.h"
-#include "public_day_model.h"
+namespace com {
 
-class TestDayModel : public BaseTestCase {
+namespace chancho {
+
+namespace qml {
+
+class Book : public QObject {
     Q_OBJECT
 
  public:
-    explicit TestDayModel(QObject *parent = 0)
-            : BaseTestCase("TestDayModel", parent) { }
+    enum TransactionType {
+        INCOME,
+        EXPENSE
+    };
 
- private slots:
+    Q_ENUMS(TransactionType)
 
-    void init() override;
-    void cleanup() override;
+    explicit Book(QObject* parent=0);
+    explicit Book(BookPtr book, QObject* parent=0);
 
-    void testRowCountInvalidModel();
-    void testRowCount();
-    void testRowCountError();
+    Q_INVOKABLE QObject* accountsModel();
+    Q_INVOKABLE bool storeTransaction(QObject* account, QObject* category, QDate date, QString amount,
+            QString contents, QString memo);
+    Q_INVOKABLE QObject* categoriesModel();
+    Q_INVOKABLE QObject* categoriesModeForType(TransactionType type);
+    Q_INVOKABLE QObject* dayModel(int day, int month, int year);
+    Q_INVOKABLE QObject* monthModel(int month, int year);
 
-    void testDataNotValidIndex();
-    void testDataOutOfIndex();
-    void testDataBookError();
-    void testDataNoData();
-    void testDataGetTransaction();
-
-    void testGetDay();
-    void testSetDayNoSignal();
-    void testSetDaySignal();
-
-    void testGetMonth();
-    void testSetMonthNoSignal();
-    void testSetMonthSignal();
-
-    void testGetYear();
-    void testSetYearNoSignal();
-    void testSetYearSignal();
+ private:
+    BookPtr _book;
 };
 
+}
+
+}
+
+}

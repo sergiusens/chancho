@@ -20,50 +20,35 @@
  * THE SOFTWARE.
  */
 
-#include "day_model.h"
-#include "month_model.h"
+#include "com/chancho/qml/account.h"
+#include "accounts.h"
 
 namespace com {
 
 namespace chancho {
 
-MonthModel::MonthModel(QObject* parent)
-    : QAbstractListModel(parent),
-      _month(-1),
-      _year(-1),
-      _book(std::make_shared<Book>()) {
+namespace qml {
+
+namespace models {
+
+Accounts::Accounts(QObject* parent)
+        : QAbstractListModel(parent),
+          _book(std::make_shared<com::chancho::Book>()) {
 }
 
-MonthModel::MonthModel(int month, int year, QObject* parent)
-    : QAbstractListModel(parent),
-      _month(month),
-      _year(year),
-      _book(std::make_shared<Book>()) {
+Accounts::Accounts(BookPtr book, QObject* parent)
+        : QAbstractListModel(parent),
+          _book(book) {
 }
 
-MonthModel::MonthModel(BookPtr book, QObject* parent)
-    : QAbstractListModel(parent),
-      _book(book) {
-}
-
-MonthModel::MonthModel(int month, int year, BookPtr book, QObject* parent)
-    : QAbstractListModel(parent),
-      _month(month),
-      _year(year),
-      _book(book) {
-}
-
-MonthModel::~MonthModel() {
+Accounts::~Accounts() {
 }
 
 int
-MonthModel::rowCount(const QModelIndex&) const {
+Accounts::rowCount(const QModelIndex&) const {
     // the parent is not really used
-    if (_month == -1 || _year == -1) {
-        return 0;
-    }
     // use the book to return the count of transactions for the given month
-    auto count = _book->numberOfDaysWithTransactions(_month, _year);
+    auto count = _book->numberOfAccounts();
     if (_book->isError()) {
         return 0;
     }
@@ -71,8 +56,9 @@ MonthModel::rowCount(const QModelIndex&) const {
 }
 
 QVariant
-MonthModel::data(int row, int role) const {
-    auto count = _book->numberOfDaysWithTransactions(_month, _year);
+Accounts::data(int row, int role) const {
+    LOG(INFO) << "Requesting data";
+    auto count = _book->numberOfAccounts();
     if (_book->isError()) {
         LOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
         return QVariant();
@@ -83,17 +69,17 @@ MonthModel::data(int row, int role) const {
     }
 
     if (role == Qt::DisplayRole) {
-        LOG(INFO) << "Getting transactions for month" << _month << "/" << _year << " with offset " << row;
-        auto days = _book->daysWithTransactions(_month, _year, 1, row);
+        auto accs = _book->accounts(1, row);
         if (_book->isError()) {
             LOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
             return QVariant();
         }
-        if (days.count() > 0) {
-            auto model = new DayModel(days.at(0), _month, _year, _book);
+        if (accs.count() > 0) {
+            LOG(INFO) << "Returning account " << accs.at(0)->name.toStdString();
+            auto model = new Account(accs.at(0));
             return QVariant::fromValue(model);
         } else {
-            LOG(INFO) << "No transaction was found.";
+            LOG(INFO) << "No account was found.";
             return QVariant();
         }
     } else {
@@ -102,7 +88,7 @@ MonthModel::data(int row, int role) const {
 }
 
 QVariant
-MonthModel::data(const QModelIndex& index, int role) const {
+Accounts::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) {
         LOG(INFO) << "Querying data for not valid index.";
         return QVariant();
@@ -111,7 +97,7 @@ MonthModel::data(const QModelIndex& index, int role) const {
 }
 
 QVariant
-MonthModel::headerData(int section, Qt::Orientation orientation, int role) const {
+Accounts::headerData(int section, Qt::Orientation orientation, int role) const {
     if (role != Qt::DisplayRole)
         return QVariant();
 
@@ -121,30 +107,8 @@ MonthModel::headerData(int section, Qt::Orientation orientation, int role) const
         return QString("Row %1").arg(section);
 }
 
-int
-MonthModel::getMonth() const {
-    return _month;
 }
 
-void
-MonthModel::setMonth(int month) {
-    if (month != _month) {
-        _month = month;
-        emit monthChanged(_month);
-    }
-}
-
-int
-MonthModel::getYear() const {
-    return _year;
-}
-
-void
-MonthModel::setYear(int year) {
-    if (year != _year) {
-        _year = year;
-        emit yearChanged(year);
-    }
 }
 
 }

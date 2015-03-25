@@ -52,4 +52,8 @@ class TestBookAccount : public BaseTestCase {
 
     void testGetAccontsEmpty();
     void testGetAcconts();
+
+    void testNumberOfAccounts();
+
+    void testAccountsLimit();
 };

@@ -40,8 +40,11 @@ class MockBook: public com::chancho::Book {
     MOCK_METHOD1(remove, void(AccountPtr));
     MOCK_METHOD1(remove, void(CategoryPtr));
     MOCK_METHOD1(remove, void(TransactionPtr));
-    MOCK_METHOD0(accounts, QList<AccountPtr>());
-    MOCK_METHOD0(categories, QList<CategoryPtr>());
+    MOCK_METHOD2(accounts, QList<AccountPtr>(boost::optional<int>, boost::optional<int>));
+    MOCK_METHOD0(numberOfAccounts, int());
+    MOCK_METHOD3(categories, QList<CategoryPtr>(boost::optional<com::chancho::Category::Type>,
+            boost::optional<int>, boost::optional<int>));
+    MOCK_METHOD1(numberOfCategories, int(boost::optional<Category::Type>));
     MOCK_METHOD2(transactions, QList<TransactionPtr>(int, int));
     MOCK_METHOD4(transactions, QList<TransactionPtr>(int, int, int, int));
     MOCK_METHOD3(transactions, QList<TransactionPtr>(int, int, int));
