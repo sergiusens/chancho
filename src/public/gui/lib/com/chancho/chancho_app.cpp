@@ -27,11 +27,16 @@
 #include <QtQml>
 
 #include <com/chancho/book.h>
+#include <com/chancho/qml/category.h>
 
-#include "book_model.h"
-#include "day_model.h"
-#include "month_model.h"
-#include "transaction_model.h"
+#include "qml/account.h"
+#include "qml/category.h"
+#include "qml/book.h"
+#include "qml/transaction.h"
+#include "qml/models/accounts.h"
+#include "qml/models/categories.h"
+#include "qml/models/day.h"
+#include "qml/models/month.h"
 
 #include "chancho_app.h"
 
@@ -70,16 +75,20 @@ ChanchoApp::setup() {
     // register all the diff types with the qml engine
     // register the cpp types used in qml
     auto bookProvider = [](QQmlEngine*, QJSEngine*) -> QObject* {
-        Book::initDatabse();
+        com::chancho::Book::initDatabse();
 
-        auto model = new BookModel();
+        auto model = new com::chancho::qml::Book();
         return model;
     };
 
-    qmlRegisterSingletonType<BookModel>("com.chancho", 1, 0, "Book", bookProvider);
-    qmlRegisterType<DayModel>("com.chancho", 1, 0, "DayModel");
-    qmlRegisterType<MonthModel>("com.chancho", 1, 0, "Month");
-    qmlRegisterType<TransactionModel>("com.chancho", 1, 0, "Transaction");
+    qmlRegisterType<com::chancho::qml::Account>("com.chancho", 1, 0, "Account");
+    qmlRegisterType<com::chancho::qml::Category>("com.chancho", 1, 0, "Category");
+    qmlRegisterType<com::chancho::qml::Transaction>("com.chancho", 1, 0, "Transaction");
+    qmlRegisterSingletonType<com::chancho::qml::Book>("com.chancho", 1, 0, "Book", bookProvider);
+    qmlRegisterType<com::chancho::qml::models::Day>("com.chancho", 1, 0, "DayModel");
+    qmlRegisterType<com::chancho::qml::models::Month>("com.chancho", 1, 0, "Month");
+    qmlRegisterType<com::chancho::qml::models::Accounts>("com.chancho", 1, 0, "Accounts");
+    qmlRegisterType<com::chancho::qml::models::Categories>("com.chancho", 1, 0, "Categories");
 
     return true;
 }

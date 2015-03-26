@@ -59,4 +59,13 @@ class TestBookCategory : public BaseTestCase {
     void testGetCategoriesOneLevelParents();
     void testGetCategoriesSeveralLevels();
 
+    void testNumberOfCategories();
+    void testNumberOfCategoriesType();
+
+    void testCategoriesLimit();
+
+    void testCategoriesType();
+
+    void testCategoriesTypeLimit();
+
 };

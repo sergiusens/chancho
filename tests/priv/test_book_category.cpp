@@ -545,4 +545,108 @@ TestBookCategory::testGetCategoriesSeveralLevels() {
     }
 }
 
+void
+TestBookCategory::testNumberOfCategories() {
+    // add several cats and add them to the books
+    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
+    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE);
+    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+
+    PublicBook book;
+    book.store(first);
+    book.store(second);
+    book.store(last);
+
+    QVERIFY(first->wasStoredInDb());
+    QVERIFY(second->wasStoredInDb());
+    QVERIFY(last->wasStoredInDb());
+
+    auto result = book.numberOfCategories();
+    QCOMPARE(result, 3);
+}
+
+void
+TestBookCategory::testNumberOfCategoriesType() {
+    // add several cats and add them to the books
+    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
+    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE);
+    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+
+    PublicBook book;
+    book.store(first);
+    book.store(second);
+    book.store(last);
+
+    QVERIFY(first->wasStoredInDb());
+    QVERIFY(second->wasStoredInDb());
+    QVERIFY(last->wasStoredInDb());
+
+    auto expense = book.numberOfCategories(chancho::Category::Type::EXPENSE);
+    QCOMPARE(expense, 2);
+
+    auto income = book.numberOfCategories(chancho::Category::Type::INCOME);
+    QCOMPARE(income, 1);
+}
+
+void
+TestBookCategory::testCategoriesLimit() {
+    // add several cats and add them to the books
+    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
+    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE);
+    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+
+    PublicBook book;
+    book.store(first);
+    book.store(second);
+    book.store(last);
+
+    QVERIFY(first->wasStoredInDb());
+    QVERIFY(second->wasStoredInDb());
+    QVERIFY(last->wasStoredInDb());
+
+    auto cats = book.categories(boost::optional<chancho::Category::Type>(), 2, 0);
+    QCOMPARE(cats.count(), 2);
+}
+
+void
+TestBookCategory::testCategoriesType() {
+    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
+    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE);
+    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+
+    PublicBook book;
+    book.store(first);
+    book.store(second);
+    book.store(last);
+
+    QVERIFY(first->wasStoredInDb());
+    QVERIFY(second->wasStoredInDb());
+    QVERIFY(last->wasStoredInDb());
+
+    auto expense = book.categories(com::chancho::Category::Type::EXPENSE);
+    QCOMPARE(expense.count(), 2);
+
+    auto income = book.categories(com::chancho::Category::Type::INCOME);
+    QCOMPARE(income.count(), 1);
+}
+
+void
+TestBookCategory::testCategoriesTypeLimit() {
+    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
+    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE);
+    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+
+    PublicBook book;
+    book.store(first);
+    book.store(second);
+    book.store(last);
+
+    QVERIFY(first->wasStoredInDb());
+    QVERIFY(second->wasStoredInDb());
+    QVERIFY(last->wasStoredInDb());
+
+    auto expense = book.categories(com::chancho::Category::Type::EXPENSE, 1, 0);
+    QCOMPARE(expense.count(), 1);
+}
+
 QTEST_MAIN(TestBookCategory)

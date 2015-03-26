@@ -110,7 +110,15 @@ class Book {
 
         Returns all the accounts that can be found in the database.
     */
-    virtual QList<AccountPtr> accounts();
+    virtual QList<AccountPtr> accounts(boost::optional<int> limit=boost::optional<int>(),
+            boost::optional<int> offset=boost::optional<int>());
+
+    /*!
+        \fn virtual int numberOfAccounts();
+
+        Returns the number of accounts that have been added so far to the system.
+    */
+    virtual int numberOfAccounts();
 
     /*!
         \fn virtual QList<CategoryPtr> categories();
@@ -118,7 +126,15 @@ class Book {
         Returns all the categories that can be found in the database. If the categories have children categories it
         those will be found in the parent object.
     */
-    virtual QList<CategoryPtr> categories();
+    virtual QList<CategoryPtr> categories(boost::optional<Category::Type> type=boost::optional<Category::Type>(),
+            boost::optional<int> linit=boost::optional<int>(), boost::optional<int> offset=boost::optional<int>());
+
+    /*!
+        \fn virtual int numberOfCategories();
+
+        Returns the number of categories that have been added so far to the system.
+    */
+    virtual int numberOfCategories(boost::optional<Category::Type> type = boost::optional<Category::Type>());
 
     /*!
         \fn virtual QList<TransactionPtr> transactions(int month, int year)

@@ -24,44 +24,30 @@
 
 #include <memory>
 
-#include <com/chancho/qml/models/day.h>
-
-#include "book.h"
 #include "base_testcase.h"
-#include "public_day_model.h"
 
-class TestDayModel : public BaseTestCase {
+class TestAccount : public BaseTestCase {
     Q_OBJECT
 
  public:
-    explicit TestDayModel(QObject *parent = 0)
-            : BaseTestCase("TestDayModel", parent) { }
+    explicit TestAccount(QObject *parent = 0)
+            : BaseTestCase("TestAccount", parent) { }
 
  private slots:
 
     void init() override;
     void cleanup() override;
 
-    void testRowCountInvalidModel();
-    void testRowCount();
-    void testRowCountError();
+    void testGetName();
+    void testSetNameNoSignal();
+    void testSetNameSignal();
 
-    void testDataNotValidIndex();
-    void testDataOutOfIndex();
-    void testDataBookError();
-    void testDataNoData();
-    void testDataGetTransaction();
+    void testGetAmount();
+    void testSetAmountNoSignal();
+    void testSetAmountSignal();
 
-    void testGetDay();
-    void testSetDayNoSignal();
-    void testSetDaySignal();
-
-    void testGetMonth();
-    void testSetMonthNoSignal();
-    void testSetMonthSignal();
-
-    void testGetYear();
-    void testSetYearNoSignal();
-    void testSetYearSignal();
+    void testGetMemo();
+    void testSetMemoNoSignal();
+    void testSetMemoSignal();
 };
 

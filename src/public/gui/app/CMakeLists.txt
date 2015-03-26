@@ -23,7 +23,7 @@ set(QML_SOURCES
     qml/components/BillingPerDay.qml
     qml/components/BillingPerDayHeader.qml
     qml/components/DateHeaderComponent.qml
-    qml/components/NewEntry.qml
+    qml/components/NewTransaction.qml
     qml/components/PageWithBottomEdge.qml
     qml/components/TransactionComponent.qml
 )

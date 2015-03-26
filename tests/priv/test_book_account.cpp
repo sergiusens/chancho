@@ -239,4 +239,48 @@ TestBookAccount::testGetAcconts() {
     }
 }
 
+void
+TestBookAccount::testNumberOfAccounts() {
+    auto firstAcc = std::make_shared<PublicAccount>("Bankia", 89.2, "Savings account");
+    auto secondAcc = std::make_shared<PublicAccount>("BBVA", 89082.1, "Student loan");
+    auto lastAcc = std::make_shared<PublicAccount>("HSBC", 23890, "Not declared.");
+
+    PublicBook book;
+    book.store(firstAcc);
+    book.store(secondAcc);
+    book.store(lastAcc);
+
+    QVERIFY(firstAcc->wasStoredInDb());
+    QVERIFY(secondAcc->wasStoredInDb());
+    QVERIFY(lastAcc->wasStoredInDb());
+
+    auto number = book.numberOfAccounts();
+    QCOMPARE(number, 3);
+}
+
+void
+TestBookAccount::testAccountsLimit() {
+    auto firstAcc = std::make_shared<PublicAccount>("BBVA", 89.2, "Savings account");
+    auto secondAcc = std::make_shared<PublicAccount>("Bankia", 89082.1, "Student loan");
+    auto lastAcc = std::make_shared<PublicAccount>("HSBC", 23890, "Not declared.");
+
+    PublicBook book;
+    book.store(firstAcc);
+    book.store(secondAcc);
+    book.store(lastAcc);
+
+    QVERIFY(firstAcc->wasStoredInDb());
+    QVERIFY(secondAcc->wasStoredInDb());
+    QVERIFY(lastAcc->wasStoredInDb());
+
+    auto firstResult = book.accounts(1, 0);
+    QCOMPARE(firstResult.at(0)->name, firstAcc->name);
+
+    auto secondResult = book.accounts(1, 1);
+    QCOMPARE(secondResult.at(0)->name, secondAcc->name);
+
+    auto lastResult = book.accounts(1, 2);
+    QCOMPARE(lastResult.at(0)->name, lastAcc->name);
+}
+
 QTEST_MAIN(TestBookAccount)

@@ -34,7 +34,6 @@
 #include <QSqlQuery>
 #include <QString>
 #include <QStringList>
-#include <QtCore/qcoreevent.h>
 
 #include "query.h"
 

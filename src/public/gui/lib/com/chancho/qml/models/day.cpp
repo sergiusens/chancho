@@ -20,36 +20,39 @@
  * THE SOFTWARE.
  */
 
-#include <strings.h>
-#include "day_model.h"
-#include "transaction_model.h"
+#include "com/chancho/qml/transaction.h"
+#include "day.h"
 
 namespace com {
 
 namespace chancho {
 
-DayModel::DayModel(QObject* parent)
+namespace qml {
+
+namespace models {
+
+Day::Day(QObject* parent)
     : QAbstractListModel(parent),
       _day(-1),
       _month(-1),
       _year(-1),
-      _book(std::make_shared<Book>()) {
+      _book(std::make_shared<com::chancho::Book>()) {
 }
 
-DayModel::DayModel(int day, int month, int year, QObject* parent)
+Day::Day(int day, int month, int year, QObject* parent)
     : QAbstractListModel(parent),
       _day(day),
       _month(month),
       _year(year),
-      _book(std::make_shared<Book>()) {
+      _book(std::make_shared<com::chancho::Book>()) {
 }
 
-DayModel::DayModel(BookPtr book, QObject* parent)
+Day::Day(BookPtr book, QObject* parent)
     : QAbstractListModel(parent),
       _book(book) {
 }
 
-DayModel::DayModel(int day, int month, int year, BookPtr book, QObject* parent)
+Day::Day(int day, int month, int year, BookPtr book, QObject* parent)
     : QAbstractListModel(parent),
       _day(day),
       _month(month),
@@ -57,11 +60,11 @@ DayModel::DayModel(int day, int month, int year, BookPtr book, QObject* parent)
       _book(book) {
 }
 
-DayModel::~DayModel() {
+Day::~Day() {
 }
 
 int
-DayModel::rowCount(const QModelIndex&) const {
+Day::rowCount(const QModelIndex&) const {
     // the parent is not really used
     if (_day == -1 || _month == -1 || _year == -1) {
         return 0;
@@ -75,7 +78,7 @@ DayModel::rowCount(const QModelIndex&) const {
 }
 
 QVariant
-DayModel::data(int row, int role) const {
+Day::data(int row, int role) const {
     auto count = _book->numberOfTransactions(_day, _month, _year);
     if (_book->isError()) {
         return QVariant();
@@ -94,7 +97,7 @@ DayModel::data(int row, int role) const {
             return QVariant();
         }
         if (transactions.count() > 0) {
-            auto model = new TransactionModel(transactions.at(0));
+            auto model = new com::chancho::qml::Transaction(transactions.at(0));
             return QVariant::fromValue(model);
         } else {
             LOG(INFO) << "No transaction was found.";
@@ -106,7 +109,7 @@ DayModel::data(int row, int role) const {
 }
 
 QVariant
-DayModel::data(const QModelIndex& index, int role) const {
+Day::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) {
         LOG(INFO) << "Querying data for not valid index.";
         return QVariant();
@@ -115,7 +118,7 @@ DayModel::data(const QModelIndex& index, int role) const {
 }
 
 QVariant
-DayModel::headerData(int section, Qt::Orientation orientation, int role) const {
+Day::headerData(int section, Qt::Orientation orientation, int role) const {
     if (role != Qt::DisplayRole)
         return QVariant();
 
@@ -126,12 +129,12 @@ DayModel::headerData(int section, Qt::Orientation orientation, int role) const {
 }
 
 int
-DayModel::getDay() const {
+Day::getDay() const {
     return _day;
 }
 
 void
-DayModel::setDay(int day) {
+Day::setDay(int day) {
     if (day != _day) {
         _day = day;
         emit dayChanged(_day);
@@ -139,12 +142,12 @@ DayModel::setDay(int day) {
 }
 
 int
-DayModel::getMonth() const {
+Day::getMonth() const {
     return _month;
 }
 
 void
-DayModel::setMonth(int month) {
+Day::setMonth(int month) {
     if (month != _month) {
         _month = month;
         emit monthChanged(_month);
@@ -152,16 +155,20 @@ DayModel::setMonth(int month) {
 }
 
 int
-DayModel::getYear() const {
+Day::getYear() const {
     return _year;
 }
 
 void
-DayModel::setYear(int year) {
+Day::setYear(int year) {
     if (year != _year) {
         _year = year;
         emit yearChanged(year);
     }
+}
+
+}
+
 }
 
 }

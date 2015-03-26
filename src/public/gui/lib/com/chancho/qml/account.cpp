@@ -20,25 +20,75 @@
  * THE SOFTWARE.
  */
 
-#pragma once
-
-#include <com/chancho/book.h>
-#include <com/chancho/qml/models/month.h>
+#include "account.h"
 
 namespace com {
 
 namespace chancho {
 
-namespace tests {
+namespace qml {
 
-class PublicMonthModel : public com::chancho::qml::models::Month {
- public:
-    PublicMonthModel(BookPtr book, QObject* parent=0)
-            : com::chancho::qml::models::Month(book, parent) {}
 
-    PublicMonthModel(int month, int year, BookPtr book, QObject* parent=0)
-                : com::chancho::qml::models::Month(month, year, book, parent) {}
-    };
+Account::Account(QObject* parent)
+    : QObject(parent),
+      _acc(std::make_shared<com::chancho::Account>()) {
+}
+
+Account::Account(QString name, double amount, QString memo, QObject* parent)
+    : QObject(parent),
+    _acc(std::make_shared<com::chancho::Account>(name, amount, memo)) {
+
+}
+
+Account::Account(AccountPtr ptr, QObject* parent)
+    : QObject(parent),
+      _acc(ptr) {
+}
+
+QString
+Account::getName() const {
+    return _acc->name;
+}
+
+void
+Account::setName(QString name) {
+    if (name != _acc->name) {
+        _acc->name = name;
+        emit nameChanged(_acc->name);
+    }
+}
+
+double
+Account::getAmount() const {
+    return _acc->amount;
+}
+
+void
+Account::setAmount(double amount) {
+    if (amount != _acc->amount) {
+        _acc->amount = amount;
+        emit amountChanged(_acc->amount);
+    }
+}
+
+QString
+Account::getMemo() const {
+    return _acc->memo;
+}
+
+void
+Account::setMemo(QString memo) {
+    if (memo != _acc->memo) {
+        _acc->memo = memo;
+        emit memoChanged(_acc->memo);
+    }
+}
+
+AccountPtr
+Account::getAccount() const {
+    return _acc;
+}
+
 }
 
 }

@@ -124,21 +124,7 @@ MainView {
 
             }
 
-            bottomEdgePageComponent: Page {
-                title: "Add new entry"
-
-                head.actions: [
-                    Action {
-                        iconName: "add"
-                        text: i18n.tr("Add")
-                    }
-                ]
-
-                NewEntry {
-                    anchors.fill: parent
-                    anchors.margins: units.gu(1)
-                }
-            }
+            bottomEdgePageComponent: NewTransaction {}
             bottomEdgeTitle: i18n.tr("Add new entry")
         }
     }

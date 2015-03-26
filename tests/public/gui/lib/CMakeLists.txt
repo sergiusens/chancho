@@ -1,4 +1,8 @@
 set(PRIVATE_TESTS
+    test_account
+    test_accounts_model
+    test_categories_model
+    test_category
     test_day_model
     test_month_model
 )

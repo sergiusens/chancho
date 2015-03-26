@@ -31,19 +31,27 @@ namespace com {
 
 namespace chancho {
 
-class DayModel : public QAbstractListModel {
+namespace qml {
+
+class Book;
+
+namespace models {
+
+class Month;
+
+class Day : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(int day READ getDay WRITE setDay NOTIFY dayChanged)
     Q_PROPERTY(int month READ getMonth WRITE setMonth NOTIFY monthChanged)
     Q_PROPERTY(int year READ getYear WRITE setYear NOTIFY yearChanged)
 
-    friend class BookModel;
-    friend class MonthModel;
+    friend class com::chancho::qml::Book;
+    friend class com::chancho::qml::models::Month;
 
  public:
-    explicit DayModel(QObject* parent = 0);
-    DayModel(int day, int month, int year, QObject* parent = 0);
-    virtual ~DayModel();
+    explicit Day(QObject* parent = 0);
+    Day(int day, int month, int year, QObject* parent = 0);
+    virtual ~Day();
 
     // methods to override to allow the model to be used from qml
     int rowCount(const QModelIndex & parent = QModelIndex()) const override;
@@ -61,8 +69,8 @@ class DayModel : public QAbstractListModel {
     void setYear(int year);
 
  protected:
-    DayModel(BookPtr book, QObject* parent = 0);
-    DayModel(int day, int month, int year, BookPtr book, QObject* parent = 0);
+    Day(BookPtr book, QObject* parent = 0);
+    Day(int day, int month, int year, BookPtr book, QObject* parent = 0);
 
  signals:
     void dayChanged(int day);
@@ -75,6 +83,10 @@ class DayModel : public QAbstractListModel {
     int _year = -1;
     BookPtr _book;
 };
+
+}
+
+}
 
 }
 

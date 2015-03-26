@@ -22,46 +22,25 @@
 
 #pragma once
 
-#include <memory>
+#include <com/chancho/book.h>
+#include <com/chancho/qml/models/accounts.h>
 
-#include <com/chancho/qml/models/day.h>
+namespace com {
 
-#include "book.h"
-#include "base_testcase.h"
-#include "public_day_model.h"
+namespace chancho {
 
-class TestDayModel : public BaseTestCase {
-    Q_OBJECT
+namespace tests {
 
+class PublicAccountsModel : public com::chancho::qml::models::Accounts {
  public:
-    explicit TestDayModel(QObject *parent = 0)
-            : BaseTestCase("TestDayModel", parent) { }
+    PublicAccountsModel(BookPtr book, QObject* parent=0)
+            : com::chancho::qml::models::Accounts(book, parent) {}
 
- private slots:
-
-    void init() override;
-    void cleanup() override;
-
-    void testRowCountInvalidModel();
-    void testRowCount();
-    void testRowCountError();
-
-    void testDataNotValidIndex();
-    void testDataOutOfIndex();
-    void testDataBookError();
-    void testDataNoData();
-    void testDataGetTransaction();
-
-    void testGetDay();
-    void testSetDayNoSignal();
-    void testSetDaySignal();
-
-    void testGetMonth();
-    void testSetMonthNoSignal();
-    void testSetMonthSignal();
-
-    void testGetYear();
-    void testSetYearNoSignal();
-    void testSetYearSignal();
 };
+
+}
+
+}
+
+}
 

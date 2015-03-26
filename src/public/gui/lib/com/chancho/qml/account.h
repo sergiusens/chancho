@@ -22,66 +22,61 @@
 
 #pragma once
 
-#include <memory>
-#include <com/chancho/transaction.h>
+#include <QObject>
+
+#include <com/chancho/account.h>
 
 namespace com {
 
 namespace chancho {
 
-class TransactionModel : public QObject {
-    Q_OBJECT
-    Q_ENUMS(TransactionModel::Type)
-    Q_PROPERTY(QString account READ getAccount)
-    Q_PROPERTY(double amount READ getAmount WRITE setAmount NOTIFY amountChanged)
-    Q_PROPERTY(QString category READ getCategory)
-    Q_PROPERTY(QDate date READ getDate WRITE setDate NOTIFY dateChanged)
-    Q_PROPERTY(QString contents READ getContents WRITE setContents NOTIFY contentsChanged)
-    Q_PROPERTY(QString memo READ getMemo WRITE setMemo NOTIFY memoChanged)
-    Q_PROPERTY(TransactionModel::Type type READ getType)
+namespace qml {
 
-    friend class DayModel;
+class Book;
+
+namespace models {
+
+class Accounts;
+
+}
+
+class Account : public QObject {
+    Q_OBJECT
+    Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(double amount READ getAmount WRITE setAmount NOTIFY amountChanged)
+    Q_PROPERTY(QString memo READ getMemo WRITE setMemo NOTIFY memoChanged)
+
+    friend class models::Accounts;
+    friend class qml::Book;
 
  public:
-    enum Type {
-        INCOME,
-        EXPENSE
-    };
+    explicit Account(QObject* parent=0);
+    Account(QString name, double amount, QString memo, QObject* parent = 0);
 
-    explicit TransactionModel(QObject* parent =0);
-    ~TransactionModel();
-
-    QString getAccount() const;
+    QString getName() const;
+    void setName(QString name);
 
     double getAmount() const;
     void setAmount(double amount);
 
-    QString getCategory() const;
-
-    QDate getDate() const;
-    void setDate(QDate date);
-
-    QString getContents() const;
-    void setContents(QString contents);
-
     QString getMemo() const;
     void setMemo(QString memo);
 
-    TransactionModel::Type getType() const;
-
- private:
-    TransactionModel(TransactionPtr transactionPtr, QObject* parent=0);
-
  signals:
-    void amountChanged(double amount);
-    void dateChanged(QDate date);
-    void contentsChanged(QString contents);
-    void memoChanged(QString memo);
+    void nameChanged(QString);
+    void amountChanged(double);
+    void memoChanged(QString);
+
+ protected:
+    Account(AccountPtr ptr, QObject* parent=0);
+
+    AccountPtr getAccount() const;
 
  private:
-    TransactionPtr _transaction;
-
+    AccountPtr _acc;
 };
+
+}
 
 }
 

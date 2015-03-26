@@ -20,38 +20,40 @@
  * THE SOFTWARE.
  */
 
-#include "transaction_model.h"
+#include "transaction.h"
 
 namespace com {
 
 namespace chancho {
 
-TransactionModel::TransactionModel(QObject* parent)
+namespace qml {
+
+Transaction::Transaction(QObject* parent)
     : QObject(parent),
-      _transaction(std::make_shared<Transaction>()){
+      _transaction(std::make_shared<com::chancho::Transaction>()){
 }
 
-TransactionModel::TransactionModel(TransactionPtr transactionPtr, QObject* parent)
+Transaction::Transaction(TransactionPtr transactionPtr, QObject* parent)
     : QObject(parent),
       _transaction(transactionPtr) {
 
 }
 
-TransactionModel::~TransactionModel() {
+Transaction::~Transaction() {
 }
 
 QString
-TransactionModel::getAccount() const {
+Transaction::getAccount() const {
     return _transaction->account->name;
 }
 
 double
-TransactionModel::getAmount() const {
+Transaction::getAmount() const {
     return _transaction->amount;
 }
 
 void
-TransactionModel::setAmount(double amount) {
+Transaction::setAmount(double amount) {
     if (amount != _transaction->amount) {
         _transaction->amount = amount;
         emit amountChanged(_transaction->amount);
@@ -59,17 +61,17 @@ TransactionModel::setAmount(double amount) {
 }
 
 QString
-TransactionModel::getCategory() const {
+Transaction::getCategory() const {
     return _transaction->category->name;
 }
 
 QDate
-TransactionModel::getDate() const {
+Transaction::getDate() const {
     return _transaction->date;
 }
 
 void
-TransactionModel::setDate(QDate date) {
+Transaction::setDate(QDate date) {
     if (date != _transaction->date) {
         _transaction->date = date;
         emit dateChanged(_transaction->date);
@@ -77,12 +79,12 @@ TransactionModel::setDate(QDate date) {
 }
 
 QString
-TransactionModel::getContents() const {
+Transaction::getContents() const {
     return _transaction->contents;
 }
 
 void
-TransactionModel::setContents(QString contents) {
+Transaction::setContents(QString contents) {
     if (contents != _transaction->contents) {
         _transaction->contents = contents;
         emit contentsChanged(_transaction->contents);
@@ -90,25 +92,27 @@ TransactionModel::setContents(QString contents) {
 }
 
 QString
-TransactionModel::getMemo() const {
+Transaction::getMemo() const {
     return _transaction->memo;
 }
 
 void
-TransactionModel::setMemo(QString memo) {
+Transaction::setMemo(QString memo) {
     if (memo != _transaction->memo) {
         _transaction->memo = memo;
         emit memoChanged(_transaction->memo);
     }
 }
 
-TransactionModel::Type
-TransactionModel::getType() const {
+Transaction::Type
+Transaction::getType() const {
     if (_transaction->category->type == Category::Type::EXPENSE) {
-        return TransactionModel::Type::EXPENSE;
+        return Transaction::Type::EXPENSE;
     } else {
-        return TransactionModel::Type::INCOME;
+        return Transaction::Type::INCOME;
     }
+}
+
 }
 
 }
