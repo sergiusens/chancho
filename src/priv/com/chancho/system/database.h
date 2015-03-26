@@ -70,7 +70,7 @@ static void subtractStringNumbers(sqlite3_context *context, int argc, sqlite3_va
 }
 
 static void trace(void*, const char* query ) {
-    Dt coLOG(INFO) << "SQlite: " << query;
+    DLOG(INFO) << "SQlite: " << query;
 }
 
 }
