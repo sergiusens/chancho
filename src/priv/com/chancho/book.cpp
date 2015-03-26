@@ -32,9 +32,6 @@
 
 #include <com/chancho/system/database_lock.h>
 #include <com/chancho/system/database_factory.h>
-#include <QtSql/qsqlquerymodel.h>
-#include <QtGui/qimage.h>
-#include <QtCore/qsocketnotifier.h>
 
 #include "book.h"
 

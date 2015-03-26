@@ -34,7 +34,6 @@
 #include <QSqlQuery>
 #include <QString>
 #include <QStringList>
-#include <QtCore/qcoreevent.h>
 
 #include "query.h"
 
@@ -71,7 +70,7 @@ static void subtractStringNumbers(sqlite3_context *context, int argc, sqlite3_va
 }
 
 static void trace(void*, const char* query ) {
-    DLOG(INFO) << "SQlite: " << query;
+    Dt coLOG(INFO) << "SQlite: " << query;
 }
 
 }
