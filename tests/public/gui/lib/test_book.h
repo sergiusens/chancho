@@ -22,31 +22,34 @@
 
 #pragma once
 
-#include <com/chancho/category.h>
+#include <memory>
 
-namespace chancho = com::chancho;
+#include "base_testcase.h"
 
-class PublicCategory : public chancho::Category {
+class TestBook : public BaseTestCase {
+    Q_OBJECT
+
  public:
-    PublicCategory()
-            : chancho::Category() {}
+    explicit TestBook(QObject *parent = 0)
+            : BaseTestCase("TestBook", parent) { }
 
-    PublicCategory(QUuid id)
-            : chancho::Category() {
-        _dbId = id;
-    }
+ private slots:
 
-    PublicCategory(const QString& n, Category::Type t)
-            : chancho::Category(n, t) {}
+    void init() override;
+    void cleanup() override;
 
-    PublicCategory(const QString& n, Category::Type t, std::shared_ptr<Category> p)
-            : chancho::Category(n, t, p) {}
+    void testStoreTransaction();
+    void testStoreTransactionWrongAccount();
+    void testStoreTransactionWrongCategory();
+    void testStoreTransactionBookError();
 
-    virtual ~PublicCategory() = default;
+    void testRemoveTransaction();
+    void testRemoveTransactionWrongObject();
+    void testRemoveTransactionBookError();
 
-    using chancho::Category::_dbId;
+    void testUpdateTransactionWrongAccount();
+    void testUpdateTransactionWrongCategory();
+    void testUpdateTransactionWrongObject();
+    void testUpdateTransactionNeedsUpdate();
+    void testUpdateTransactionBookError();
 };
-
-typedef std::shared_ptr<PublicCategory> PublicCategoryPtr;
-
-Q_DECLARE_METATYPE(std::shared_ptr<PublicCategory>)

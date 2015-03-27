@@ -32,28 +32,28 @@ namespace qml {
 namespace models {
 
 Month::Month(QObject* parent)
-    : QAbstractListModel(parent),
-      _month(-1),
-      _year(-1),
-      _book(std::make_shared<com::chancho::Book>()) {
+    : Month(QDate(), std::make_shared<com::chancho::Book>(), parent) {
 }
 
 Month::Month(int month, int year, QObject* parent)
-    : QAbstractListModel(parent),
-      _month(month),
-      _year(year),
-      _book(std::make_shared<com::chancho::Book>()) {
+    : Month(QDate(year, month, 1), std::make_shared<com::chancho::Book>(), parent) {
+}
+
+Month::Month(QDate date, QObject* parent)
+    : Month(date, std::make_shared<com::chancho::Book>(), parent) {
 }
 
 Month::Month(BookPtr book, QObject* parent)
-    : QAbstractListModel(parent),
-      _book(book) {
+    : Month(QDate(), book, parent) {
 }
 
 Month::Month(int month, int year, BookPtr book, QObject* parent)
+    : Month(QDate(year, month, 1), book, parent) {
+}
+
+Month::Month(QDate date, BookPtr book, QObject* parent)
     : QAbstractListModel(parent),
-      _month(month),
-      _year(year),
+      _date(date),
       _book(book) {
 }
 
@@ -63,44 +63,45 @@ Month::~Month() {
 int
 Month::rowCount(const QModelIndex&) const {
     // the parent is not really used
-    if (_month == -1 || _year == -1) {
+    if (!_date.isValid()){
         return 0;
     }
     // use the book to return the count of transactions for the given month
-    auto count = _book->numberOfDaysWithTransactions(_month, _year);
+    auto count = _book->numberOfDaysWithTransactions(_date.month(), _date.year());
     if (_book->isError()) {
         return 0;
     }
-    LOG(INFO) << "Number of days with transactions is " << count;
+    DLOG(INFO) << "Number of days with transactions is " << count;
     return count;
 }
 
 QVariant
 Month::data(int row, int role) const {
-    LOG(INFO) << "Return model for day in index " << row << " for " << _month << "/" << _year;
-    auto count = _book->numberOfDaysWithTransactions(_month, _year);
+    DLOG(INFO) << "Return model for day in index " << _date.toString("mm/yyyy").toStdString();
+    auto count = _book->numberOfDaysWithTransactions(_date.month(), _date.year());
     if (_book->isError()) {
-        LOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
+        DLOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
         return QVariant();
     }
     if (row > count) {
-        LOG(INFO) << "Querying data for to large index";
+        DLOG(INFO) << "Querying data for to large index";
         return QVariant();
     }
 
     if (role == Qt::DisplayRole) {
-        LOG(INFO) << "Getting days with transactions for month " << _month << "/" << _year << " with offset " << row;
-        auto days = _book->daysWithTransactions(_month, _year, 1, row);
+        DLOG(INFO) << "Getting days with transactions for month " << _date.toString("mm/yyyy").toStdString()
+                << " with offset " << row;
+        auto days = _book->daysWithTransactions(_date.month(), _date.year(), 1, row);
         if (_book->isError()) {
             LOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
             return QVariant();
         }
         if (days.count() > 0) {
-            auto model = new Day(days.at(0), _month, _year, _book);
-            LOG(INFO) << "Returning day model " << days.at(0);
+            auto model = new Day(days.at(0), _date.month(), _date.year(), _book);
+            DLOG(INFO) << "Returning day model " << days.at(0);
             return QVariant::fromValue(model);
         } else {
-            LOG(INFO) << "No transaction was found.";
+            DLOG(INFO) << "No transaction was found.";
             return QVariant();
         }
     } else {
@@ -110,9 +111,9 @@ Month::data(int row, int role) const {
 
 QVariant
 Month::data(const QModelIndex& index, int role) const {
-    LOG(INFO) << "Get data (" << index.row() << ", " << index.column() << ")";
+    DLOG(INFO) << "Get data (" << index.row() << ", " << index.column() << ")";
     if (!index.isValid()) {
-        LOG(INFO) << "Querying data for not valid index.";
+        DLOG(INFO) << "Querying data for not valid index.";
         return QVariant();
     }
     return data(index.row(), role);
@@ -131,27 +132,91 @@ Month::headerData(int section, Qt::Orientation orientation, int role) const {
 
 int
 Month::getMonth() const {
-    return _month;
+    return _date.month();
 }
 
 void
 Month::setMonth(int month) {
-    if (month != _month) {
-        _month = month;
-        emit monthChanged(_month);
+    if (month != _date.month()) {
+        beginResetModel();
+
+        _date.setDate(_date.year(), month, _date.day());
+        emit monthChanged(month);
+        emit dateChanged(_date);
+
+        endResetModel();
     }
 }
 
 int
 Month::getYear() const {
-    return _year;
+    return _date.year();
 }
 
 void
 Month::setYear(int year) {
-    if (year != _year) {
-        _year = year;
+    if (year != _date.year()) {
+        beginResetModel();
+
+        _date.setDate(year, _date.month(), _date.day());
         emit yearChanged(year);
+        emit dateChanged(_date);
+
+        endResetModel();
+    }
+}
+
+QDate
+Month::getDate() const {
+    return _date;
+}
+
+void
+Month::setDate(QDate date) {
+    DLOG(INFO) << "Setting new date";
+    if (date != _date) {
+        beginResetModel();
+        auto oldDate = _date;
+        _date = date;
+
+        emit dateChanged(_date);
+
+        if (_date.month() != oldDate.month()) {
+            emit monthChanged(_date.month());
+        }
+
+        if (_date.year() != oldDate.year()) {
+            emit yearChanged(_date.year());
+        }
+
+        endResetModel();
+    }
+}
+
+void
+Month::onTransactionStored(QDate date) {
+    // if the transaction was stored in the month of this model, trigger a redraw
+    if (_date.month() == date.month() && _date.year() == date.year()) {
+        beginResetModel();
+        endResetModel();
+    }
+}
+
+void
+Month::onTransactionRemoved(QDate date) {
+    if (_date.month() == date.month() && _date.year() == date.year()) {
+        beginResetModel();
+        endResetModel();
+    }
+}
+
+void
+Month::onTransactionUpdated(QDate oldDate, QDate newDate) {
+    // TODO: be smarter, in some cases we just need to update a specific model or even item
+    if ((_date.month() == oldDate.month() && _date.year() == oldDate.year())
+            || (_date.month() == newDate.month() && _date.year() == newDate.year())) {
+        beginResetModel();
+        endResetModel();
     }
 }
 

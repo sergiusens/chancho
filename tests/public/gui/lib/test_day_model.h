@@ -63,5 +63,11 @@ class TestDayModel : public BaseTestCase {
     void testGetYear();
     void testSetYearNoSignal();
     void testSetYearSignal();
+
+    void testSetDate_data();
+    void testSetDate();
+
+    void testGetIncome();
+    void testGetExpense();
 };
 

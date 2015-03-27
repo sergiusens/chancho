@@ -49,4 +49,7 @@ class TestAccount : public BaseTestCase {
 
     void testWasDbStored_data();
     void testWasDbStored();
+
+    void testAccountEquals();
+    void testAccountPtrEquals();
 };

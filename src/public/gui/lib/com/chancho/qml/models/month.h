@@ -41,12 +41,14 @@ class Month : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(int month READ getMonth WRITE setMonth NOTIFY monthChanged)
     Q_PROPERTY(int year READ getYear WRITE setYear NOTIFY yearChanged)
+    Q_PROPERTY(QDate date READ getDate WRITE setDate NOTIFY dateChanged)
 
     friend class com::chancho::qml::Book;
 
  public:
     explicit Month(QObject* parent = 0);
     Month(int month, int year, QObject* parent = 0);
+    Month(QDate date, QObject* parent = 0);
     virtual ~Month();
 
     // methods to override to allow the model to be used from qml
@@ -61,17 +63,25 @@ class Month : public QAbstractListModel {
     int getYear() const;
     void setYear(int year);
 
+    QDate getDate() const;
+    void setDate(QDate date);
+
  protected:
     Month(BookPtr book, QObject* parent = 0);
     Month(int month, int year, BookPtr book, QObject* parent = 0);
+    Month(QDate date, BookPtr book, QObject* parent = 0);
+
+    void onTransactionStored(QDate date);
+    void onTransactionRemoved(QDate date);
+    void onTransactionUpdated(QDate oldDate, QDate date);
 
  signals:
     void monthChanged(int month);
     void yearChanged(int year);
+    void dateChanged(QDate date);
 
  private:
-    int _month = -1;
-    int _year = -1;
+    QDate _date;
     BookPtr _book;
 
 };

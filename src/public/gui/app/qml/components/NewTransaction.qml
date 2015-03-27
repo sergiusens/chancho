@@ -39,21 +39,22 @@ Page {
             iconName: "add"
             text: i18n.tr("Add")
             onTriggered: {
-                var amount = amountField.text;
+                var amount = form.amount;
                 if (amount === "") {
                     // we must have the amount
                     var title = i18n.tr("Error: amount is missing");
                     var text = i18n.tr("Transactions must have an amount.");
                     PopupUtils.open(dialog, page, {"title": title, "text": text});
                 } else {
-                    var account = accountSelector.model.get(accountSelector.selectedIndex);
-                    var category = categorySelector.model.get(categorySelector.selectedIndex);
-                    var date = datePicker.date;
-                    var contents = contentsField.text;
-                    var memo = memoTextArea.text;
-                    var success = Book.storeTransaction(account, category, date, amount, contents, memo);
+                    var account = form.accountModel.get(form.accountIndex);
+                    amount = amount.replace(",", ".");
+                    var category = form.categoryModel.get(form.categoryIndex);
+                    var date = form.date;
+                    var contents = form.contents;
+                    var memo = form.memo;
+                    var success = Book.storeTransaction(account, category, date, parseFloat(amount), contents, memo);
                     if (success) {
-                        stack.pop();
+                        mainPageStack.pop();
                     } else {
                         var title = i18n.tr("Internal Error");
                         var text = i18n.tr("The transaction could not be stored.");
@@ -77,138 +78,9 @@ Page {
          }
     }
 
-    UbuntuShape {
-
+    TransactionForm {
+        id: form
         anchors.fill: parent
         anchors.margins: units.gu(1)
-
-        ColumnLayout {
-            spacing: units.gu(1)
-            anchors.fill: parent
-            anchors.margins: units.gu(1)
-
-            Component {
-                id: typeDelegate
-                OptionSelectorDelegate {
-                    text: name;
-                }
-            }
-
-            ListModel {
-                id: typeModel
-                ListElement {
-                    name: "Expense";
-                    enumType: Book.EXPENSE;
-                }
-                ListElement {
-                    name: "Income";
-                    enumType: Book.INCOME;
-                }
-            }
-
-            OptionSelector {
-                id: typeSelector
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-                width: parent.width
-
-                model: typeModel
-                delegate: typeDelegate
-
-                onSelectedIndexChanged : {
-                    categorySelector.model.categoryType = model.get(selectedIndex).enumType;
-                }
-            }
-
-            Component {
-                id: accountsDelegate
-                OptionSelectorDelegate {
-                    text: model.display.name;
-                }
-            }
-
-            OptionSelector {
-                id: accountSelector
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                model: Book.accountsModel()
-                delegate: accountsDelegate
-            }
-
-            Component {
-                id: categoriesDelegate
-                OptionSelectorDelegate {
-                    text: model.display.name;
-                }
-            }
-
-            OptionSelector {
-                id: categorySelector
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                model: Book.categoriesModeForType(Book.EXPENSE)
-                delegate: categoriesDelegate
-            }
-
-            TextField {
-                id: datePicker
-                property date date: new Date()
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                placeholderText: i18n.tr("Date")
-                onDateChanged: {
-                    console.log("Date changed.");
-                    datePicker.text = Qt.formatDateTime(date, "dd/MM/yyyy");
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-
-                    onClicked: {
-                        PickerPanel.openDatePicker(datePicker, "date");
-                    }
-                }
-            }
-
-            TextField {
-                id: amountField
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                validator: DoubleValidator {
-                    notation: DoubleValidator.StandardNotation;
-                }
-
-                placeholderText: i18n.tr("Amount")
-            }
-
-            TextField {
-                id: contentsField
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                placeholderText: i18n.tr("Contents")
-            }
-
-            TextArea {
-                id: memoTextArea
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                Layout.fillHeight: true
-
-                width: parent.width
-                autoSize: true
-
-                placeholderText: i18n.tr("Memo")
-            }
-        }
     }
 }

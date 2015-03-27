@@ -42,8 +42,12 @@ class Month;
 class Day : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(int day READ getDay WRITE setDay NOTIFY dayChanged)
+    Q_PROPERTY(QString dayName READ getDayName NOTIFY dayNameChanged)
     Q_PROPERTY(int month READ getMonth WRITE setMonth NOTIFY monthChanged)
     Q_PROPERTY(int year READ getYear WRITE setYear NOTIFY yearChanged)
+    Q_PROPERTY(QDate date READ getDate WRITE setDate NOTIFY dateChanged)
+    Q_PROPERTY(double expenseSum READ getExpenseSum NOTIFY expenseSumChanged)
+    Q_PROPERTY(double incomeSum READ getIncomeSum NOTIFY incomeSumChanged)
 
     friend class com::chancho::qml::Book;
     friend class com::chancho::qml::models::Month;
@@ -51,9 +55,11 @@ class Day : public QAbstractListModel {
  public:
     explicit Day(QObject* parent = 0);
     Day(int day, int month, int year, QObject* parent = 0);
+    Day(QDate date, QObject* parent = 0);
     virtual ~Day();
 
     // methods to override to allow the model to be used from qml
+    Q_INVOKABLE int numberOfTransactions() const;
     int rowCount(const QModelIndex & parent = QModelIndex()) const override;
     QVariant data(int row, int role) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
@@ -62,25 +68,36 @@ class Day : public QAbstractListModel {
     int getDay() const;
     void setDay(int day);
 
+    QString getDayName() const;
+
     int getMonth() const;
     void setMonth(int month);
 
     int getYear() const;
     void setYear(int year);
 
+    QDate getDate() const;
+    void setDate(QDate date);
+
+    double getExpenseSum() const;
+    double getIncomeSum() const;
+
  protected:
     Day(BookPtr book, QObject* parent = 0);
     Day(int day, int month, int year, BookPtr book, QObject* parent = 0);
+    Day(QDate date, BookPtr book, QObject* parent = 0);
 
  signals:
     void dayChanged(int day);
+    void dayNameChanged(QString name);
     void monthChanged(int month);
     void yearChanged(int year);
+    void dateChanged(QDate date);
+    void expenseSumChanged(double expense);
+    void incomeSumChanged(double income);
 
  private:
-    int _day = -1;
-    int _month = -1;
-    int _year = -1;
+    QDate _date;
     BookPtr _book;
 };
 

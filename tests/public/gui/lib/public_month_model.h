@@ -37,7 +37,9 @@ class PublicMonthModel : public com::chancho::qml::models::Month {
             : com::chancho::qml::models::Month(book, parent) {}
 
     PublicMonthModel(int month, int year, BookPtr book, QObject* parent=0)
-                : com::chancho::qml::models::Month(month, year, book, parent) {}
+            : com::chancho::qml::models::Month(month, year, book, parent) {}
+    PublicMonthModel(QDate date, BookPtr book)
+            : com::chancho::qml::models::Month(date, book) {}
     };
 }
 

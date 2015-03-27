@@ -46,6 +46,8 @@ class Account {
     QString memo = QString::null;
 
     virtual bool wasStoredInDb() const;
+    bool operator==(const Account& rhs);
+    bool operator!=(const Account& rhs);
 
  protected:
     // optional so that we know if a category was added to the db or not
@@ -53,6 +55,9 @@ class Account {
 };
 
 typedef std::shared_ptr<Account> AccountPtr;
+
+bool operator==(const AccountPtr& lhs, const AccountPtr& rhs);
+bool operator!=(const AccountPtr& lhs, const AccountPtr& rhs);
 
 }
 

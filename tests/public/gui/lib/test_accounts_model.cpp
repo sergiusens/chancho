@@ -21,6 +21,12 @@
  */
 
 #include <QSignalSpy>
+
+#include <com/chancho/qml/account.h>
+#include <com/chancho/qml/category.h>
+
+#include "public_account.h"
+#include "public_qml_account.h"
 #include "test_accounts_model.h"
 
 using ::testing::_;
@@ -200,6 +206,95 @@ TestAccountsModel::testDataGetAccount() {
     QVERIFY(result.isValid());
 
     QVERIFY(Mock::VerifyAndClearExpectations(book.get()));
+}
+
+void
+TestAccountsModel::testGetIndex() {
+    com::chancho::AccountPtr firstAcc = std::make_shared<PublicAccount>(QUuid::createUuid());
+    com::chancho::AccountPtr secondAcc = std::make_shared<PublicAccount>(QUuid::createUuid());
+
+    auto qmlAcc = new com::chancho::tests::PublicAccount(secondAcc);
+
+    QList<com::chancho::AccountPtr> accs;
+    accs.append(firstAcc);
+    accs.append(secondAcc);
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicAccountsModel>(book);
+
+    EXPECT_CALL(*book.get(), accounts(boost::optional<int>(), boost::optional<int>()))
+            .Times(1)
+            .WillOnce(Return(accs));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto index = model->getIndex(qmlAcc);
+    QCOMPARE(index, 1);
+}
+
+void
+TestAccountsModel::testGetIndexMissing() {
+    com::chancho::AccountPtr firstAcc = std::make_shared<PublicAccount>(QUuid::createUuid());
+    com::chancho::AccountPtr secondAcc = std::make_shared<PublicAccount>(QUuid::createUuid());
+    com::chancho::AccountPtr notPresentAcc = std::make_shared<PublicAccount>(QUuid::createUuid());
+
+    auto qmlAcc = new com::chancho::tests::PublicAccount(notPresentAcc);
+
+    QList<com::chancho::AccountPtr> accs;
+    accs.append(firstAcc);
+    accs.append(secondAcc);
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicAccountsModel>(book);
+
+    EXPECT_CALL(*book.get(), accounts(boost::optional<int>(), boost::optional<int>()))
+            .Times(1)
+            .WillOnce(Return(accs));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto index = model->getIndex(qmlAcc);
+    QCOMPARE(index, -1);
+}
+
+void
+TestAccountsModel::testGetIndexError() {
+    // use a diff qobject poninter and assert that we return -1
+    auto other = new com::chancho::qml::Category();
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicAccountsModel>(book);
+
+    auto index = model->getIndex(other);
+    QCOMPARE(index, -1);
+}
+
+void
+TestAccountsModel::testGetIndexBookError() {
+    // the db will return an error and -1 most be returned
+    auto acc = new com::chancho::qml::Account();
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicAccountsModel>(book);
+
+    EXPECT_CALL(*book.get(), accounts(boost::optional<int>(), boost::optional<int>()))
+            .Times(1)
+            .WillOnce(Return(QList<com::chancho::AccountPtr>()));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*book.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(QString("Foo")));
+
+    auto index = model->getIndex(acc);
+    QCOMPARE(index, -1);
 }
 
 QTEST_MAIN(TestAccountsModel)

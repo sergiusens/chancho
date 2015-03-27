@@ -114,5 +114,26 @@ TestAccount::testWasDbStored() {
     QCOMPARE(account->wasStoredInDb(), result);
 }
 
+void
+TestAccount::testAccountEquals() {
+    auto uuid = QUuid::createUuid();
+    PublicAccount firstAcc;
+    firstAcc._dbId = uuid;
+
+    PublicAccount secondAcc;
+    secondAcc._dbId = uuid;
+
+    QVERIFY(firstAcc == secondAcc);
+}
+
+void
+TestAccount::testAccountPtrEquals() {
+    auto uuid = QUuid::createUuid();
+    com::chancho::AccountPtr firtAcc = std::make_shared<PublicAccount>(uuid);
+    com::chancho::AccountPtr secondAcc = std::make_shared<PublicAccount>(uuid);
+
+    QVERIFY(firtAcc == secondAcc);
+}
+
 QTEST_MAIN(TestAccount)
 

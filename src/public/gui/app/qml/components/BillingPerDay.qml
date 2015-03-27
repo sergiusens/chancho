@@ -24,48 +24,57 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.1
 
 import Ubuntu.Components 1.1
-import com.chancho 1.0
+import Ubuntu.Components.ListItems 1.0 as ListItems
 
-Item {
+UbuntuShape {
     property var dayModel
+    anchors.margins: units.gu(1)
+
+    width: parent.width
     height: childrenRect.height
 
     ColumnLayout {
+        anchors.margins: units.gu(1)
+        anchors.left: parent.left
+        anchors.right: parent.right
         height: childrenRect.height
-        anchors.fill : parent
-        spacing: units.gu(2)
 
-        BillingPerDayHeader {
-            id: perDayHeader
-            width: parent.width
-
+        DateHeaderComponent {
+            dayName: dayModel.dayName
             day: dayModel.day
             month: dayModel.month
             year: dayModel.year
-            dayName: "Thu"
-
-            income: "0"//transactionModel.income
-            outcome: "0"//transactionModel.outcome
+            income: dayModel.incomeSum
+            expenses: dayModel.expenseSum
         }
-/*
+
+        ListItems.Divider { }
+
         Repeater {
             id: transactionsList
-            width: parent.width - units.gu(2)
+            property var repeatCount: dayModel.numberOfTransactions()
 
             model: dayModel
 
             TransactionComponent {
-                anchors.leftMargin: units.gu(9)
-                width: perDayHeader.width
+                property var transaction: model.display
+                property var repeaterIndex: index
 
+                numberOfTransactions: transactionsList.repeatCount
                 category: model.display.category
                 contents: model.display.contents
                 amount: model.display.amount
+
+                MouseArea {
+                    anchors.fill: parent
+
+                    onClicked: {
+                        parent.selected = !parent.selected;
+                        mainPageStack.push(editTransaction, {"transaction": transaction});
+                        parent.selected = !parent.selected;
+                    }
+                }
             }
-
         }
-        */
-    }
-
+    } // ColumnLayout
 }
-

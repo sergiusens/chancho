@@ -32,6 +32,8 @@
 
 #include <com/chancho/system/database_lock.h>
 #include <com/chancho/system/database_factory.h>
+#include <QtCore/qsocketnotifier.h>
+#include <QtSql/qsqlquerymodel.h>
 
 #include "book.h"
 
@@ -153,6 +155,9 @@ namespace {
         "WHERE year=:year AND month=:month ORDER BY day DESC LIMIT :limit OFFSET :offset";
     const QString SELECT_DAYS_WITH_TRANSACTIONS_COUNT = "SELECT COUNT(DISTINCT day) FROM Transactions "\
         "WHERE year=:year AND month=:month";
+    const QString SELECT_DAY_CATEGORY_TYPE_SUM = "SELECT SSUM(t.amount) FROM Transactions AS t "\
+        "INNER JOIN Categories AS c ON t.category = c.uuid  WHERE c.type=:type AND t.day=:day AND "\
+        "t.month=:month AND t.year=:year";
     const QString FOREIGN_KEY_SUPPORT = "PRAGMA foreign_keys = ON";
 
 }
@@ -590,6 +595,7 @@ Book::categories(boost::optional<Category::Type> type, boost::optional<int> limi
     std::lock_guard<std::mutex> lock(_categoriesMutex);
     QMap<QUuid, QList<QUuid>> parentChildMap;
     QMap<QUuid, CategoryPtr> catsMap;
+    QList<QUuid> orderedIds;
 
     system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
@@ -679,6 +685,7 @@ Book::categories(boost::optional<Category::Type> type, boost::optional<int> limi
         } else {
             LOG(INFO) << "Parent not found";
         }
+        orderedIds.append(uuid);
     }
 
     // set the parent child relationship
@@ -698,7 +705,14 @@ Book::categories(boost::optional<Category::Type> type, boost::optional<int> limi
             catsMap[childId]->parent = catsMap[parentId];
         }
     }
-    return catsMap.values();
+
+    // QMap and QHash will not return the results in the right order, we have the QList of uuids to get them in
+    // the order that the select returned
+    QList<CategoryPtr> orderedCats;
+    foreach(const QUuid& id, orderedIds) {
+            orderedCats.append(catsMap[id]);
+    }
+    return orderedCats;
 }
 
 int
@@ -1148,6 +1162,51 @@ Book::numberOfDaysWithTransactions(int month, int year) {
     }
 
     return count;
+}
+
+double
+Book::amountForTypeInDay(int day, int month, int year, Category::Type type) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
+    double result = 0;
+
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return result;
+    }
+
+    //SELECT_DAY_CATEGORY_TYPE_SUM = SELECT SSUM(t.amount) FROM Transactions AS t
+    //    INNER JOIN Categories AS c ON t.category = c.uuid  WHERE c.type=:type AND t.day=:day AND
+    //    t.month=:month AND t.year=:year
+    // SSUM is a custom function and returns a STRING.
+    auto query = _db->createQuery();
+    query->prepare(SELECT_DAY_CATEGORY_TYPE_SUM);
+    query->bindValue(":day", day);
+    query->bindValue(":month", month);
+    query->bindValue(":year", year);
+    query->bindValue(":type", static_cast<int>(type));
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the amount count" << _lastError.toStdString();
+    } else if (query->next()) {
+        result = query->value(0).toString().toDouble();
+    }
+
+    return result;
+}
+
+double
+Book::incomeForDay(int day, int month, int year) {
+    return amountForTypeInDay(day, month, year, Category::Type::INCOME);
+}
+
+double
+Book::expenseForDay(int day, int month, int year) {
+    return amountForTypeInDay(day, month, year, Category::Type::EXPENSE);
 }
 
 bool

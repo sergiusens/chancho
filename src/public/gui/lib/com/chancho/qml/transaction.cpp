@@ -20,6 +20,9 @@
  * THE SOFTWARE.
  */
 
+#include "account.h"
+#include "category.h"
+
 #include "transaction.h"
 
 namespace com {
@@ -104,12 +107,45 @@ Transaction::setMemo(QString memo) {
     }
 }
 
-Transaction::Type
+qml::Book::TransactionType
 Transaction::getType() const {
-    if (_transaction->category->type == Category::Type::EXPENSE) {
-        return Transaction::Type::EXPENSE;
+    if (_transaction->category->type == chancho::Category::Type::EXPENSE) {
+        return qml::Book::EXPENSE;
     } else {
-        return Transaction::Type::INCOME;
+        return qml::Book::INCOME;
+    }
+}
+
+TransactionPtr
+Transaction::getTransaction() const {
+    return _transaction;
+}
+
+QObject*
+Transaction::getAccountModel() {
+    // pass this as the parent to ensure that we clean the memory on destruction
+    return new qml::Account(_transaction->account, this);
+}
+
+void
+Transaction::setAccountModel(QObject* account) {
+    auto acc = qobject_cast<qml::Account*>(account);
+    if(acc != nullptr) {
+        _transaction->account = acc->getAccount();
+    }
+}
+
+QObject*
+Transaction::getCategoryModel() {
+    // pass this as the parent to ensure that we clean the memory on destruction
+    return new qml::Category(_transaction->category, this);
+}
+
+void
+Transaction::setCategoryModel(QObject* category) {
+    auto cat = qobject_cast<qml::Category*>(category);
+    if(cat != nullptr) {
+        _transaction->category = cat->getCategory();
     }
 }
 

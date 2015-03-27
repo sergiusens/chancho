@@ -165,6 +165,46 @@ Categories::setType(qml::Book::TransactionType type) {
     }
 }
 
+QVariant
+Categories::get(int row) {
+    return data(row, Qt::DisplayRole);
+}
+
+int
+Categories::getIndex(QObject* category) {
+    auto qmlCat = qobject_cast<qml::Category*>(category);
+    if (qmlCat == nullptr) {
+        return -1;
+    }
+
+    auto type = boost::optional<chancho::Category::Type>();
+
+    if (_type) {
+        if (*_type == qml::Book::TransactionType::EXPENSE) {
+            type = chancho::Category::Type::EXPENSE;
+        } else {
+            type = chancho::Category::Type::INCOME;
+        }
+    }
+
+    auto cats = _book->categories(type);
+
+    if (_book->isError()) {
+        LOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
+        return -1;
+    }
+
+    if (cats.count() > 0 ){
+        for(int index=0; index < cats.count(); index++) {
+            if (cats.at(index) == qmlCat->getCategory()) {
+                return index;
+            }
+        }
+    }
+
+    return -1;
+}
+
 }
 
 }

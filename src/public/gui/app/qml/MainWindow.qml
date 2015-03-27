@@ -55,214 +55,61 @@ MainView {
     width: units.gu(100)
     height: units.gu(75)
 
-    Component {
-        id: pageComponent
+    Tabs {
+        id: tabs
+        Tab {
+            id: tab1
+            title: "Bills"
+            page: MainPage {}
+        } // tab
 
-        PageWithBottomEdge {
-            id: mainPage
-            title: i18n.tr("Bills")
-
-            Component {
-                id: pageMenu
-                ActionSelectionPopover {
-                    delegate: ListItems.Standard {
-                      text: action.text
-                    }
-                    actions: ActionList {
-                      Action {
-                          text: "Action one"
-                          onTriggered: print(text)
-                      }
-                      Action {
-                          text: "Action two"
-                          onTriggered: print(text)
-                      }
-                    }
+        Tab {
+            id: statsTab
+            title: "Stats"
+            page: Page {
+                Button {
+                        anchors.centerIn: parent
+                        onClicked: pageStack.push(page3)
+                        text: "Press"
                 }
             }
-
-            head.actions: [
-                Action {
-                    iconName: "search"
-                    text: i18n.tr("Search")
-                },
-                Action {
-                    iconName: "settings"
-                    text: i18n.tr("Settings")
-                },
-                Action {
-                    iconName: "contextual-menu"
-                    text: i18n.tr("Stats")
-                },
-                Action {
-                    iconName: "contextual-menu"
-                    text: i18n.tr("Accounts")
-                }
-            ]
-
-            ColumnLayout {
-                spacing: units.gu(2)
-
-                anchors.fill: parent
-                anchors.margins: units.gu(1)
-
-                Label {
-                    id: monthLabel
-                    property date date: new Date()
-
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-
-                    text: Qt.formatDateTime(date, "MMMM yyyy");
-                    fontSize: "x-large"
-                    horizontalAlignment: Text.AlignHCenter
-
-                    onDateChanged: {
-                        text: Qt.formatDateTime(date, "MM yyyy");
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-
-                        onClicked: {
-                            PickerPanel.openDatePicker(monthLabel, "date");
-                        }
-                    }
-                }
-
-
-                Rectangle {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    color : "light blue"
-
-                    Layout.fillHeight: true
-
-                    UbuntuListView {
-                        id: daysList
-                        width: parent.width
-                        height:10000
-                        spacing: units.gu(1)
-
-                        model: Book.monthModel(new Date())
-                        delegate: Item {
-                            property var dayModel: Book.dayModel(model.display.day, model.display.month, model.display.year)
-                            anchors.margins: units.gu(1)
-
-                            width: parent.width
-                            height: childrenRect.height
-
-                            ColumnLayout {
-                                width: parent.width
-                                height: childrenRect.height
-
-                                RowLayout {
-                                    width: parent.width
-
-                                    Row {
-                                        spacing: units.gu(1)
-                                        anchors.margins: units.gu(1)
-                                        width: childrenRect.width
-
-                                        UbuntuShape {
-                                            id: dayNameRectangle
-
-                                            color: "Orange"
-                                            width: dayNameLabel.width
-                                            height: dayLabel.height - units.dp(2)
-
-                                            Label {
-                                                id: dayNameLabel
-
-                                                anchors.top: parent.top;
-                                                anchors.bottom: parent.bottom;
-                                                rotation: -90
-
-                                                fontSize: "x-small"
-                                                font.bold: true
-                                                horizontalAlignment: Text.AlignLeft
-                                                verticalAlignment: Text.AlignVCenter
-
-                                                text: "Thu"
-                                            }
-                                        }
-                                        Label {
-                                            id: dayLabel
-
-                                            text: dayModel.day
-
-                                            fontSize: "x-large"
-                                            font.bold: true
-                                            horizontalAlignment: Text.AlignCenter
-                                            verticalAlignment: Text.AlignBottom
-                                        }
-
-                                        Label {
-                                            id: monthYear
-                                            height: dayLabel.height - units.dp(2)
-
-                                            text: dayModel.month + "." + dayModel.year
-
-                                            fontSize: "small"
-                                            horizontalAlignment: Text.AlignCenter
-                                            verticalAlignment: Text.AlignBottom
-                                        }
-                                    } // Row
-
-                                    Label {
-                                        Layout.alignment: Qt.AlignRight
-                                        Layout.fillWidth: true
-                                        id: outcomeValue
-                                        height: dayLabel.height
-
-                                        horizontalAlignment: Text.AlignRight
-                                        verticalAlignment: Text.AlignBottom
-
-                                        text: "0.0"
-                                        color: "Red"
-                                    }
-
-                                    Label {
-                                        Layout.alignment: Qt.AlignRight
-                                        Layout.fillWidth: true
-                                        id: incomeLabel
-                                        height: dayLabel.height
-
-                                        horizontalAlignment: Text.AlignRight
-                                        verticalAlignment: Text.AlignBottom
-
-                                        text: "0.0"
-                                        color: "Green"
-                                    }
-                                }// RowLayout
-
-                                Rectangle {
-                                    id: separatorRectangle
-                                    Layout.fillWidth: true
-                                    width: parent.width
-                                    height: units.dp(2)
-
-                                    anchors.leftMargin: units.gu(1)
-                                    anchors.rightMargin: units.gu(1)
-
-                                    color: "Light grey"
-                                }
-                            } // ColumnLayout
-                        }
-                    }
-                }
-
-            }
-
-            bottomEdgePageComponent: NewTransaction {}
-            bottomEdgeTitle: i18n.tr("Add new entry")
         }
-    }
+        Tab {
+            id: accountsTab
+            title: "Accounts"
+            page: Page {
+                Button {
+                        anchors.centerIn: parent
+                        onClicked: pageStack.push(page3)
+                        text: "Press"
+                }
+            }
+        }
 
-    PageStack {
-        id: stack
-        Component.onCompleted: stack.push(pageComponent)
-    }
+        Tab {
+            id: categoriesTab
+            title: "Categories"
+            page: Page {
+                Button {
+                        anchors.centerIn: parent
+                        onClicked: pageStack.push(page3)
+                        text: "Press"
+                }
+            }
+        }
+
+        Tab {
+            id: settingsTab
+            title: "Settings"
+            page: Page {
+                Button {
+                        anchors.centerIn: parent
+                        onClicked: pageStack.push(page3)
+                        text: "Press"
+                }
+            }
+        }
+    }// tabs
 
 }
 

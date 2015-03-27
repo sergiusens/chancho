@@ -2,10 +2,12 @@
     <qresource>
         <file>qml/MainWindow.qml</file>
         <file>qml/components/BillingPerDay.qml</file>
-        <file>qml/components/BillingPerDayHeader.qml</file>
         <file>qml/components/DateHeaderComponent.qml</file>
+        <file>qml/components/EditTransaction.qml</file>
+        <file>qml/components/MainPage.qml</file>
         <file>qml/components/NewTransaction.qml</file>
         <file>qml/components/PageWithBottomEdge.qml</file>
         <file>qml/components/TransactionComponent.qml</file>
+        <file>qml/components/TransactionForm.qml</file>
     </qresource>
 </RCC>

@@ -1,6 +1,7 @@
 set(PRIVATE_TESTS
     test_account
     test_accounts_model
+    test_book
     test_categories_model
     test_category
     test_day_model

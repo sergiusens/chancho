@@ -69,6 +69,33 @@ static void subtractStringNumbers(sqlite3_context *context, int argc, sqlite3_va
     }
 }
 
+static void stringSumStep(sqlite3_context *context, int, sqlite3_value** argv) {
+    double *amount = (double *) sqlite3_aggregate_context(context, sizeof(double));
+
+    if (amount == nullptr) {
+        LOG(ERROR) << "Error when calculating SSUM";
+        sqlite3_result_error_nomem(context);
+        return;
+    }
+
+    auto numStr = reinterpret_cast<const char*>(sqlite3_value_text(argv[0]));
+    auto num = QString::fromUtf8(numStr).toDouble();
+    *amount += num;
+}
+
+static void stringSumFinal(sqlite3_context *context) {
+    double *amount= (double *) sqlite3_aggregate_context(context, sizeof(double));
+
+    if (amount == nullptr) {
+        LOG(ERROR) << "Error when calculating SSUM";
+        sqlite3_result_error_nomem(context);
+        return;
+    }
+
+    auto amountStr = QString::number(*amount).toStdString();
+    sqlite3_result_text(context, amountStr.c_str(), -1, SQLITE_TRANSIENT);
+}
+
 static void trace(void*, const char* query ) {
     DLOG(INFO) << "SQlite: " << query;
 }
@@ -264,6 +291,13 @@ class Database {
             return false;
         }
 
+        added = sqlite3_create_function_v2(handler, "SSUM", 1, SQLITE_ANY, NULL, NULL, stringSumStep, stringSumFinal, NULL);
+        if (added == SQLITE_OK) {
+            DLOG(INFO) << "SSUM added";
+        } else {
+            LOG(WARNING) << "Cannot create SQLite functions: SSUM";
+            return false;
+        }
 
         sqlite3_trace(handler, trace, NULL);
 

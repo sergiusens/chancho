@@ -20,8 +20,6 @@
  * THE SOFTWARE.
  */
 
-#include <glog/logging.h>
-
 #include "category.h"
 
 namespace com {
@@ -48,6 +46,32 @@ Category::Category(const Category& other)
 bool
 Category::wasStoredInDb() const {
     return !_dbId.isNull();
+}
+
+bool
+Category::operator==(const Category& rhs) {
+    return _dbId == rhs._dbId;
+}
+
+bool
+Category::operator!=(const Category& rhs) {
+    return _dbId != rhs._dbId;
+}
+
+bool operator==(const CategoryPtr& lhs, const CategoryPtr& rhs) {
+    if (lhs && rhs) {
+        return *lhs.get() == *rhs.get();
+    } else {
+        return lhs.get() == rhs.get();
+    }
+}
+
+bool operator!=(const CategoryPtr& lhs, const CategoryPtr& rhs) {
+    if (lhs && rhs) {
+        return *lhs.get() != *rhs.get();
+    } else {
+        return lhs.get() != rhs.get();
+    }
 }
 
 }

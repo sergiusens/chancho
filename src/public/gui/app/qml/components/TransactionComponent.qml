@@ -21,44 +21,85 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
+
 import Ubuntu.Components 1.1
+import Ubuntu.Components.ListItems 1.0 as ListItems
 
 Item {
     property alias category: categoryLabel.text
     property alias contents: contentsLabel.text
-    property int amount
+    property alias amount: amountLabel.text
+    property alias color: background.color
+    property bool selected: false
+    property var numberOfTransactions
 
-    anchors.margins: units.gu(2)
+    height: childrenRect.height
+    anchors.left: parent.left
+    anchors.right: parent.right
 
-    Rectangle {
-        width: parent.width
-
-        Label {
-            id: categoryLabel
-            width: units.gu(20)
-            anchors.left: parent.left
-
-            font.bold: true
-            horizontalAlignment: Text.AlignLeft
-        }
-
-        Label {
-            id: contentsLabel
-            width: units.gu(20)
-            anchors.left: categoryLabel.right
-
-            horizontalAlignment: Text.AlignLeft
-        }
-
-        Label {
-            id: amountLabel
-            anchors.right: parent.right
-
-            color: (amount > 0)? "green" : "red"
-            horizontalAlignment: Text.AlignRight
-            text: amount
+    onSelectedChanged: {
+        if (selected) {
+            background.color = "Light grey";
+        } else {
+            background.color = "white";
         }
     }
 
-    height: categoryLabel.height
+    Rectangle {
+        id: background
+
+        height: childrenRect.height
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        ColumnLayout {
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            Item {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: childrenRect.height
+
+                Label {
+                    id: categoryLabel
+                    width: units.gu(20)
+
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+
+                    text:model.display.category
+                    font.bold: true
+                    horizontalAlignment: Text.AlignLeft
+                }
+
+                Label {
+                    id: contentsLabel
+                    anchors.left: categoryLabel.right
+                    anchors.top: parent.top
+                    width: parent.width - categoryLabel.width - amountLabel.width
+
+                    text:model.display.contents
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignLeft
+                }
+
+                Label {
+                    id: amountLabel
+                    width: units.gu(10)
+
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+
+                    text: model.display.amount
+                    color: (model.display.amount > 0)? "green" : "red"
+                    horizontalAlignment: Text.AlignRight
+                }
+            }
+            ListItems.ThinDivider {
+                visible: (index + 1 != numberOfTransactions)?true:false;
+            }
+        }
+    }
 }
