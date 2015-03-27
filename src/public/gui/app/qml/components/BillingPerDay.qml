@@ -21,73 +21,51 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
+
 import Ubuntu.Components 1.1
 import com.chancho 1.0
 
-UbuntuShape {
-    property alias day: perDayHeader.day
-    property alias dayName: perDayHeader.dayName
-    property alias month: perDayHeader.month
-    property alias year: perDayHeader.year
+Item {
+    property var dayModel
+    height: childrenRect.height
 
-    BillingPerDayHeader {
-        id: perDayHeader
-        anchors.top: parent.top
+    ColumnLayout {
+        height: childrenRect.height
+        anchors.fill : parent
+        spacing: units.gu(2)
 
-        income: "0"//transactionModel.income
-        outcome: "0"//transactionModel.outcome
-    }
-
-    Component {
-        id: transactionDelegate
-        Column {
+        BillingPerDayHeader {
+            id: perDayHeader
             width: parent.width
-            spacing: units.gu(1)
-            TransactionComponent {
-                width: parent.width
 
-                anchors.left: parent.left
-                anchors.leftMargin: units.gu(1)
-                anchors.right: parent.right
-                anchors.rightMargin: units.gu(1)
+            day: dayModel.day
+            month: dayModel.month
+            year: dayModel.year
+            dayName: "Thu"
 
-                category: transactionCategory
-                contents: transactionContents
-                amount: transactionAmount
-            }
-
-            Rectangle {
-                width: parent.width
-                height: units.dp(1)
-
-                anchors.left: parent.left
-                anchors.leftMargin: units.gu(1)
-                anchors.right: parent.right
-                anchors.rightMargin: units.gu(1)
-
-                color: "Light grey"
-                visible: (index < transactionsList.model.count - 1) ? true: false
-            }
+            income: "0"//transactionModel.income
+            outcome: "0"//transactionModel.outcome
         }
+/*
+        Repeater {
+            id: transactionsList
+            width: parent.width - units.gu(2)
+
+            model: dayModel
+
+            TransactionComponent {
+                anchors.leftMargin: units.gu(9)
+                width: perDayHeader.width
+
+                category: model.display.category
+                contents: model.display.contents
+                amount: model.display.amount
+            }
+
+        }
+        */
     }
-
-    ListView {
-        id: transactionsList
-        anchors.top: perDayHeader.bottom
-        anchors.topMargin: units.gu(1)
-        anchors.bottom: parent.bottom
-
-        spacing: units.gu(1)
-
-        model: Book.dayModel(day, month, year)
-        delegate: transactionDelegate
-
-        focus: true
-        width: parent.width
-    }
-
-    width: parent.width
-    height: transactionsList.model.count * 50
 
 }
 

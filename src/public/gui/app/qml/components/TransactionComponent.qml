@@ -28,6 +28,8 @@ Item {
     property alias contents: contentsLabel.text
     property int amount
 
+    anchors.margins: units.gu(2)
+
     Rectangle {
         width: parent.width
 

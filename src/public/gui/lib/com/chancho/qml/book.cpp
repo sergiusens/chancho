@@ -83,12 +83,14 @@ Book::categoriesModeForType(TransactionType type) {
 
 QObject*
 Book::dayModel(int day, int month, int year) {
+    LOG(INFO) << "days model for " << day << " " << month << " " << year;
     return new models::Day(day, month, year, _book);
 }
 
 QObject*
-Book::monthModel(int month, int year) {
-    return new models::Month(month, year, _book);
+Book::monthModel(QDate date) {
+    LOG(INFO) << "months model for " << date.month() << " " << date.year();
+    return new models::Month(date.month(), date.year(), _book);
 }
 
 }

@@ -71,11 +71,13 @@ Month::rowCount(const QModelIndex&) const {
     if (_book->isError()) {
         return 0;
     }
+    LOG(INFO) << "Number of days with transactions is " << count;
     return count;
 }
 
 QVariant
 Month::data(int row, int role) const {
+    LOG(INFO) << "Return model for day in index " << row << " for " << _month << "/" << _year;
     auto count = _book->numberOfDaysWithTransactions(_month, _year);
     if (_book->isError()) {
         LOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
@@ -87,7 +89,7 @@ Month::data(int row, int role) const {
     }
 
     if (role == Qt::DisplayRole) {
-        LOG(INFO) << "Getting transactions for month" << _month << "/" << _year << " with offset " << row;
+        LOG(INFO) << "Getting days with transactions for month " << _month << "/" << _year << " with offset " << row;
         auto days = _book->daysWithTransactions(_month, _year, 1, row);
         if (_book->isError()) {
             LOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
@@ -95,6 +97,7 @@ Month::data(int row, int role) const {
         }
         if (days.count() > 0) {
             auto model = new Day(days.at(0), _month, _year, _book);
+            LOG(INFO) << "Returning day model " << days.at(0);
             return QVariant::fromValue(model);
         } else {
             LOG(INFO) << "No transaction was found.";
@@ -107,6 +110,7 @@ Month::data(int row, int role) const {
 
 QVariant
 Month::data(const QModelIndex& index, int role) const {
+    LOG(INFO) << "Get data (" << index.row() << ", " << index.column() << ")";
     if (!index.isValid()) {
         LOG(INFO) << "Querying data for not valid index.";
         return QVariant();

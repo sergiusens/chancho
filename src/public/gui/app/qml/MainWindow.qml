@@ -21,9 +21,15 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
+
 import Ubuntu.Components 1.1
+import Ubuntu.Components.Pickers 0.1
 import Ubuntu.Components.Popups 1.0
 import Ubuntu.Components.ListItems 1.0 as ListItems
+
+import com.chancho 1.0
+
 import "components"
 
 /*!
@@ -94,32 +100,156 @@ MainView {
                 }
             ]
 
-            Column {
+            ColumnLayout {
                 spacing: units.gu(2)
 
-                anchors.top: parent.top
-                anchors.topMargin: units.gu(1)
-                anchors.left: parent.left
-                anchors.leftMargin: units.gu(1)
-                anchors.right: parent.right
-                anchors.rightMargin: units.gu(1)
+                anchors.fill: parent
+                anchors.margins: units.gu(1)
 
-                BillingPerDay {
-                    anchors.horizontalCenter: parent.horizontalCenter
+                Label {
+                    id: monthLabel
+                    property date date: new Date()
 
-                    day: 5
-                    dayName: "Thu"
-                    month: 3;
-                    year: 2014
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    text: Qt.formatDateTime(date, "MMMM yyyy");
+                    fontSize: "x-large"
+                    horizontalAlignment: Text.AlignHCenter
+
+                    onDateChanged: {
+                        text: Qt.formatDateTime(date, "MM yyyy");
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        onClicked: {
+                            PickerPanel.openDatePicker(monthLabel, "date");
+                        }
+                    }
                 }
 
-                BillingPerDay {
-                    anchors.horizontalCenter: parent.horizontalCenter
 
-                    day: 2
-                    dayName: "Tue"
-                    month: 3;
-                    year: 2014
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    color : "light blue"
+
+                    Layout.fillHeight: true
+
+                    UbuntuListView {
+                        id: daysList
+                        width: parent.width
+                        height:10000
+                        spacing: units.gu(1)
+
+                        model: Book.monthModel(new Date())
+                        delegate: Item {
+                            property var dayModel: Book.dayModel(model.display.day, model.display.month, model.display.year)
+                            anchors.margins: units.gu(1)
+
+                            width: parent.width
+                            height: childrenRect.height
+
+                            ColumnLayout {
+                                width: parent.width
+                                height: childrenRect.height
+
+                                RowLayout {
+                                    width: parent.width
+
+                                    Row {
+                                        spacing: units.gu(1)
+                                        anchors.margins: units.gu(1)
+                                        width: childrenRect.width
+
+                                        UbuntuShape {
+                                            id: dayNameRectangle
+
+                                            color: "Orange"
+                                            width: dayNameLabel.width
+                                            height: dayLabel.height - units.dp(2)
+
+                                            Label {
+                                                id: dayNameLabel
+
+                                                anchors.top: parent.top;
+                                                anchors.bottom: parent.bottom;
+                                                rotation: -90
+
+                                                fontSize: "x-small"
+                                                font.bold: true
+                                                horizontalAlignment: Text.AlignLeft
+                                                verticalAlignment: Text.AlignVCenter
+
+                                                text: "Thu"
+                                            }
+                                        }
+                                        Label {
+                                            id: dayLabel
+
+                                            text: dayModel.day
+
+                                            fontSize: "x-large"
+                                            font.bold: true
+                                            horizontalAlignment: Text.AlignCenter
+                                            verticalAlignment: Text.AlignBottom
+                                        }
+
+                                        Label {
+                                            id: monthYear
+                                            height: dayLabel.height - units.dp(2)
+
+                                            text: dayModel.month + "." + dayModel.year
+
+                                            fontSize: "small"
+                                            horizontalAlignment: Text.AlignCenter
+                                            verticalAlignment: Text.AlignBottom
+                                        }
+                                    } // Row
+
+                                    Label {
+                                        Layout.alignment: Qt.AlignRight
+                                        Layout.fillWidth: true
+                                        id: outcomeValue
+                                        height: dayLabel.height
+
+                                        horizontalAlignment: Text.AlignRight
+                                        verticalAlignment: Text.AlignBottom
+
+                                        text: "0.0"
+                                        color: "Red"
+                                    }
+
+                                    Label {
+                                        Layout.alignment: Qt.AlignRight
+                                        Layout.fillWidth: true
+                                        id: incomeLabel
+                                        height: dayLabel.height
+
+                                        horizontalAlignment: Text.AlignRight
+                                        verticalAlignment: Text.AlignBottom
+
+                                        text: "0.0"
+                                        color: "Green"
+                                    }
+                                }// RowLayout
+
+                                Rectangle {
+                                    id: separatorRectangle
+                                    Layout.fillWidth: true
+                                    width: parent.width
+                                    height: units.dp(2)
+
+                                    anchors.leftMargin: units.gu(1)
+                                    anchors.rightMargin: units.gu(1)
+
+                                    color: "Light grey"
+                                }
+                            } // ColumnLayout
+                        }
+                    }
                 }
 
             }

@@ -21,13 +21,35 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
+
 import Ubuntu.Components 1.1
 
-Row {
+    Label {
     property int day
     property int month
     property int year
     property string dayName
+        id: dayLabel
+
+        text: day
+
+        fontSize: "x-large"
+        font.bold: true
+        horizontalAlignment: Text.AlignCenter
+        verticalAlignment: Text.AlignBottom
+    }
+/*Rectangle{
+    height: childrenRect.height
+    property int day
+    property int month
+    property int year
+    property string dayName
+
+}
+*/
+  /*
+Row {
 
     spacing: 2
 
@@ -35,7 +57,7 @@ Row {
         id: dayNameRectangle
 
         color: "Orange"
-        width: dayLabel.width + units.gu(1)
+        width: dayNameLabel.width
         height: dayLabel.height - units.dp(2)
 
         Label {
@@ -76,4 +98,5 @@ Row {
         verticalAlignment: Text.AlignBottom
     }
 }
+*/
 

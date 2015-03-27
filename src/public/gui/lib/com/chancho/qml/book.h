@@ -52,7 +52,7 @@ class Book : public QObject {
     Q_INVOKABLE QObject* categoriesModel();
     Q_INVOKABLE QObject* categoriesModeForType(TransactionType type);
     Q_INVOKABLE QObject* dayModel(int day, int month, int year);
-    Q_INVOKABLE QObject* monthModel(int month, int year);
+    Q_INVOKABLE QObject* monthModel(QDate date);
 
  private:
     BookPtr _book;

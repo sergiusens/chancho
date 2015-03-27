@@ -42,7 +42,7 @@ class Transaction : public QObject {
     Q_ENUMS(Transaction::Type)
     Q_PROPERTY(QString account READ getAccount)
     Q_PROPERTY(double amount READ getAmount WRITE setAmount NOTIFY amountChanged)
-    Q_PROPERTY(QString category READ getCategory)
+    Q_PROPERTY(QString category READ getCategory NOTIFY categoryChanged)
     Q_PROPERTY(QDate date READ getDate WRITE setDate NOTIFY dateChanged)
     Q_PROPERTY(QString contents READ getContents WRITE setContents NOTIFY contentsChanged)
     Q_PROPERTY(QString memo READ getMemo WRITE setMemo NOTIFY memoChanged)
@@ -82,6 +82,7 @@ class Transaction : public QObject {
 
  signals:
     void amountChanged(double amount);
+    void categoryChanged(QString category);
     void dateChanged(QDate date);
     void contentsChanged(QString contents);
     void memoChanged(QString memo);

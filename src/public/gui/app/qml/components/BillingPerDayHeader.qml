@@ -21,84 +21,96 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
+
 import Ubuntu.Components 1.1
 
+            DateHeaderComponent {
+                id: dateLabel
+                width: parent.width
+
+                anchors.left : parent.left
+                anchors.right: parent.left
+                anchors.top: parent.top
+            }
+            /*
 Item {
     property alias day: dateLabel.day
     property alias dayName: dateLabel.dayName
     property alias month: dateLabel.month
     property alias year: dateLabel.year
 
-    property alias income: incomeLabel.text
+   property alias income: incomeLabel.text
     property alias outcome: outcomeValue.text
 
-    Item {
-        id: dataWidget
-
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.topMargin: units.gu(1)
-        anchors.leftMargin: units.gu(1)
-
-        DateHeaderComponent {
-            id: dateLabel
-            width: units.gu(20)
-
-            anchors.left : parent.left
-            anchors.top: parent.top
-        }
-
-        Label {
-            id: outcomeValue
-            height: dateLabel.height - units.dp(2)
-
-            anchors.right: incomeLabel.left
-            anchors.top: parent.top
-
-            horizontalAlignment: Text.AlignRight
-            verticalAlignment: Text.AlignBottom
-
-            text: "0.0"
-            color: "Red"
-        }
-
-        Label {
-            id: incomeLabel
-            height: dateLabel.height - units.dp(2)
-            width: units.gu(20)
-
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.rightMargin: units.gu(1)
-
-            horizontalAlignment: Text.AlignRight
-            verticalAlignment: Text.AlignBottom
-
-            text: "0.0"
-            color: "Green"
-        }
-
-
-        width: parent.width
-        height: dateLabel.height
-    }
-
-    Rectangle {
-        id: separatorRectangle
-        height: units.dp(2)
-
-        anchors.top: dataWidget.bottom
-        anchors.topMargin: units.dp(2)
-        anchors.left: parent.left
-        anchors.leftMargin: units.gu(1)
-        anchors.right: parent.right
-        anchors.rightMargin: units.gu(1)
-
-        color: "Light grey"
-    }
 
     width: parent.width
-    height: dataWidget.height + dataWidget.anchors.topMargin + separatorRectangle.height
+    height: childrenRect.height
+*/
+
+/*
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: units.gu(1)
+
+        Item {
+            id: dataWidget
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            DateHeaderComponent {
+                id: dateLabel
+                width: units.gu(20)
+
+                anchors.left : parent.left
+                anchors.top: parent.top
+            }
+            Label {
+                id: outcomeValue
+                height: dateLabel.height - units.dp(2)
+
+                anchors.right: incomeLabel.left
+                anchors.top: parent.top
+
+                horizontalAlignment: Text.AlignRight
+                verticalAlignment: Text.AlignBottom
+
+                text: "0.0"
+                color: "Red"
+            }
+
+            Label {
+                id: incomeLabel
+                height: dateLabel.height - units.dp(2)
+                width: units.gu(20)
+
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.rightMargin: units.gu(1)
+
+                horizontalAlignment: Text.AlignRight
+                verticalAlignment: Text.AlignBottom
+
+                text: "0.0"
+                color: "Green"
+            }
+
+
+            width: parent.width
+            height: dateLabel.height
+        }
+
+        Rectangle {
+            id: separatorRectangle
+            height: units.dp(2)
+
+            anchors.leftMargin: units.gu(1)
+            anchors.rightMargin: units.gu(1)
+
+            color: "Light grey"
+        }
+    }
 
 }
+        */
