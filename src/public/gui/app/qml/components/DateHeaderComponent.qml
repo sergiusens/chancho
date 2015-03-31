@@ -21,59 +21,109 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
+
 import Ubuntu.Components 1.1
 
-Row {
-    property int day
-    property int month
-    property int year
-    property string dayName
+Item {
+    property alias dayName: dayNameLabel.text
+    property alias day: dayLabel.text
+    property alias expenses: expenses.text
+    property alias income: income.text
+    property var month
+    property var year
 
-    spacing: 2
+    anchors.left: parent.left
+    anchors.right: parent.right
 
-    UbuntuShape {
-        id: dayNameRectangle
+    height: totalLayout.height + units.gu(1)
 
-        color: "Orange"
-        width: dayLabel.width + units.gu(1)
-        height: dayLabel.height - units.dp(2)
+    Item {
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        height: totalLayout.height
+
+        Row {
+            id: dateRow
+            spacing: units.gu(1)
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.topMargin: units.gu(1)
+            anchors.rightMargin: units.gu(1)
+            width: parent.width - units.gu(20)
+            height: totalLayout.height
+
+            UbuntuShape {
+                id: dayNameRectangle
+
+                color: "Orange"
+                width: dayNameLabel.width
+                height: dayLabel.height - units.dp(2)
+
+                Label {
+                    id: dayNameLabel
+
+                    anchors.top: parent.top;
+                    anchors.bottom: parent.bottom;
+                    rotation: -90
+
+                    fontSize: "x-small"
+                    font.bold: true
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Label {
+                id: dayLabel
+
+                fontSize: "x-large"
+                font.bold: true
+                horizontalAlignment: Text.AlignCenter
+                verticalAlignment: Text.AlignBottom
+            }
+
+            Label {
+                id: monthYear
+                height: dayLabel.height - units.dp(2)
+
+                text: month + "." + year
+
+                fontSize: "small"
+                horizontalAlignment: Text.AlignCenter
+                verticalAlignment: Text.AlignBottom
+            }
+        } // Row
+
+        ColumnLayout {
+            id: totalLayout
+            anchors.top: parent.top
+            anchors.left: dateRow.left
+            anchors.right: parent.right
+            anchors.topMargin: units.gu(1)
 
         Label {
-            id: dayNameLabel
+            id: expenses
+            Layout.fillWidth: true
 
-            anchors.top: parent.top;
-            anchors.bottom: parent.bottom;
-            rotation: -90
+            horizontalAlignment: Text.AlignRight
+            fontSize: "small"
 
-            fontSize: "x-small"
-            font.bold: true
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-
-            text: dayName
+            text: "0.0"
+            color: "Red"
         }
-    }
 
-    Label {
-        id: dayLabel
+        Label {
+            id: income
+            Layout.fillWidth: true
 
-        text: day
+            horizontalAlignment: Text.AlignRight
+            fontSize: "small"
 
-        fontSize: "x-large"
-        font.bold: true
-        horizontalAlignment: Text.AlignCenter
-        verticalAlignment: Text.AlignBottom
-    }
-
-    Label {
-        id: monthYear
-        height: dayLabel.height - units.dp(2)
-
-        text: month + "." + year
-
-        fontSize: "small"
-        horizontalAlignment: Text.AlignCenter
-        verticalAlignment: Text.AlignBottom
-    }
+            text: "0.0"
+            color: "Green"
+        }
+        }
+    }// Item
 }
-

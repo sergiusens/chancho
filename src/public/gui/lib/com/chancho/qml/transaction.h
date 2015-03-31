@@ -24,12 +24,17 @@
 
 #include <memory>
 #include <com/chancho/transaction.h>
+#include "book.h"
 
 namespace com {
 
 namespace chancho {
 
 namespace qml {
+
+class Account;
+class Book;
+class Category;
 
 namespace models {
 
@@ -39,23 +44,20 @@ class Day;
 
 class Transaction : public QObject {
     Q_OBJECT
-    Q_ENUMS(Transaction::Type)
     Q_PROPERTY(QString account READ getAccount)
+    Q_PROPERTY(QObject* accountModel READ getAccountModel WRITE setAccountModel)
     Q_PROPERTY(double amount READ getAmount WRITE setAmount NOTIFY amountChanged)
-    Q_PROPERTY(QString category READ getCategory)
+    Q_PROPERTY(QString category READ getCategory NOTIFY categoryChanged)
+    Q_PROPERTY(QObject* categoryModel READ getCategoryModel WRITE setCategoryModel)
     Q_PROPERTY(QDate date READ getDate WRITE setDate NOTIFY dateChanged)
     Q_PROPERTY(QString contents READ getContents WRITE setContents NOTIFY contentsChanged)
     Q_PROPERTY(QString memo READ getMemo WRITE setMemo NOTIFY memoChanged)
-    Q_PROPERTY(Transaction::Type type READ getType)
+    Q_PROPERTY(com::chancho::qml::Book::TransactionType type READ getType)
 
     friend class models::Day;
+    friend class qml::Book;
 
  public:
-    enum Type {
-        INCOME,
-        EXPENSE
-    };
-
     explicit Transaction(QObject* parent =0);
     ~Transaction();
 
@@ -75,16 +77,27 @@ class Transaction : public QObject {
     QString getMemo() const;
     void setMemo(QString memo);
 
-    Transaction::Type getType() const;
+    qml::Book::TransactionType getType() const;
+
+    QObject* getAccountModel();
+    void setAccountModel(QObject* account);
+
+    QObject* getCategoryModel();
+    void setCategoryModel(QObject* category);
+
 
  private:
     Transaction(TransactionPtr transactionPtr, QObject* parent=0);
 
  signals:
     void amountChanged(double amount);
+    void categoryChanged(QString category);
     void dateChanged(QDate date);
     void contentsChanged(QString contents);
     void memoChanged(QString memo);
+
+ protected:
+    TransactionPtr getTransaction() const;
 
  private:
     TransactionPtr _transaction;

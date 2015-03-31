@@ -25,8 +25,10 @@
 #include "models/day.h"
 #include "models/month.h"
 
-#include "book.h"
 #include "account.h"
+#include "transaction.h"
+
+#include "book.h"
 
 namespace com {
 
@@ -52,23 +54,101 @@ Book::accountsModel() {
 }
 
 bool
-Book::storeTransaction(QObject* account, QObject* category, QDate date, QString amount, QString contents,
+Book::storeTransaction(QObject* account, QObject* category, QDate date, double amount, QString contents,
         QString memo) {
-    LOG(INFO) << "Store a new transaction from QML";
     auto acc = qobject_cast<qml::Account*>(account);
+    if (acc == nullptr) {
+        return false;
+    }
+
     auto cat = qobject_cast<qml::Category*>(category);
-    auto amountDouble = amount.toDouble();
-    // TODO: fire a signal
+    if (cat == nullptr) {
+        return false;
+    }
+
     auto tran = std::make_shared<chancho::Transaction>(
-            acc->getAccount(), amountDouble, cat->getCategory(), date, contents, memo);
+            acc->getAccount(), amount, cat->getCategory(), date, contents, memo);
     _book->store(tran);
+
     if (_book->isError()) {
-        LOG(INFO) << "Error storing transaction";
         return false;
     } else {
-        LOG(INFO) << "New transaction added";
+        emit transactionStored(date);
         return true;
     }
+}
+
+bool
+Book::removeTransaction(QObject* transaction) {
+    auto tran = qobject_cast<qml::Transaction*>(transaction);
+    if (tran == nullptr) {
+        return false;
+    }
+    _book->remove(tran->getTransaction());
+    if (_book->isError()) {
+        return false;
+    } else {
+        emit transactionRemoved(tran->getTransaction()->date);
+        return true;
+    }
+}
+
+bool
+Book::updateTransaction(QObject* tranObj, QObject* accObj, QObject* catObj, QDate date,
+                        QString contents, QString memo, double amount) {
+    TransactionPtr tran;
+    AccountPtr acc;
+    CategoryPtr cat;
+
+    auto tranModel = qobject_cast<qml::Transaction*>(tranObj);
+    if (tranModel != nullptr) {
+        tran = tranModel->getTransaction();
+    } else {
+        LOG(ERROR) << "Method called with wrong object type as a transaction model";
+        return false;
+    }
+
+    auto accModel = qobject_cast<qml::Account*>(accObj);
+    if (accModel != nullptr) {
+        acc = accModel->getAccount();
+    } else {
+        LOG(ERROR) << "Method called with wrong object type as an account model";
+        return false;
+    }
+
+    auto catModel = qobject_cast<qml::Category*>(catObj);
+    if (catModel != nullptr) {
+        cat = catModel->getCategory();
+    } else {
+        LOG(ERROR) << "Method called with wrong object type as a category model";
+        return false;
+    }
+
+    // decide if we need to perform the update
+    auto requiresUpdate = tran->account != acc || tran->category != cat || tran->date != date
+        || tran->contents != contents || tran->memo != memo || tran->amount != amount;
+
+    if (requiresUpdate) {
+        auto oldDate = tran->date;
+        tran->account = acc;
+        tran->category = cat;
+        tran->date = date;
+        tran->contents = contents;
+        tran->memo = memo;
+        tran->amount = amount;
+
+        _book->store(tran);
+        if (_book->isError()) {
+            return false;
+        } else {
+            emit transactionUpdated(oldDate, date);
+            return true;
+        }
+
+    } else {
+        return false;
+    }
+
 }
 
 QObject*
@@ -87,8 +167,12 @@ Book::dayModel(int day, int month, int year) {
 }
 
 QObject*
-Book::monthModel(int month, int year) {
-    return new models::Month(month, year, _book);
+Book::monthModel(QDate date) {
+    auto model = new models::Month(date.month(), date.year(), _book);
+    connect(this, &Book::transactionStored, model, &models::Month::onTransactionStored);
+    connect(this, &Book::transactionRemoved, model, &models::Month::onTransactionRemoved);
+    connect(this, &Book::transactionUpdated, model, &models::Month::onTransactionUpdated);
+    return model;
 }
 
 }

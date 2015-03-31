@@ -47,12 +47,21 @@ class Book : public QObject {
     explicit Book(BookPtr book, QObject* parent=0);
 
     Q_INVOKABLE QObject* accountsModel();
-    Q_INVOKABLE bool storeTransaction(QObject* account, QObject* category, QDate date, QString amount,
+    Q_INVOKABLE bool storeTransaction(QObject* account, QObject* category, QDate date, double amount,
             QString contents, QString memo);
+    Q_INVOKABLE bool removeTransaction(QObject* transaction);
+
+    Q_INVOKABLE bool updateTransaction(QObject* transaction, QObject* accModel, QObject* catModel, QDate date,
+                                       QString contents, QString memo, double amount);
     Q_INVOKABLE QObject* categoriesModel();
     Q_INVOKABLE QObject* categoriesModeForType(TransactionType type);
     Q_INVOKABLE QObject* dayModel(int day, int month, int year);
-    Q_INVOKABLE QObject* monthModel(int month, int year);
+    Q_INVOKABLE QObject* monthModel(QDate date);
+
+ signals:
+    void transactionStored(QDate date);
+    void transactionRemoved(QDate date);
+    void transactionUpdated(QDate oldDate, QDate newDate);
 
  private:
     BookPtr _book;

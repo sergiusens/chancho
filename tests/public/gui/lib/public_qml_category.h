@@ -22,31 +22,25 @@
 
 #pragma once
 
-#include <com/chancho/category.h>
+#include <com/chancho/qml/category.h>
 
-namespace chancho = com::chancho;
+namespace com {
 
-class PublicCategory : public chancho::Category {
+namespace chancho {
+
+namespace tests {
+
+class PublicCategory : public com::chancho::qml::Category {
  public:
-    PublicCategory()
-            : chancho::Category() {}
-
-    PublicCategory(QUuid id)
-            : chancho::Category() {
-        _dbId = id;
+    PublicCategory(com::chancho::CategoryPtr ptr, QObject* parent =0)
+        : com::chancho::qml::Category(ptr, parent) {
     }
 
-    PublicCategory(const QString& n, Category::Type t)
-            : chancho::Category(n, t) {}
-
-    PublicCategory(const QString& n, Category::Type t, std::shared_ptr<Category> p)
-            : chancho::Category(n, t, p) {}
-
-    virtual ~PublicCategory() = default;
-
-    using chancho::Category::_dbId;
+    using com::chancho::qml::Category::getCategory;
 };
 
-typedef std::shared_ptr<PublicCategory> PublicCategoryPtr;
+}
 
-Q_DECLARE_METATYPE(std::shared_ptr<PublicCategory>)
+}
+
+}

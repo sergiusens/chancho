@@ -21,9 +21,15 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
+
 import Ubuntu.Components 1.1
+import Ubuntu.Components.Pickers 0.1
 import Ubuntu.Components.Popups 1.0
 import Ubuntu.Components.ListItems 1.0 as ListItems
+
+import com.chancho 1.0
+
 import "components"
 
 /*!
@@ -49,90 +55,61 @@ MainView {
     width: units.gu(100)
     height: units.gu(75)
 
-    Component {
-        id: pageComponent
+    Tabs {
+        id: tabs
+        Tab {
+            id: tab1
+            title: "Bills"
+            page: MainPage {}
+        } // tab
 
-        PageWithBottomEdge {
-            id: mainPage
-            title: i18n.tr("Bills")
-
-            Component {
-                id: pageMenu
-                ActionSelectionPopover {
-                    delegate: ListItems.Standard {
-                      text: action.text
-                    }
-                    actions: ActionList {
-                      Action {
-                          text: "Action one"
-                          onTriggered: print(text)
-                      }
-                      Action {
-                          text: "Action two"
-                          onTriggered: print(text)
-                      }
-                    }
+        Tab {
+            id: statsTab
+            title: "Stats"
+            page: Page {
+                Button {
+                        anchors.centerIn: parent
+                        onClicked: pageStack.push(page3)
+                        text: "Press"
                 }
             }
-
-            head.actions: [
-                Action {
-                    iconName: "search"
-                    text: i18n.tr("Search")
-                },
-                Action {
-                    iconName: "settings"
-                    text: i18n.tr("Settings")
-                },
-                Action {
-                    iconName: "contextual-menu"
-                    text: i18n.tr("Stats")
-                },
-                Action {
-                    iconName: "contextual-menu"
-                    text: i18n.tr("Accounts")
-                }
-            ]
-
-            Column {
-                spacing: units.gu(2)
-
-                anchors.top: parent.top
-                anchors.topMargin: units.gu(1)
-                anchors.left: parent.left
-                anchors.leftMargin: units.gu(1)
-                anchors.right: parent.right
-                anchors.rightMargin: units.gu(1)
-
-                BillingPerDay {
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    day: 5
-                    dayName: "Thu"
-                    month: 3;
-                    year: 2014
-                }
-
-                BillingPerDay {
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    day: 2
-                    dayName: "Tue"
-                    month: 3;
-                    year: 2014
-                }
-
-            }
-
-            bottomEdgePageComponent: NewTransaction {}
-            bottomEdgeTitle: i18n.tr("Add new entry")
         }
-    }
+        Tab {
+            id: accountsTab
+            title: "Accounts"
+            page: Page {
+                Button {
+                        anchors.centerIn: parent
+                        onClicked: pageStack.push(page3)
+                        text: "Press"
+                }
+            }
+        }
 
-    PageStack {
-        id: stack
-        Component.onCompleted: stack.push(pageComponent)
-    }
+        Tab {
+            id: categoriesTab
+            title: "Categories"
+            page: Page {
+                Button {
+                        anchors.centerIn: parent
+                        onClicked: pageStack.push(page3)
+                        text: "Press"
+                }
+            }
+        }
+
+        Tab {
+            id: settingsTab
+            title: "Settings"
+            page: Page {
+                Button {
+                        anchors.centerIn: parent
+                        onClicked: pageStack.push(page3)
+                        text: "Press"
+                }
+            }
+        }
+    }// tabs
 
 }
 

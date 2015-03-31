@@ -57,12 +57,12 @@ class Categories : public QAbstractListModel {
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    Q_INVOKABLE QVariant get(int row) {
-        return data(row, Qt::DisplayRole);
-    }
-
     qml::Book::TransactionType getType() const;
     void setType(qml::Book::TransactionType type);
+
+    // useful methods to be called from qml
+    Q_INVOKABLE QVariant get(int row);
+    Q_INVOKABLE int getIndex(QObject* category);
 
  signals:
     void typeChanged(qml::Book::TransactionType type);

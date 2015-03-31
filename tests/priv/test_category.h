@@ -46,4 +46,7 @@ class TestCategory : public BaseTestCase {
 
     void testWasDbStored_data();
     void testWasDbStored();
+
+    void testCategoryEqual();
+    void testCategoryPtrEqual();
 };

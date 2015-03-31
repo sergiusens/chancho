@@ -52,9 +52,9 @@ class Accounts : public QAbstractListModel {
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    Q_INVOKABLE QVariant get(int row) {
-        return data(row, Qt::DisplayRole);
-    }
+    // helper methods used in the ui
+    Q_INVOKABLE QVariant get(int row);
+    Q_INVOKABLE int getIndex(QObject* account);
 
  protected:
     Accounts(BookPtr book, QObject* parent = 0);

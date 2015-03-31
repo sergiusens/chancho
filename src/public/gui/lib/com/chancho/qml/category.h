@@ -34,6 +34,7 @@ namespace chancho {
 namespace qml {
 
 class Book;
+class Transaction;
 
 namespace models {
 
@@ -48,6 +49,7 @@ class Category : public QObject {
 
     friend class models::Categories;
     friend class qml::Book;
+    friend class qml::Transaction;
 
  public:
     explicit Category(QObject* parent=0);
@@ -65,7 +67,6 @@ class Category : public QObject {
 
  protected:
     Category(CategoryPtr cat, QObject* parent=0);
-
     CategoryPtr getCategory() const;
 
  private:

@@ -50,5 +50,10 @@ class TestCategoriesModel : public BaseTestCase {
     void testDataBookError();
     void testDataNoData();
     void testDataGetCategory();
+
+    void testGetIndex();
+    void testGetIndexMissing();
+    void testGetIndexError();
+    void testGetIndexBookError();
 };
 

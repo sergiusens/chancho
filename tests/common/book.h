@@ -59,6 +59,8 @@ class MockBook: public com::chancho::Book {
     MOCK_METHOD2(numberOfDaysWithTransactions, int(int, int));
     MOCK_METHOD0(isError, bool());
     MOCK_METHOD0(lastError, QString());
+    MOCK_METHOD3(incomeForDay, double(int, int, int));
+    MOCK_METHOD3(expenseForDay, double(int, int, int));
 };
 
 }

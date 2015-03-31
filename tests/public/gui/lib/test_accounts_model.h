@@ -51,5 +51,9 @@ class TestAccountsModel : public BaseTestCase {
     void testDataNoData();
     void testDataGetAccount();
 
+    void testGetIndex();
+    void testGetIndexMissing();
+    void testGetIndexError();
+    void testGetIndexBookError();
 };
 

@@ -107,6 +107,36 @@ Accounts::headerData(int section, Qt::Orientation orientation, int role) const {
         return QString("Row %1").arg(section);
 }
 
+QVariant
+Accounts::get(int row) {
+    return data(row, Qt::DisplayRole);
+}
+
+int
+Accounts::getIndex(QObject* account) {
+    auto qmlAcc = qobject_cast<qml::Account*>(account);
+    if (qmlAcc == nullptr) {
+        return -1;
+    }
+
+    auto accs = _book->accounts();
+
+    if (_book->isError()) {
+        LOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
+        return -1;
+    }
+
+    if (accs.count() > 0 ){
+        for(int index=0; index < accs.count(); index++) {
+            if (accs.at(index) == qmlAcc->getAccount()) {
+                return index;
+            }
+        }
+    }
+
+    return -1;
+}
+
 }
 
 }

@@ -21,11 +21,13 @@ set(SOURCES
 set(QML_SOURCES
     qml/MainWindow.qml
     qml/components/BillingPerDay.qml
-    qml/components/BillingPerDayHeader.qml
     qml/components/DateHeaderComponent.qml
+    qml/components/EditTransaction.qml
+    qml/components/MainPage.qml
     qml/components/NewTransaction.qml
     qml/components/PageWithBottomEdge.qml
     qml/components/TransactionComponent.qml
+    qml/components/TransactionForm.qml
 )
 
 qt5_add_resources(chancho-app-resources ui.qrc)

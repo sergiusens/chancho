@@ -21,6 +21,11 @@
  */
 
 #include <QSignalSpy>
+
+#include <com/chancho/qml/account.h>
+
+#include "public_category.h"
+#include "public_qml_category.h"
 #include "test_categories_model.h"
 
 using ::testing::_;
@@ -203,6 +208,97 @@ TestCategoriesModel::testDataGetCategory() {
     QVERIFY(result.isValid());
 
     QVERIFY(Mock::VerifyAndClearExpectations(book.get()));
+}
+
+void
+TestCategoriesModel::testGetIndex() {
+    com::chancho::CategoryPtr firstCat = std::make_shared<PublicCategory>(QUuid::createUuid());
+    com::chancho::CategoryPtr secondCat = std::make_shared<PublicCategory>(QUuid::createUuid());
+
+    auto qmlCat = new com::chancho::tests::PublicCategory(secondCat);
+
+    QList<com::chancho::CategoryPtr> cats;
+    cats.append(firstCat);
+    cats.append(secondCat);
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicCategoriesModel>(book);
+
+    EXPECT_CALL(*book.get(), categories(boost::optional<com::chancho::Category::Type>(), boost::optional<int>(),
+                    boost::optional<int>()))
+            .Times(1)
+            .WillOnce(Return(cats));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto index = model->getIndex(qmlCat);
+    QCOMPARE(index, 1);
+}
+
+void
+TestCategoriesModel::testGetIndexMissing() {
+    com::chancho::CategoryPtr firstCat = std::make_shared<PublicCategory>(QUuid::createUuid());
+    com::chancho::CategoryPtr secondCat = std::make_shared<PublicCategory>(QUuid::createUuid());
+    com::chancho::CategoryPtr notPresentCat = std::make_shared<PublicCategory>(QUuid::createUuid());
+
+    auto qmlCat = new com::chancho::tests::PublicCategory(notPresentCat);
+
+    QList<com::chancho::CategoryPtr> cats;
+    cats.append(firstCat);
+    cats.append(secondCat);
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicCategoriesModel>(book);
+
+    EXPECT_CALL(*book.get(), categories(boost::optional<com::chancho::Category::Type>(), boost::optional<int>(),
+                boost::optional<int>()))
+            .Times(1)
+            .WillOnce(Return(cats));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto index = model->getIndex(qmlCat);
+    QCOMPARE(index, -1);
+}
+
+void
+TestCategoriesModel::testGetIndexError() {
+    auto other = new com::chancho::qml::Account();
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicCategoriesModel>(book);
+
+    auto index = model->getIndex(other);
+    QCOMPARE(index, -1);
+}
+
+void
+TestCategoriesModel::testGetIndexBookError() {
+    // the db will return an error and -1 most be returned
+    auto cat = new com::chancho::qml::Category();
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicCategoriesModel>(book);
+
+    EXPECT_CALL(*book.get(), categories(boost::optional<com::chancho::Category::Type>(), boost::optional<int>(),
+                boost::optional<int>()))
+            .Times(1)
+            .WillOnce(Return(QList<com::chancho::CategoryPtr>()));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*book.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(QString("Foo")));
+
+    auto index = model->getIndex(cat);
+    QCOMPARE(index, -1);
 }
 
 QTEST_MAIN(TestCategoriesModel)

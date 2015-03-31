@@ -252,8 +252,10 @@ TestMonthModel::testSetMonthNoSignal() {
     QCOMPARE(model->getMonth(), month);
 
     QSignalSpy spy(model.get(), SIGNAL(monthChanged(int)));
+    QSignalSpy dateSpy(model.get(), SIGNAL(dateChanged(QDate)));
     model->setMonth(month);
     QCOMPARE(spy.count(), 0);
+    QCOMPARE(dateSpy.count(), 0);
 }
 
 void
@@ -266,8 +268,10 @@ TestMonthModel::testSetMonthSignal() {
     QCOMPARE(model->getMonth(), month);
 
     QSignalSpy spy(model.get(), SIGNAL(monthChanged(int)));
+    QSignalSpy dateSpy(model.get(), SIGNAL(dateChanged(QDate)));
     model->setMonth(month + 1);
     QCOMPARE(spy.count(), 1);
+    QCOMPARE(dateSpy.count(), 1);
 }
 
 void
@@ -290,8 +294,10 @@ TestMonthModel::testSetYearNoSignal() {
     QCOMPARE(model->getMonth(), month);
 
     QSignalSpy spy(model.get(), SIGNAL(yearChanged(int)));
+    QSignalSpy dateSpy(model.get(), SIGNAL(dateChanged(QDate)));
     model->setYear(year);
     QCOMPARE(spy.count(), 0);
+    QCOMPARE(dateSpy.count(), 0);
 }
 
 void
@@ -304,8 +310,65 @@ TestMonthModel::testSetYearSignal() {
     QCOMPARE(model->getMonth(), month);
 
     QSignalSpy spy(model.get(), SIGNAL(yearChanged(int)));
+    QSignalSpy dateSpy(model.get(), SIGNAL(dateChanged(QDate)));
     model->setYear(year + 1);
-    QCOMPARE(spy.count(), 1);
+    QCOMPARE(dateSpy.count(), 1);
+}
+
+void
+TestMonthModel::testSetDate_data() {
+    QTest::addColumn<QDate>("oldDate");
+    QTest::addColumn<QDate>("newDate");
+    QTest::addColumn<bool>("monthSignal");
+    QTest::addColumn<bool>("yearSignal");
+
+    QDate monthDate(2014, 1, 1);
+    QDate newMonthDate(2014, 2, 1);
+
+    QTest::newRow("month-changed") << monthDate << newMonthDate << true << false;
+
+    QDate yearDate(2014, 1, 1);
+    QDate newYearDate(2015, 1, 1);
+
+    QTest::newRow("year-changed") << yearDate << newYearDate << false << true;
+
+    QDate dayMonthYearDate(2014, 1, 1);
+    QDate newDayMonthYearDate(2015, 2, 2);
+
+    QTest::newRow("month-year-changed") << dayMonthYearDate << newDayMonthYearDate << true << true;
+}
+
+void
+TestMonthModel::testSetDate() {
+    QFETCH(QDate, oldDate);
+    QFETCH(QDate, newDate);
+    QFETCH(bool, monthSignal);
+    QFETCH(bool, yearSignal);
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicMonthModel>(oldDate, book);
+
+    QSignalSpy monthSpy(model.get(), SIGNAL(monthChanged(int)));
+    QSignalSpy yearSpy(model.get(), SIGNAL(yearChanged(int)));
+    QSignalSpy dateSpy(model.get(), SIGNAL(dateChanged(QDate)));
+
+    model->setDate(newDate);
+
+    if (monthSignal) {
+        QCOMPARE(monthSpy.count(), 1);
+    } else {
+        QCOMPARE(monthSpy.count(), 0);
+    }
+
+    if (yearSignal) {
+        QCOMPARE(yearSpy.count(), 1);
+    } else {
+        QCOMPARE(yearSpy.count(), 0);
+    }
+
+    QCOMPARE(dateSpy.count(), 1);
+
+    QVERIFY(Mock::VerifyAndClearExpectations(book.get()));
 }
 
 QTEST_MAIN(TestMonthModel)

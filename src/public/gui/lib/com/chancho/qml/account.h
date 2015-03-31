@@ -33,6 +33,7 @@ namespace chancho {
 namespace qml {
 
 class Book;
+class Transaction;
 
 namespace models {
 
@@ -48,6 +49,7 @@ class Account : public QObject {
 
     friend class models::Accounts;
     friend class qml::Book;
+    friend class qml::Transaction;
 
  public:
     explicit Account(QObject* parent=0);

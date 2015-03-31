@@ -21,73 +21,60 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
+
 import Ubuntu.Components 1.1
-import com.chancho 1.0
+import Ubuntu.Components.ListItems 1.0 as ListItems
 
 UbuntuShape {
-    property alias day: perDayHeader.day
-    property alias dayName: perDayHeader.dayName
-    property alias month: perDayHeader.month
-    property alias year: perDayHeader.year
-
-    BillingPerDayHeader {
-        id: perDayHeader
-        anchors.top: parent.top
-
-        income: "0"//transactionModel.income
-        outcome: "0"//transactionModel.outcome
-    }
-
-    Component {
-        id: transactionDelegate
-        Column {
-            width: parent.width
-            spacing: units.gu(1)
-            TransactionComponent {
-                width: parent.width
-
-                anchors.left: parent.left
-                anchors.leftMargin: units.gu(1)
-                anchors.right: parent.right
-                anchors.rightMargin: units.gu(1)
-
-                category: transactionCategory
-                contents: transactionContents
-                amount: transactionAmount
-            }
-
-            Rectangle {
-                width: parent.width
-                height: units.dp(1)
-
-                anchors.left: parent.left
-                anchors.leftMargin: units.gu(1)
-                anchors.right: parent.right
-                anchors.rightMargin: units.gu(1)
-
-                color: "Light grey"
-                visible: (index < transactionsList.model.count - 1) ? true: false
-            }
-        }
-    }
-
-    ListView {
-        id: transactionsList
-        anchors.top: perDayHeader.bottom
-        anchors.topMargin: units.gu(1)
-        anchors.bottom: parent.bottom
-
-        spacing: units.gu(1)
-
-        model: Book.dayModel(day, month, year)
-        delegate: transactionDelegate
-
-        focus: true
-        width: parent.width
-    }
+    property var dayModel
+    anchors.margins: units.gu(1)
 
     width: parent.width
-    height: transactionsList.model.count * 50
+    height: childrenRect.height
 
+    ColumnLayout {
+        anchors.margins: units.gu(1)
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: childrenRect.height
+
+        DateHeaderComponent {
+            dayName: dayModel.dayName
+            day: dayModel.day
+            month: dayModel.month
+            year: dayModel.year
+            income: dayModel.incomeSum
+            expenses: dayModel.expenseSum
+        }
+
+        ListItems.Divider { }
+
+        Repeater {
+            id: transactionsList
+            property var repeatCount: dayModel.numberOfTransactions()
+
+            model: dayModel
+
+            TransactionComponent {
+                property var transaction: model.display
+                property var repeaterIndex: index
+
+                numberOfTransactions: transactionsList.repeatCount
+                category: model.display.category
+                contents: model.display.contents
+                amount: model.display.amount
+
+                MouseArea {
+                    anchors.fill: parent
+
+                    onClicked: {
+                        parent.selected = !parent.selected;
+                        mainPageStack.push(editTransaction, {"transaction": transaction});
+                        parent.selected = !parent.selected;
+                    }
+                }
+            }
+        }
+    } // ColumnLayout
 }
-

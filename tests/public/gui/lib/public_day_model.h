@@ -38,6 +38,9 @@ class PublicDayModel : public com::chancho::qml::models::Day {
 
     PublicDayModel(int day, int month, int year, BookPtr book, QObject* parent=0)
             : com::chancho::qml::models::Day(day, month, year, book, parent) {}
+
+    PublicDayModel(QDate date, BookPtr book, QObject* parent=0)
+            : com::chancho::qml::models::Day(date, book, parent) {}
 };
 
 }

@@ -238,6 +238,20 @@ class Book {
     */
     virtual int numberOfDaysWithTransactions(int month, int year);
 
+    /*!
+        \fn virtual int incomeForDay(int day, int month, int year);
+
+        Returns income that was added in an specific day.
+    */
+    virtual double incomeForDay(int day, int month, int year);
+
+    /*!
+        \fn virtual int expenseForDay(int day, int month, int year);
+
+        Returns expense that was added in an specific day.
+    */
+    virtual double expenseForDay(int day, int month, int year);
+
     static void initDatabse();
 
     /*!
@@ -264,6 +278,7 @@ class Book {
    QList<TransactionPtr> parseTransactions(std::shared_ptr<system::Query> query);
    QList<TransactionPtr> transactions(int year, int month, boost::optional<int> day, boost::optional<int> limit,
            boost::optional<int> offset);
+    double amountForTypeInDay(int day, int month, int year, Category::Type type);
 
  protected:
     std::shared_ptr<system::Database> _db;

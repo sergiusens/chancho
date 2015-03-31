@@ -106,4 +106,27 @@ TestCategory::testWasDbStored() {
     QCOMPARE(category->wasStoredInDb(), result);
 }
 
+void
+TestCategory::testCategoryEqual() {
+    // create two cats with the same uuid and assert that they are equal
+    auto uuid = QUuid::createUuid();
+    PublicCategory firstCat;
+    firstCat._dbId = uuid;
+
+    PublicCategory secondCat;
+    secondCat._dbId = uuid;
+
+    QVERIFY(firstCat == secondCat);
+}
+
+void
+TestCategory::testCategoryPtrEqual() {
+    auto uuid = QUuid::createUuid();
+
+    com::chancho::CategoryPtr firstCat = std::make_shared<PublicCategory>(uuid);
+    com::chancho::CategoryPtr secondCat = std::make_shared<PublicCategory>(uuid);
+
+    QVERIFY(firstCat == secondCat);
+}
+
 QTEST_MAIN(TestCategory)

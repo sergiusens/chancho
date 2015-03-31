@@ -95,4 +95,10 @@ class TestBookTransaction : public BaseTestCase {
 
     void testDeleteAccountTransactions_data();
     void testDeleteAccountTransactions();
+
+    void testIncomeForDay_data();
+    void testIncomeForDay();
+
+    void testExpenseForDay_data();
+    void testExpenseForDay();
 };

@@ -37,6 +37,32 @@ Account::wasStoredInDb() const {
     return !_dbId.isNull();
 }
 
+bool
+Account::operator==(const Account& rhs) {
+    return _dbId == rhs._dbId;
+}
+
+bool
+Account::operator!=(const Account& rhs) {
+    return _dbId != rhs._dbId;
+}
+
+bool operator==(const AccountPtr& lhs, const AccountPtr& rhs) {
+    if (lhs && rhs) {
+        return *lhs.get() == *rhs.get();
+    } else {
+        return lhs.get() == rhs.get();
+    }
+}
+
+bool operator!=(const AccountPtr& lhs, const AccountPtr& rhs) {
+    if (lhs && rhs) {
+        return *lhs.get() != *rhs.get();
+    } else {
+        return lhs.get() != rhs.get();
+    }
+}
+
 }
 
 }

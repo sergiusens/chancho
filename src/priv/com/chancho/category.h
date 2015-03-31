@@ -56,6 +56,8 @@ class Category {
     std::shared_ptr<Category> parent;
 
     virtual bool wasStoredInDb() const;
+    bool operator==(const Category& rhs);
+    bool operator!=(const Category& rhs);
 
  protected:
     // optional so that we know if a category was added to the db or not
@@ -63,6 +65,9 @@ class Category {
 };
 
 typedef std::shared_ptr<Category> CategoryPtr;
+
+bool operator==(const CategoryPtr& lhs, const CategoryPtr& rhs);
+bool operator!=(const CategoryPtr& lhs, const CategoryPtr& rhs);
 
 }
 
