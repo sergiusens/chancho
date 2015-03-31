@@ -52,4 +52,17 @@ class TestBook : public BaseTestCase {
     void testUpdateTransactionWrongObject();
     void testUpdateTransactionNeedsUpdate();
     void testUpdateTransactionBookError();
+
+    void testStoreAccountInitialAmount();
+    void testStoreAccountNoInitialAmount();
+    void testStoreAccountBookError();
+
+    void testRemoveAccountWrongObj();
+    void testRemoveAccount();
+    void testRemoveAccountBookError();
+
+    void testUpdateAccountWrongObj();
+    void testUpdateAccountNoNeed();
+    void testUpdateAccount();
+    void testUpdateAccountBookError();
 };

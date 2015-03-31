@@ -150,5 +150,46 @@ TestAccount::testSetMemoSignal() {
     QCOMPARE(spy.count(), 1);
 }
 
+void
+TestAccount::testGetColor() {
+    QString name = "Bankia";
+    double amount = 3.4;
+    QString memo = "Savings";
+    QString color = "#fff";
+
+    auto acc = std::make_shared<com::chancho::qml::Account>(name, amount, memo, color);
+    QCOMPARE(acc->getColor(), color);
+}
+
+void
+TestAccount::testSetColorNoSignal() {
+    QString name = "Bankia";
+    double amount = 3.4;
+    QString memo = "Savings";
+    QString color = "#fff";
+
+    auto acc = std::make_shared<com::chancho::qml::Account>(name, amount, memo, color);
+    QCOMPARE(acc->getColor(), color);
+
+    QSignalSpy spy(acc.get(), SIGNAL(colorChanged(QString)));
+    acc->setColor(color);
+    QCOMPARE(spy.count(), 0);
+}
+
+void
+TestAccount::testSetColorSignal() {
+    QString name = "Bankia";
+    double amount = 3.4;
+    QString memo = "Savings";
+    QString color = "#fff";
+
+    auto acc = std::make_shared<com::chancho::qml::Account>(name, amount, memo, color);
+    QCOMPARE(acc->getColor(), color);
+
+    QSignalSpy spy(acc.get(), SIGNAL(colorChanged(QString)));
+    acc->setColor("#000");
+    QCOMPARE(spy.count(), 1);
+}
+
 QTEST_MAIN(TestAccount)
 

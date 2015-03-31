@@ -32,3 +32,10 @@ MATCHER_P(QStringEqual, value, "Returns if two QStrings are equal.") {
     return argStr == valueStr;
 }
 
+
+MATCHER_P(AccountEquals, value, "Returns if the two accounts are equal.") {
+    return arg->name == value->name && arg->amount == value->amount
+            && arg->initialAmount == value->initialAmount && arg->memo == value->memo
+            && arg->color == value->color;
+}
+

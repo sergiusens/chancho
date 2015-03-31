@@ -27,16 +27,16 @@ import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0 as ListItems
 
 Item {
-    property alias category: categoryLabel.text
-    property alias contents: contentsLabel.text
+    property alias name: nameLabel.text
+    property alias memo: memoLabel.text
     property alias amount: amountLabel.text
-    property alias color: background.color
+    property alias color: accountColor.color
     property bool selected: false
-    property var numberOfTransactions
+    property var numberOfAccounts
 
-    height: childrenRect.height
     anchors.left: parent.left
     anchors.right: parent.right
+    height: childrenRect.height
 
     onSelectedChanged: {
         if (selected) {
@@ -56,50 +56,59 @@ Item {
         ColumnLayout {
             anchors.left: parent.left
             anchors.right: parent.right
+            anchors.margins: units.gu(1)
+            spacing: units.gu(1)
 
             Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 height: childrenRect.height
 
+                UbuntuShape {
+                    id: accountColor
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+
+                    color: "orange"
+                    height: units.gu(2)
+                    width: units.gu(2)
+                }
+
                 Label {
-                    id: categoryLabel
+                    id: nameLabel
+                    anchors.top: parent.top
+                    anchors.left: accountColor.right
+                    anchors.leftMargin: units.gu(1)
                     width: units.gu(20)
 
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-
-                    text: model.display.category
                     elide: Text.ElideRight
                     font.bold: true
                     horizontalAlignment: Text.AlignLeft
                 }
 
                 Label {
-                    id: contentsLabel
-                    anchors.left: categoryLabel.right
+                    id: memoLabel
                     anchors.top: parent.top
-                    width: parent.width - categoryLabel.width - amountLabel.width
+                    anchors.left: nameLabel.right
+                    width: parent.width - nameLabel.width - amountLabel.width - accountColor.width
 
-                    text: model.display.contents
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignLeft
                 }
 
                 Label {
                     id: amountLabel
+                    anchors.top: parent.top
+                    anchors.right: parent.right
                     width: units.gu(10)
 
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-
-                    text: model.display.amount
                     color: (model.display.amount > 0)? "green" : "red"
                     horizontalAlignment: Text.AlignRight
                 }
             }
             ListItems.ThinDivider {
-                visible: (index + 1 != numberOfTransactions)?true:false;
+                width: parent.width
+                visible: (index + 1 != numberOfAccounts)?true:false;
             }
         }
     }

@@ -32,7 +32,7 @@
 namespace sys = com::chancho::system;
 
 namespace {
-    const QString SELECT_ACCOUNT_QUERY = "SELECT name, amount, memo FROM Accounts WHERE uuid=:uuid";
+    const QString SELECT_ACCOUNT_QUERY = "SELECT name, initialAmount, amount, color, memo FROM Accounts WHERE uuid=:uuid";
 }
 
 void
@@ -54,21 +54,26 @@ TestBookAccount::cleanup() {
 void
 TestBookAccount::testStoreAccount_data() {
     QTest::addColumn<QString>("name");
+    QTest::addColumn<double>("initialAmount");
     QTest::addColumn<double>("amount");
     QTest::addColumn<QString>("memo");
+    QTest::addColumn<QString>("color");
 
-    QTest::newRow("bankia-obj") << "Bankia" << 3004.89 << "Savings account";
-    QTest::newRow("bbva-obj") << "BBVA" << 23.9 << "Student loan";
+    QTest::newRow("bankia-obj") << "Bankia" << 50.0 << 3004.89 << "Savings account" << "#ff";
+    QTest::newRow("bbva-obj") << "BBVA" << 10.9 << 23.9 << "Student loan" << "#234523";
 }
 
 void
 TestBookAccount::testStoreAccount() {
     QFETCH(QString, name);
+    QFETCH(double, initialAmount);
     QFETCH(double, amount);
     QFETCH(QString, memo);
+    QFETCH(QString, color);
 
     // create the category and store it
-    auto account = std::make_shared<PublicAccount>(name, amount, memo);
+    auto account = std::make_shared<PublicAccount>(name, amount, memo, color);
+    account->initialAmount = initialAmount;
     PublicBook book;
     book.store(account);
 
@@ -93,7 +98,9 @@ TestBookAccount::testStoreAccount() {
     QVERIFY(query->next());
     QCOMPARE(query->value("name").toString(), account->name);
     QCOMPARE(query->value("amount").toString(), QString::number(account->amount));
+    QCOMPARE(query->value("initialAmount").toString(), QString::number(account->initialAmount));
     QCOMPARE(query->value("memo").toString(), account->memo);
+    QCOMPARE(query->value("color").toString(), account->color);
 
     db->close();
 }
@@ -105,9 +112,13 @@ TestBookAccount::testUpdateAccount_data() {
     QTest::addColumn<double>("amount");
     QTest::addColumn<QString>("memo");
     QTest::addColumn<QString>("newMemo");
+    QTest::addColumn<QString>("color");
+    QTest::addColumn<QString>("newColor");
 
-    QTest::newRow("bankia-obj") << "Bankia" << "Updated Bankia" << 189.9 << "Savings account." << "Savings";
-    QTest::newRow("bbva-obj") << "BBVA" << "Updated BBVA" << 18909.23 << "Student loan" << "Student account";
+    QTest::newRow("bankia-obj") << "Bankia" << "Updated Bankia" << 189.9 << "Savings account." << "Savings"
+        << "#ff" << "#345678";
+    QTest::newRow("bbva-obj") << "BBVA" << "Updated BBVA" << 18909.23 << "Student loan" << "Student account"
+        << "#453212" << "#fff";
 }
 
 void
@@ -117,9 +128,11 @@ TestBookAccount::testUpdateAccount() {
     QFETCH(double, amount);
     QFETCH(QString, memo);
     QFETCH(QString, newMemo);
+    QFETCH(QString, color);
+    QFETCH(QString, newColor);
 
     // create the category and store it
-    auto account = std::make_shared<PublicAccount>(name, amount, memo);
+    auto account = std::make_shared<PublicAccount>(name, amount, memo, color);
     PublicBook book;
     book.store(account);
 
@@ -128,6 +141,7 @@ TestBookAccount::testUpdateAccount() {
     // update the category and assert the values
     account->name = newName;
     account->memo = newMemo;
+    account->color = newColor;
     book.store(account);
 
     QVERIFY(account->wasStoredInDb());
@@ -152,6 +166,7 @@ TestBookAccount::testUpdateAccount() {
     QCOMPARE(query->value("name").toString(), newName);  // test against new name to be 100% sure
     QCOMPARE(query->value("amount").toString(), QString::number(account->amount));
     QCOMPARE(query->value("memo").toString(), newMemo);
+    QCOMPARE(query->value("color").toString(), newColor);
 
     db->close();
 }

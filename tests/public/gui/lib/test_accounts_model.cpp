@@ -297,5 +297,40 @@ TestAccountsModel::testGetIndexBookError() {
     QCOMPARE(index, -1);
 }
 
+void
+TestAccountsModel::testNumberOfAccounts() {
+    auto count = 5;
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicAccountsModel>(book);
+
+    EXPECT_CALL(*book.get(), numberOfAccounts())
+            .Times(1)
+            .WillOnce(Return(count));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto result = model->numberOfAccounts();
+    QCOMPARE(result, count);
+}
+
+void
+TestAccountsModel::testNumberOfAccountsBookError() {
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicAccountsModel>(book);
+
+    EXPECT_CALL(*book.get(), numberOfAccounts())
+            .Times(1)
+            .WillOnce(Return(0));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    auto count = model->numberOfAccounts();
+    QCOMPARE(count, -1);
+}
+
 QTEST_MAIN(TestAccountsModel)
 

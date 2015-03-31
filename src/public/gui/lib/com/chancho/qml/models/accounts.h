@@ -55,9 +55,13 @@ class Accounts : public QAbstractListModel {
     // helper methods used in the ui
     Q_INVOKABLE QVariant get(int row);
     Q_INVOKABLE int getIndex(QObject* account);
+    Q_INVOKABLE int numberOfAccounts() const;
 
  protected:
     Accounts(BookPtr book, QObject* parent = 0);
+    void onAccountStored();
+    void onAccountRemoved();
+    void onAccountUpdated();
 
  private:
     BookPtr _book;

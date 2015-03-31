@@ -61,9 +61,6 @@ UbuntuShape {
                 property var repeaterIndex: index
 
                 numberOfTransactions: transactionsList.repeatCount
-                category: model.display.category
-                contents: model.display.contents
-                amount: model.display.amount
 
                 MouseArea {
                     anchors.fill: parent

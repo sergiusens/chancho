@@ -47,6 +47,9 @@ class Book : public QObject {
     explicit Book(BookPtr book, QObject* parent=0);
 
     Q_INVOKABLE QObject* accountsModel();
+    Q_INVOKABLE bool storeAccount(QString name, QString memo, QString color, double initialAmount);
+    Q_INVOKABLE bool removeAccount(QObject* account);
+    Q_INVOKABLE bool updateAccount(QObject* account, QString name, QString memo, QString color);
     Q_INVOKABLE bool storeTransaction(QObject* account, QObject* category, QDate date, double amount,
             QString contents, QString memo);
     Q_INVOKABLE bool removeTransaction(QObject* transaction);
@@ -59,6 +62,9 @@ class Book : public QObject {
     Q_INVOKABLE QObject* monthModel(QDate date);
 
  signals:
+    void accountStored();
+    void accountRemoved();
+    void accountUpdated();
     void transactionStored(QDate date);
     void transactionRemoved(QDate date);
     void transactionUpdated(QDate oldDate, QDate newDate);

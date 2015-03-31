@@ -20,51 +20,51 @@
  * THE SOFTWARE.
  */
 
-#include "account.h"
+import QtQuick 2.0
 
-namespace com {
+ListModel {
+    id: colorModel
 
-namespace chancho {
-
-Account::Account(const QString& n, double a, const QString& m, const QString& c)
-    : name(n),
-      amount(a),
-      initialAmount(0),
-      memo(m),
-      color(c) {
-}
-
-bool
-Account::wasStoredInDb() const {
-    return !_dbId.isNull();
-}
-
-bool
-Account::operator==(const Account& rhs) {
-    return _dbId == rhs._dbId;
-}
-
-bool
-Account::operator!=(const Account& rhs) {
-    return _dbId != rhs._dbId;
-}
-
-bool operator==(const AccountPtr& lhs, const AccountPtr& rhs) {
-    if (lhs && rhs) {
-        return *lhs.get() == *rhs.get();
-    } else {
-        return lhs.get() == rhs.get();
+    ListElement {
+        option: "purple"
     }
-}
-
-bool operator!=(const AccountPtr& lhs, const AccountPtr& rhs) {
-    if (lhs && rhs) {
-        return *lhs.get() != *rhs.get();
-    } else {
-        return lhs.get() != rhs.get();
+    ListElement {
+        option: "fuchsia"
     }
-}
-
-}
-
+    ListElement {
+        option: "navy"
+    }
+    ListElement {
+        option: "blue"
+    }
+    ListElement {
+        option: "teal"
+    }
+    ListElement {
+        option: "aqua"
+    }
+    ListElement {
+        option: "green"
+    }
+    ListElement {
+        option: "lime"
+    }
+    ListElement {
+        option: "yellow"
+    }
+    ListElement {
+        option: "maroon"
+    }
+    ListElement {
+        option: "red"
+    }
+    ListElement {
+        option: "gold"
+    }
+    ListElement {
+        option: "silver"
+    }
+    ListElement {
+        option: "black"
+    }
 }

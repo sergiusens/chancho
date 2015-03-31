@@ -77,13 +77,7 @@ MainView {
         Tab {
             id: accountsTab
             title: "Accounts"
-            page: Page {
-                Button {
-                        anchors.centerIn: parent
-                        onClicked: pageStack.push(page3)
-                        text: "Press"
-                }
-            }
+            page: AccountsPage {}
         }
 
         Tab {

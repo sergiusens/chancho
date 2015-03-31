@@ -22,7 +22,6 @@
 
 #include <glog/logging.h>
 
-#include <QDebug>
 #include <QDir>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -32,8 +31,6 @@
 
 #include <com/chancho/system/database_lock.h>
 #include <com/chancho/system/database_factory.h>
-#include <QtCore/qsocketnotifier.h>
-#include <QtSql/qsqlquerymodel.h>
 
 #include "book.h"
 
@@ -47,6 +44,8 @@ namespace {
         "uuid VARCHAR(40) PRIMARY KEY, "\
         "name TEXT NOT NULL,"\
         "memo TEXT,"\
+        "color VARCHAR(7),"\
+        "initialAmount TEXT,"\
         "amount TEXT)";  // amounts are stored in text so that we can use the most precise number
     const QString CATEGORIES_TABLE = "CREATE TABLE IF NOT EXISTS Categories("\
         "uuid VARCHAR(40) PRIMARY KEY, "\
@@ -87,8 +86,8 @@ namespace {
     const QString TRANSACTION_CATEGORY_INDEX = "CREATE INDEX transaction_category_index ON Transactions(category);";
     const QString TRANSACTION_CATEGORY_MONTH_INDEX = "CREATE INDEX transaction_category_month_index ON Transactions(category, year, month);";
     const QString TRANSACTION_ACCOUNT_INDEX = "CREATE INDEX transaction_account_index ON Transactions(account);";
-    const QString INSERT_UPDATE_ACCOUNT = "INSERT OR REPLACE INTO Accounts(uuid, name, memo, amount) " \
-        "VALUES (:uuid, :name, :memo, :amount)";
+    const QString INSERT_UPDATE_ACCOUNT = "INSERT OR REPLACE INTO Accounts(uuid, name, memo, color, initialAmount, amount) " \
+        "VALUES (:uuid, :name, :memo, :color, :initialAmount, :amount)";
     const QString INSERT_UPDATE_CATEGORY = "INSERT OR REPLACE INTO Categories(uuid, parent, name, type) " \
         "VALUES (:uuid, :parent, :name, :type)";
     const QString INSERT_TRANSACTION = "INSERT INTO Transactions(uuid, amount, account, category, "\
@@ -99,8 +98,8 @@ namespace {
     const QString DELETE_CHILD_CATEGORIES = "DELETE FROM Categories WHERE parent=:uuid";
     const QString DELETE_CATEGORY = "DELETE FROM Categories WHERE uuid=:uuid";
     const QString DELETE_TRANSACTION = "DELETE FROM Transactions WHERE uuid=:uuid";
-    const QString SELECT_ALL_ACCOUNTS = "SELECT uuid, name, memo, amount FROM Accounts ORDER BY name ASC";
-    const QString SELECT_ALL_ACCOUNTS_LIMIT = "SELECT uuid, name, memo, amount FROM Accounts ORDER BY name ASC "\
+    const QString SELECT_ALL_ACCOUNTS = "SELECT uuid, name, memo, color, initialAmount, amount FROM Accounts ORDER BY name ASC";
+    const QString SELECT_ALL_ACCOUNTS_LIMIT = "SELECT uuid, name, memo, color, initialAmount, amount FROM Accounts ORDER BY name ASC "\
         "LIMIT :limit OFFSET :offset";
     const QString SELECT_ACCOUNTS_COUNT = "SELECT count(*) FROM Accounts";
     const QString SELECT_ALL_CATEGORIES = "SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC";
@@ -275,12 +274,16 @@ Book::store(AccountPtr acc) {
         acc->_dbId = QUuid::createUuid();
     }
 
+
+    // INSERT_UPDATE_ACCOUNT = INSERT OR REPLACE INTO Accounts(uuid, name, memo, color, initialAmount, amount)
+    //     VALUES (:uuid, :name, :memo, :color, :initialAmount, :amount)
     auto query = _db->createQuery();
     query->prepare(INSERT_UPDATE_ACCOUNT);
     query->bindValue(":uuid", acc->_dbId.toString());
     query->bindValue(":name", acc->name);
     query->bindValue(":memo", acc->memo);
-
+    query->bindValue(":color", acc->color);
+    query->bindValue(":initialAmount", QString::number(acc->initialAmount));
     query->bindValue(":amount", QString::number(acc->amount));
 
     // no need to use a transaction since is a single insert
@@ -521,8 +524,8 @@ Book::accounts(boost::optional<int> limit, boost::optional<int> offset) {
 
     auto query = _db->createQuery();
     if (limit) {
-        // SELECT_ALL_ACCOUNTS_LIMIT = "SELECT uuid, name, memo, amount FROM Accounts ORDER BY name ASC
-        // LIMIT :limit OFFSET :offset
+        // SELECT_ALL_ACCOUNTS_LIMIT = SELECT uuid, name, memo, color, initialAmount, amount FROM Accounts ORDER BY name ASC
+        //     LIMIT :limit OFFSET :offset;
         query->prepare(SELECT_ALL_ACCOUNTS_LIMIT);
         query->bindValue(":limit", *limit);
 
@@ -532,7 +535,7 @@ Book::accounts(boost::optional<int> limit, boost::optional<int> offset) {
             query->bindValue(":offset", 0);
         }
     } else {
-        // SELECT_ALL_ACCOUNTS = "SELECT uuid, name, memo, amount FROM Accounts";
+        // SELECT_ALL_ACCOUNTS = SELECT uuid, name, memo, color, initialAmount, amount FROM Accounts ORDER BY name ASC
         query->prepare(SELECT_ALL_ACCOUNTS);
     }
 
@@ -546,14 +549,19 @@ Book::accounts(boost::optional<int> limit, boost::optional<int> offset) {
     // index 0 => uuid
     // index 1 => name
     // index 2 => memo
-    // index 3 => amount
+    // index 3 => color
+    // index 4 => initialAmount
+    // index 5 => amount
     // using indexes is more efficient than strings
     while (query->next()) {
         auto uuid = QUuid(query->value(0).toString());
         auto name = query->value(1).toString();
         auto memo = query->value(2).toString();
-        auto amount = query->value(3).toString().toDouble();
-        auto current = std::make_shared<Account>(name, amount, memo);
+        auto color = query->value(3).toString();
+        auto initialAmount =query->value(4).toString().toDouble();
+        auto amount = query->value(5).toString().toDouble();
+        auto current = std::make_shared<Account>(name, amount, memo, color);
+        current->initialAmount = initialAmount;
         current->_dbId = uuid;
         accs.append(current);
     }

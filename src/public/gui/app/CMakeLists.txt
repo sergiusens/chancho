@@ -20,14 +20,24 @@ set(SOURCES
 
 set(QML_SOURCES
     qml/MainWindow.qml
+    qml/components/AccountComponent.qml
+    qml/components/AccountForm.qml
+    qml/components/AccountsPage.qml
     qml/components/BillingPerDay.qml
+    qml/components/ColorChooser.qml
     qml/components/DateHeaderComponent.qml
+    qml/components/DefaultColors.qml
+    qml/components/EditAccount.qml
     qml/components/EditTransaction.qml
     qml/components/MainPage.qml
+    qml/components/NewAccount.qml
     qml/components/NewTransaction.qml
     qml/components/PageWithBottomEdge.qml
     qml/components/TransactionComponent.qml
     qml/components/TransactionForm.qml
+    qml/components/jbQuick/Chart/qmldir
+    qml/components/jbQuick/Chart/QChart.js
+    qml/components/jbQuick/Chart/QChart.qml
 )
 
 qt5_add_resources(chancho-app-resources ui.qrc)
