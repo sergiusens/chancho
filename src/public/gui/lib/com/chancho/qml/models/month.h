@@ -42,6 +42,7 @@ class Month : public QAbstractListModel {
     Q_PROPERTY(int month READ getMonth WRITE setMonth NOTIFY monthChanged)
     Q_PROPERTY(int year READ getYear WRITE setYear NOTIFY yearChanged)
     Q_PROPERTY(QDate date READ getDate WRITE setDate NOTIFY dateChanged)
+    Q_PROPERTY(int daysCount READ getDaysCount NOTIFY daysCountChanged)
 
     friend class com::chancho::qml::Book;
 
@@ -66,6 +67,8 @@ class Month : public QAbstractListModel {
     QDate getDate() const;
     void setDate(QDate date);
 
+    int getDaysCount() const;
+
  protected:
     Month(BookPtr book, QObject* parent = 0);
     Month(int month, int year, BookPtr book, QObject* parent = 0);
@@ -79,6 +82,7 @@ class Month : public QAbstractListModel {
     void monthChanged(int month);
     void yearChanged(int year);
     void dateChanged(QDate date);
+    void daysCountChanged(int count);
 
  private:
     QDate _date;

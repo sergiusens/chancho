@@ -144,6 +144,9 @@ Month::setMonth(int month) {
         emit monthChanged(month);
         emit dateChanged(_date);
 
+        auto count = getDaysCount();
+        emit daysCountChanged(count);
+
         endResetModel();
     }
 }
@@ -161,6 +164,9 @@ Month::setYear(int year) {
         _date.setDate(year, _date.month(), _date.day());
         emit yearChanged(year);
         emit dateChanged(_date);
+
+        auto count = getDaysCount();
+        emit daysCountChanged(count);
 
         endResetModel();
     }
@@ -189,6 +195,9 @@ Month::setDate(QDate date) {
             emit yearChanged(_date.year());
         }
 
+        auto count = getDaysCount();
+        emit daysCountChanged(count);
+
         endResetModel();
     }
 }
@@ -198,6 +207,8 @@ Month::onTransactionStored(QDate date) {
     // if the transaction was stored in the month of this model, trigger a redraw
     if (_date.month() == date.month() && _date.year() == date.year()) {
         beginResetModel();
+        auto count = getDaysCount();
+        emit daysCountChanged(count);
         endResetModel();
     }
 }
@@ -206,6 +217,8 @@ void
 Month::onTransactionRemoved(QDate date) {
     if (_date.month() == date.month() && _date.year() == date.year()) {
         beginResetModel();
+        auto count = getDaysCount();
+        emit daysCountChanged(count);
         endResetModel();
     }
 }
@@ -218,6 +231,15 @@ Month::onTransactionUpdated(QDate oldDate, QDate newDate) {
         beginResetModel();
         endResetModel();
     }
+}
+
+int
+Month::getDaysCount() const {
+    auto count = _book->numberOfDaysWithTransactions(_date.month(), _date.year());
+    if (_book->isError()) {
+        return 0;
+    }
+    return count;
 }
 
 }

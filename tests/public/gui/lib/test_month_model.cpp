@@ -253,9 +253,11 @@ TestMonthModel::testSetMonthNoSignal() {
 
     QSignalSpy spy(model.get(), SIGNAL(monthChanged(int)));
     QSignalSpy dateSpy(model.get(), SIGNAL(dateChanged(QDate)));
+    QSignalSpy daysSpy(model.get(), SIGNAL(daysCountChanged(int)));
     model->setMonth(month);
     QCOMPARE(spy.count(), 0);
     QCOMPARE(dateSpy.count(), 0);
+    QCOMPARE(daysSpy.count(), 0);
 }
 
 void
@@ -267,11 +269,21 @@ TestMonthModel::testSetMonthSignal() {
     auto model = std::make_shared<com::chancho::tests::PublicMonthModel>(month, year, book);
     QCOMPARE(model->getMonth(), month);
 
+    EXPECT_CALL(*book.get(), numberOfDaysWithTransactions(month + 1, year))
+            .Times(1)
+            .WillOnce(Return(1));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
     QSignalSpy spy(model.get(), SIGNAL(monthChanged(int)));
     QSignalSpy dateSpy(model.get(), SIGNAL(dateChanged(QDate)));
+    QSignalSpy daysSpy(model.get(), SIGNAL(daysCountChanged(int)));
     model->setMonth(month + 1);
     QCOMPARE(spy.count(), 1);
     QCOMPARE(dateSpy.count(), 1);
+    QCOMPARE(daysSpy.count(), 1);
 }
 
 void
@@ -293,11 +305,16 @@ TestMonthModel::testSetYearNoSignal() {
     auto model = std::make_shared<com::chancho::tests::PublicMonthModel>(month, year, book);
     QCOMPARE(model->getMonth(), month);
 
+    EXPECT_CALL(*book.get(), numberOfDaysWithTransactions(month, year))
+            .Times(0);
+
     QSignalSpy spy(model.get(), SIGNAL(yearChanged(int)));
     QSignalSpy dateSpy(model.get(), SIGNAL(dateChanged(QDate)));
+    QSignalSpy daysSpy(model.get(), SIGNAL(daysCountChanged(int)));
     model->setYear(year);
     QCOMPARE(spy.count(), 0);
     QCOMPARE(dateSpy.count(), 0);
+    QCOMPARE(daysSpy.count(), 0);
 }
 
 void
@@ -309,10 +326,20 @@ TestMonthModel::testSetYearSignal() {
     auto model = std::make_shared<com::chancho::tests::PublicMonthModel>(month, year, book);
     QCOMPARE(model->getMonth(), month);
 
+    EXPECT_CALL(*book.get(), numberOfDaysWithTransactions(month, year + 1))
+            .Times(1)
+            .WillOnce(Return(1));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
     QSignalSpy spy(model.get(), SIGNAL(yearChanged(int)));
     QSignalSpy dateSpy(model.get(), SIGNAL(dateChanged(QDate)));
+    QSignalSpy daysSpy(model.get(), SIGNAL(daysCountChanged(int)));
     model->setYear(year + 1);
     QCOMPARE(dateSpy.count(), 1);
+    QCOMPARE(daysSpy.count(), 1);
 }
 
 void
@@ -348,6 +375,14 @@ TestMonthModel::testSetDate() {
     auto book = std::make_shared<com::chancho::tests::MockBook>();
     auto model = std::make_shared<com::chancho::tests::PublicMonthModel>(oldDate, book);
 
+    EXPECT_CALL(*book.get(), numberOfDaysWithTransactions(newDate.month(), newDate.year()))
+            .Times(1)
+            .WillOnce(Return(1));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
     QSignalSpy monthSpy(model.get(), SIGNAL(monthChanged(int)));
     QSignalSpy yearSpy(model.get(), SIGNAL(yearChanged(int)));
     QSignalSpy dateSpy(model.get(), SIGNAL(dateChanged(QDate)));
@@ -369,6 +404,52 @@ TestMonthModel::testSetDate() {
     QCOMPARE(dateSpy.count(), 1);
 
     QVERIFY(Mock::VerifyAndClearExpectations(book.get()));
+}
+
+void
+TestMonthModel::testGetCount() {
+    int count = 5;
+    int month = 3;
+    int year = 4;
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicMonthModel>(month, year, book);
+
+    EXPECT_CALL(*book.get(), numberOfDaysWithTransactions(month, year))
+            .Times(1)
+            .WillOnce(Return(count));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto result = model->getDaysCount();
+
+    QVERIFY(Mock::VerifyAndClearExpectations(book.get()));
+    QCOMPARE(result, count);
+}
+
+void
+TestMonthModel::testGetCountBookError() {
+    int count = 5;
+    int month = 3;
+    int year = 4;
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicMonthModel>(month, year, book);
+
+    EXPECT_CALL(*book.get(), numberOfDaysWithTransactions(month, year))
+            .Times(1)
+            .WillOnce(Return(count));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    auto result = model->getDaysCount();
+
+    QVERIFY(Mock::VerifyAndClearExpectations(book.get()));
+    QCOMPARE(result, 0);
 }
 
 QTEST_MAIN(TestMonthModel)
