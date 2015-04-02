@@ -39,6 +39,12 @@ Category::Category(QString name, qml::Book::TransactionType type, QObject* paren
                       chancho::Category::Type::EXPENSE:chancho::Category::Type::INCOME)) {
 }
 
+Category::Category(QString name, qml::Book::TransactionType type, QString color, QObject* parent)
+        : QObject(parent),
+          _cat(std::make_shared<com::chancho::Category>(name, (type == qml::Book::EXPENSE)?
+                          chancho::Category::Type::EXPENSE:chancho::Category::Type::INCOME, color)) {
+}
+
 Category::Category(CategoryPtr cat, QObject* parent)
     : QObject(parent),
      _cat(cat) {
@@ -74,6 +80,19 @@ Category::setType(com::chancho::qml::Book::TransactionType type) {
     } else if (type == com::chancho::qml::Book::INCOME && _cat->type != com::chancho::Category::Type::INCOME) {
         _cat->type = com::chancho::Category::Type::EXPENSE;
         emit typeChanged(type);
+    }
+}
+
+QString
+Category::getColor() const {
+    return _cat->color;
+}
+
+void
+Category::setColor(QString color) {
+    if(_cat->color != color) {
+        _cat->color = color;
+        emit colorChanged(color);
     }
 }
 

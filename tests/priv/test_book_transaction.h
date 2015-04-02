@@ -104,4 +104,6 @@ class TestBookTransaction : public BaseTestCase {
 
     void testMoveExpenseAccounts();
     void testMoveIncomeAccounts();
+
+    void testCategoryTypeChanged();
 };

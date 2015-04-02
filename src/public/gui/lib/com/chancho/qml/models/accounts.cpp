@@ -164,6 +164,12 @@ Accounts::onAccountUpdated() {
     endResetModel();
 }
 
+void
+Accounts::onCategoryTypeUpdated() {
+    beginResetModel();
+    endResetModel();
+}
+
 }
 
 }

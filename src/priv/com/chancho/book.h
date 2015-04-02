@@ -178,6 +178,13 @@ class Book {
     }
 
     /*!
+        \fn virtual int numberOfTransactions();
+
+        Returns the number of all transactions that have been stored in the database.
+    */
+    virtual int numberOfTransactions();
+
+    /*!
         \fn virtual int numberOfTransactions(int month, int year);
 
         Returns the number of transactions that have been stored in an specific month.

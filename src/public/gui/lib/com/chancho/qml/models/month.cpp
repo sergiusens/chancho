@@ -233,6 +233,12 @@ Month::onTransactionUpdated(QDate oldDate, QDate newDate) {
     }
 }
 
+void
+Month::onCategoryTypeUpdated() {
+    beginResetModel();
+    endResetModel();
+}
+
 int
 Month::getDaysCount() const {
     auto count = _book->numberOfDaysWithTransactions(_date.month(), _date.year());

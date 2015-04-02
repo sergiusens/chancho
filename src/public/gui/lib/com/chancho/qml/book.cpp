@@ -54,6 +54,8 @@ Book::accountsModel() {
     connect(this, &Book::accountStored, model, &models::Accounts::onAccountStored);
     connect(this, &Book::accountRemoved, model, &models::Accounts::onAccountRemoved);
     connect(this, &Book::accountUpdated, model, &models::Accounts::onAccountUpdated);
+    connect(this, &Book::categoryTypeUpdated, model, &models::Accounts::onCategoryTypeUpdated);
+
     return model;
 }
 
@@ -218,12 +220,104 @@ Book::updateTransaction(QObject* tranObj, QObject* accObj, QObject* catObj, QDat
 
 QObject*
 Book::categoriesModel() {
-    return new models::Categories(qml::Book::TransactionType::EXPENSE,  _book);
+    auto model = new models::Categories(qml::Book::TransactionType::EXPENSE,  _book);
+    connect(this, &Book::categoryStored, model, &models::Categories::onCategoryStored);
+    connect(this, &Book::categoryUpdated, model, &models::Categories::onCategoryUpdated);
+    connect(this, &Book::categoryRemoved, model, &models::Categories::onCategoryRemoved);
+    connect(this, &Book::categoryTypeUpdated, model, &models::Categories::onCategoryTypeUpdated);
+
+    void categoryTypeUpdated();
+    return model;
 }
 
 QObject*
-Book::categoriesModeForType(TransactionType type) {
-    return new models::Categories(type,  _book);
+Book::categoriesModelForType(TransactionType type) {
+    auto model = new models::Categories(type,  _book);
+    connect(this, &Book::categoryStored, model, &models::Categories::onCategoryStored);
+    connect(this, &Book::categoryUpdated, model, &models::Categories::onCategoryUpdated);
+    connect(this, &Book::categoryRemoved, model, &models::Categories::onCategoryRemoved);
+    connect(this, &Book::categoryTypeUpdated, model, &models::Categories::onCategoryTypeUpdated);
+    return model;
+}
+
+bool
+Book::storeCategory(QString name, QString color, Book::TransactionType type) {
+    DLOG(INFO) << __PRETTY_FUNCTION__ << " " << name.toStdString() << " " << color.toStdString();
+    com::chancho::Category::Type catType;
+    if (type == TransactionType::EXPENSE) {
+        catType = com::chancho::Category::Type::EXPENSE;
+    } else {
+        catType = com::chancho::Category::Type::INCOME;
+    }
+
+    auto cat = std::make_shared<com::chancho::Category>(name, catType, color);
+    _book->store(cat);
+
+    if (_book->isError()) {
+        return false;
+    } else {
+        LOG(INFO) << "Category stored being emited";
+        emit categoryStored(type);
+        return true;
+    }
+}
+
+bool
+Book::updateCategory(QObject* category, QString name, QString color, Book::TransactionType type) {
+    auto catModel = qobject_cast<qml::Category*>(category);
+    if (catModel == nullptr) {
+        return false;
+    }
+    auto cat = catModel->getCategory();
+
+    com::chancho::Category::Type catType;
+    if (type == TransactionType::EXPENSE) {
+        catType = com::chancho::Category::Type::EXPENSE;
+    } else {
+        catType = com::chancho::Category::Type::INCOME;
+    }
+    auto typeChanged = catType != cat->type;
+
+    if (cat->name != name
+            || cat->color != color
+            || cat->type != catType) {
+        cat->name = name;
+        cat->type = catType;
+        cat->color = color;
+
+        _book->store(cat);
+
+        if (_book->isError()) {
+            return false;
+        } else {
+            if (typeChanged) {
+                LOG(INFO) << "Type updated!";
+                emit categoryTypeUpdated();
+            } else {
+                emit categoryUpdated(type);
+            }
+            return true;
+        }
+    } else {
+        return false;
+    }
+}
+
+bool
+Book::removeCategory(QObject* category) {
+    auto catModel = qobject_cast<qml::Category*>(category);
+    if (catModel == nullptr) {
+        return false;
+    }
+    auto cat = catModel->getCategory();
+    _book->remove(cat);
+
+    if (_book->isError()) {
+        return false;
+    } else {
+        emit categoryRemoved(catModel->getType());
+        return true;
+    }
 }
 
 QObject*
@@ -237,6 +331,7 @@ Book::monthModel(QDate date) {
     connect(this, &Book::transactionStored, model, &models::Month::onTransactionStored);
     connect(this, &Book::transactionRemoved, model, &models::Month::onTransactionRemoved);
     connect(this, &Book::transactionUpdated, model, &models::Month::onTransactionUpdated);
+    connect(this, &Book::categoryTypeUpdated, model, &models::Month::onCategoryTypeUpdated);
     return model;
 }
 
