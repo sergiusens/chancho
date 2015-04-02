@@ -1942,4 +1942,118 @@ TestBookTransaction::testExpenseForDay() {
     QCOMPARE(result, -1 * expectedAmount);
 }
 
+void
+TestBookTransaction::testMoveExpenseAccounts() {
+    PublicBook book;
+
+    auto firstAcc = std::make_shared<PublicAccount>("BBVA", 0);
+    auto secondAcc = std::make_shared<PublicAccount>("Bankia", 0);
+
+    book.store(firstAcc);
+    QVERIFY(!book.isError());
+
+    book.store(secondAcc);
+    QVERIFY(!book.isError());
+
+    auto category = std::make_shared<chancho::Category>("Test category", chancho::Category::Type::EXPENSE);
+    book.store(category);
+    QVERIFY(!book.isError());
+
+    // create a transaction, store it and then update it and ensure that the amounts are correct
+    auto tran = std::make_shared<PublicTransaction>(firstAcc, 30, category);
+    book.store(tran);
+    QVERIFY(!book.isError());
+
+    // update the account and then set it in the db
+    tran->account = secondAcc;
+    book.store(tran);
+    QVERIFY(!book.isError());
+
+    // assert that the db is present in the db
+    auto dbPath = PublicBook::databasePath();
+
+    auto db = sys::DatabaseFactory::instance()->addDatabase("QSQLITE", QTest::currentTestFunction());
+    db->setDatabaseName(dbPath);
+
+    auto opened = db->open();
+    QVERIFY(opened);
+
+    auto query = db->createQuery();
+    query->prepare(SELECT_ACCOUNT_QUERY);
+    query->bindValue(":uuid", firstAcc->_dbId.toString());
+    auto success = query->exec();
+
+    QVERIFY(success);
+    QVERIFY(query->next());
+    // assert that the first acc in set to 0
+    QCOMPARE(query->value("amount").toString(), QString::number(0));
+
+    query->bindValue(":uuid", secondAcc->_dbId.toString());
+    success = query->exec();
+
+    QVERIFY(success);
+    QVERIFY(query->next());
+    // assert that the second acc in set to the transaction value
+    QCOMPARE(query->value("amount").toString(), QString::number(-1 * tran->amount));
+
+    db->close();
+}
+
+void
+TestBookTransaction::testMoveIncomeAccounts() {
+    PublicBook book;
+
+    auto firstAcc = std::make_shared<PublicAccount>("BBVA", 0);
+    auto secondAcc = std::make_shared<PublicAccount>("Bankia", 0);
+
+    book.store(firstAcc);
+    QVERIFY(!book.isError());
+
+    book.store(secondAcc);
+    QVERIFY(!book.isError());
+
+    auto category = std::make_shared<chancho::Category>("Test category", chancho::Category::Type::INCOME);
+    book.store(category);
+    QVERIFY(!book.isError());
+
+    // create a transaction, store it and then update it and ensure that the amounts are correct
+    auto tran = std::make_shared<PublicTransaction>(firstAcc, 30, category);
+    book.store(tran);
+    QVERIFY(!book.isError());
+
+    // update the account and then set it in the db
+    tran->account = secondAcc;
+    book.store(tran);
+    QVERIFY(!book.isError());
+
+    // assert that the db is present in the db
+    auto dbPath = PublicBook::databasePath();
+
+    auto db = sys::DatabaseFactory::instance()->addDatabase("QSQLITE", QTest::currentTestFunction());
+    db->setDatabaseName(dbPath);
+
+    auto opened = db->open();
+    QVERIFY(opened);
+
+    auto query = db->createQuery();
+    query->prepare(SELECT_ACCOUNT_QUERY);
+    query->bindValue(":uuid", firstAcc->_dbId.toString());
+    auto success = query->exec();
+
+    QVERIFY(success);
+    QVERIFY(query->next());
+    // assert that the first acc in set to 0
+    QCOMPARE(query->value("amount").toString(), QString::number(0));
+
+    query->bindValue(":uuid", secondAcc->_dbId.toString());
+    success = query->exec();
+
+    QVERIFY(success);
+    QVERIFY(query->next());
+    // assert that the second acc in set to the transaction value
+    QCOMPARE(query->value("amount").toString(), QString::number(tran->amount));
+
+    db->close();
+}
+
 QTEST_MAIN(TestBookTransaction)
