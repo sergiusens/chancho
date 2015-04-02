@@ -60,6 +60,20 @@ PageStack {
            property date date: new Date()
            property var monthModel: Book.monthModel(date)
 
+           Connections {
+                target: dateTitle.monthModel
+                onDaysCountChanged: {
+                    var count = dateTitle.monthModel.daysCount
+                    if (count > 0) {
+                        daysList.visible = true;
+                        noResultLabel.visible = false;
+                    } else {
+                        daysList.visible = false;
+                        noResultLabel.visible = true;
+                    }
+                }
+           }
+
            spacing: units.gu(2)
 
            anchors.fill: parent
@@ -104,11 +118,25 @@ PageStack {
                    anchors.margins: units.gu(1)
                    spacing: units.gu(2)
 
+                   visible: dateTitle.monthModel.daysCount > 0
+
                    model: dateTitle.monthModel
                    delegate: BillingPerDay {
                        dayModel: Book.dayModel(model.display.day, model.display.month, model.display.year)
                    }
                }
+
+               Label {
+                    id: noResultLabel
+                    anchors.centerIn: parent
+                    anchors.margins: units.gu(1)
+
+                    text: i18n.tr("No entries were found!")
+
+                    fontSize: "x-large"
+                    visible: dateTitle.monthModel.daysCount <= 0
+               }
+
            }
 
        }

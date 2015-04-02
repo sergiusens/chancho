@@ -62,5 +62,8 @@ class TestMonthModel : public BaseTestCase {
 
     void testSetDate_data();
     void testSetDate();
+
+    void testGetCount();
+    void testGetCountBookError();
 };
 
