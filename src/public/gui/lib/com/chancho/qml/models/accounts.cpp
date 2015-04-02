@@ -57,14 +57,14 @@ Accounts::rowCount(const QModelIndex&) const {
 
 QVariant
 Accounts::data(int row, int role) const {
-    LOG(INFO) << "Requesting data";
+    DLOG(INFO) << "Requesting data";
     auto count = _book->numberOfAccounts();
     if (_book->isError()) {
         LOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
         return QVariant();
     }
     if (row > count) {
-        LOG(INFO) << "Querying data for to large index";
+        DLOG(INFO) << "Querying data for to large index";
         return QVariant();
     }
 
@@ -75,11 +75,11 @@ Accounts::data(int row, int role) const {
             return QVariant();
         }
         if (accs.count() > 0) {
-            LOG(INFO) << "Returning account " << accs.at(0)->name.toStdString();
+            DLOG(INFO) << "Returning account " << accs.at(0)->name.toStdString();
             auto model = new Account(accs.at(0));
             return QVariant::fromValue(model);
         } else {
-            LOG(INFO) << "No account was found.";
+            DLOG(INFO) << "No account was found.";
             return QVariant();
         }
     } else {
@@ -90,7 +90,7 @@ Accounts::data(int row, int role) const {
 QVariant
 Accounts::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) {
-        LOG(INFO) << "Querying data for not valid index.";
+        DLOG(INFO) << "Querying data for not valid index.";
         return QVariant();
     }
     return data(index.row(), role);
@@ -135,6 +135,33 @@ Accounts::getIndex(QObject* account) {
     }
 
     return -1;
+}
+
+int
+Accounts::numberOfAccounts() const {
+    auto result = _book->numberOfAccounts();
+    if (_book->isError()) {
+        return -1;
+    }
+    return result;
+}
+
+void
+Accounts::onAccountStored() {
+    beginResetModel();
+    endResetModel();
+}
+
+void
+Accounts::onAccountRemoved() {
+    beginResetModel();
+    endResetModel();
+}
+
+void
+Accounts::onAccountUpdated() {
+    beginResetModel();
+    endResetModel();
 }
 
 }

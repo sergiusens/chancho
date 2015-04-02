@@ -37,13 +37,15 @@ class Account {
 
  public:
     Account() = default;
-    Account(const QString& n, double a=0, const QString& m=QString::null);
+    Account(const QString& n, double a=0, const QString& m=QString::null, const QString& c=QString::null);
     virtual ~Account() = default;
 
  public:
     QString name = QString::null;
     double amount = 0;
+    double initialAmount = 0;
     QString memo = QString::null;
+    QString color = QString::null;
 
     virtual bool wasStoredInDb() const;
     bool operator==(const Account& rhs);

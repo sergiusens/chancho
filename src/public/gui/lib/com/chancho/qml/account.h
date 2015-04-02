@@ -43,6 +43,7 @@ class Accounts;
 
 class Account : public QObject {
     Q_OBJECT
+    Q_PROPERTY(QString color READ getColor WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(double amount READ getAmount WRITE setAmount NOTIFY amountChanged)
     Q_PROPERTY(QString memo READ getMemo WRITE setMemo NOTIFY memoChanged)
@@ -54,6 +55,10 @@ class Account : public QObject {
  public:
     explicit Account(QObject* parent=0);
     Account(QString name, double amount, QString memo, QObject* parent = 0);
+    Account(QString name, double amount, QString memo, QString color, QObject* parent = 0);
+
+    QString getColor() const;
+    void setColor(QString color);
 
     QString getName() const;
     void setName(QString name);
@@ -65,6 +70,7 @@ class Account : public QObject {
     void setMemo(QString memo);
 
  signals:
+    void colorChanged(QString);
     void nameChanged(QString);
     void amountChanged(double);
     void memoChanged(QString);

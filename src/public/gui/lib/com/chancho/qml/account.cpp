@@ -36,13 +36,32 @@ Account::Account(QObject* parent)
 
 Account::Account(QString name, double amount, QString memo, QObject* parent)
     : QObject(parent),
-    _acc(std::make_shared<com::chancho::Account>(name, amount, memo)) {
+      _acc(std::make_shared<com::chancho::Account>(name, amount, memo, QString::null)) {
+
+}
+
+Account::Account(QString name, double amount, QString memo, QString color, QObject* parent)
+    : QObject(parent),
+      _acc(std::make_shared<com::chancho::Account>(name, amount, memo, color)) {
 
 }
 
 Account::Account(AccountPtr ptr, QObject* parent)
     : QObject(parent),
       _acc(ptr) {
+}
+
+QString
+Account::getColor() const {
+    return _acc->color;
+}
+
+void
+Account::setColor(QString color) {
+    if (_acc->color != color) {
+        _acc->color = color;
+        emit colorChanged(color);
+    }
 }
 
 QString

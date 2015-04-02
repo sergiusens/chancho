@@ -50,7 +50,69 @@ Book::Book(BookPtr book, QObject* parent)
 
 QObject*
 Book::accountsModel() {
-    return new models::Accounts(_book);
+    auto model = new models::Accounts(_book);
+    connect(this, &Book::accountStored, model, &models::Accounts::onAccountStored);
+    connect(this, &Book::accountRemoved, model, &models::Accounts::onAccountRemoved);
+    connect(this, &Book::accountUpdated, model, &models::Accounts::onAccountUpdated);
+    return model;
+}
+
+bool
+Book::storeAccount(QString name, QString memo, QString color, double initialAmount) {
+
+    double amount = 0;
+    if (initialAmount != 0) {
+        amount = initialAmount;
+    }
+    auto acc = std::make_shared<com::chancho::Account>(name, amount, memo, color);
+    acc->initialAmount = initialAmount;
+    _book->store(acc);
+    if (_book->isError()) {
+        return false;
+    } else {
+        emit accountStored();
+        return true;
+    }
+}
+
+bool
+Book::removeAccount(QObject* account) {
+    auto acc = qobject_cast<qml::Account*>(account);
+    if (acc == nullptr) {
+        return false;
+    }
+    _book->remove(acc->getAccount());
+    if (_book->isError()) {
+        return false;
+    } else {
+        emit accountRemoved();
+        return true;
+    }
+}
+
+bool
+Book::updateAccount(QObject* account, QString name, QString memo, QString color) {
+    auto acc = qobject_cast<qml::Account*>(account);
+    if (acc == nullptr) {
+        return false;
+    }
+    auto accPtr = acc->getAccount();
+    if (accPtr->name != name
+            || accPtr->memo != memo
+            || accPtr->color != color) {
+        accPtr->name = name;
+        accPtr->memo = memo;
+        accPtr->color = color;
+        _book->store(accPtr);
+        if (_book->isError()) {
+            return false;
+        } else {
+            emit accountUpdated();
+            return true;
+        }
+    } else {
+        return false;
+    }
 }
 
 bool
@@ -73,6 +135,7 @@ Book::storeTransaction(QObject* account, QObject* category, QDate date, double a
     if (_book->isError()) {
         return false;
     } else {
+        emit accountUpdated();
         emit transactionStored(date);
         return true;
     }
@@ -88,6 +151,7 @@ Book::removeTransaction(QObject* transaction) {
     if (_book->isError()) {
         return false;
     } else {
+        emit accountUpdated();
         emit transactionRemoved(tran->getTransaction()->date);
         return true;
     }
@@ -141,6 +205,7 @@ Book::updateTransaction(QObject* tranObj, QObject* accObj, QObject* catObj, QDat
         if (_book->isError()) {
             return false;
         } else {
+            emit accountUpdated();
             emit transactionUpdated(oldDate, date);
             return true;
         }

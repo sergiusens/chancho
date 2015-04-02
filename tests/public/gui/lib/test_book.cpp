@@ -28,6 +28,7 @@
 #include <com/chancho/qml/transaction.h>
 
 #include "book.h"
+#include "matchers.h"
 #include "public_account.h"
 #include "public_category.h"
 #include "public_qml_account.h"
@@ -58,6 +59,7 @@ TestBook::testStoreTransaction() {
     auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
 
     QSignalSpy spy(qmlBook.get(), SIGNAL(transactionStored(QDate)));
+    QSignalSpy accSpy(qmlBook.get(), SIGNAL(accountUpdated()));
 
     auto account = new com::chancho::qml::Account();
     auto category = new com::chancho::qml::Category();
@@ -77,6 +79,7 @@ TestBook::testStoreTransaction() {
 
     QVERIFY(stored);
     QCOMPARE(spy.count(), 1);
+    QCOMPARE(accSpy.count(), 1);
 }
 
 void
@@ -85,6 +88,7 @@ TestBook::testStoreTransactionWrongAccount() {
     auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
 
     QSignalSpy spy(qmlBook.get(), SIGNAL(transactionStored(QDate)));
+    QSignalSpy accSpy(qmlBook.get(), SIGNAL(accountUpdated()));
 
     auto account = new com::chancho::qml::Category();
     auto category = new com::chancho::qml::Category();
@@ -100,6 +104,7 @@ TestBook::testStoreTransactionWrongAccount() {
 
     QVERIFY(!stored);
     QCOMPARE(spy.count(), 0);
+    QCOMPARE(accSpy.count(), 0);
 }
 
 void
@@ -108,6 +113,7 @@ TestBook::testStoreTransactionWrongCategory() {
     auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
 
     QSignalSpy spy(qmlBook.get(), SIGNAL(transactionStored(QDate)));
+    QSignalSpy accSpy(qmlBook.get(), SIGNAL(accountUpdated()));
 
     auto account = new com::chancho::qml::Account();
     auto category = new com::chancho::qml::Account();
@@ -123,6 +129,7 @@ TestBook::testStoreTransactionWrongCategory() {
 
     QVERIFY(!stored);
     QCOMPARE(spy.count(), 0);
+    QCOMPARE(accSpy.count(), 0);
 }
 
 void
@@ -131,6 +138,7 @@ TestBook::testStoreTransactionBookError() {
     auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
 
     QSignalSpy spy(qmlBook.get(), SIGNAL(transactionStored(QDate)));
+    QSignalSpy accSpy(qmlBook.get(), SIGNAL(accountUpdated()));
 
     auto account = new com::chancho::qml::Account();
     auto category = new com::chancho::qml::Category();
@@ -150,6 +158,7 @@ TestBook::testStoreTransactionBookError() {
 
     QVERIFY(!stored);
     QCOMPARE(spy.count(), 0);
+    QCOMPARE(accSpy.count(), 0);
 }
 
 void
@@ -159,6 +168,7 @@ TestBook::testRemoveTransaction() {
     auto qmlTransaction = std::make_shared<com::chancho::qml::Transaction>();
 
     QSignalSpy spy(qmlBook.get(), SIGNAL(transactionRemoved(QDate)));
+    QSignalSpy accSpy(qmlBook.get(), SIGNAL(accountUpdated()));
 
     EXPECT_CALL(*book.get(), remove(Matcher<com::chancho::TransactionPtr>(_)))
             .Times(1);
@@ -171,6 +181,7 @@ TestBook::testRemoveTransaction() {
 
     QVERIFY(removed);
     QCOMPARE(spy.count(), 1);
+    QCOMPARE(accSpy.count(), 1);
 }
 
 void
@@ -180,6 +191,7 @@ TestBook::testRemoveTransactionWrongObject() {
     auto qmlTransaction = std::make_shared<com::chancho::qml::Category>();
 
     QSignalSpy spy(qmlBook.get(), SIGNAL(transactionRemoved(QDate)));
+    QSignalSpy accSpy(qmlBook.get(), SIGNAL(accountUpdated()));
 
     EXPECT_CALL(*book.get(), remove(Matcher<com::chancho::TransactionPtr>(_)))
             .Times(0);
@@ -188,6 +200,7 @@ TestBook::testRemoveTransactionWrongObject() {
 
     QVERIFY(!removed);
     QCOMPARE(spy.count(), 0);
+    QCOMPARE(accSpy.count(), 0);
 }
 
 void
@@ -197,6 +210,7 @@ TestBook::testRemoveTransactionBookError() {
     auto qmlTransaction = std::make_shared<com::chancho::qml::Transaction>();
 
     QSignalSpy spy(qmlBook.get(), SIGNAL(transactionRemoved(QDate)));
+    QSignalSpy accSpy(qmlBook.get(), SIGNAL(accountUpdated()));
 
     EXPECT_CALL(*book.get(), remove(Matcher<com::chancho::TransactionPtr>(_)))
             .Times(1);
@@ -209,67 +223,9 @@ TestBook::testRemoveTransactionBookError() {
 
     QVERIFY(!removed);
     QCOMPARE(spy.count(), 0);
+    QCOMPARE(accSpy.count(), 0);
 }
-/*
- *
-bool
-Book::updateTransaction(QObject* tranObj, QObject* accObj, QObject* catObj, QDate date,
-                        QString contents, QString memo, double amount) {
-    TransactionPtr tran;
-    AccountPtr acc;
-    CategoryPtr cat;
 
-    auto tranModel = qobject_cast<qml::Transaction*>(tranObj);
-    if (tranModel != nullptr) {
-        tran = tranModel->getTransaction();
-    } else {
-        LOG(ERROR) << "Method called with wrong object type as a transaction model";
-        return false;
-    }
-
-    auto accModel = qobject_cast<qml::Account*>(accObj);
-    if (accModel != nullptr) {
-        acc = accModel->getAccount();
-    } else {
-        LOG(ERROR) << "Method called with wrong object type as an account model";
-        return false;
-    }
-
-    auto catModel = qobject_cast<qml::Category*>(catObj);
-    if (catModel != nullptr) {
-        cat = catModel->getCategory();
-    } else {
-        LOG(ERROR) << "Method called with wrong object type as a category model";
-        return false;
-    }
-
-    // decide if we need to perform the update
-    auto requiresUpdate = tran->account != acc || tran->category != cat || tran->date != date
-        || tran->contents != contents || tran->memo != memo || tran->amount != amount;
-
-    if (requiresUpdate) {
-        auto oldDate = tran->date;
-        tran->account = acc;
-        tran->category = cat;
-        tran->date = date;
-        tran->contents = contents;
-        tran->memo = memo;
-        tran->amount = amount;
-
-        _book->store(tran);
-        if (_book->isError()) {
-            return false;
-        } else {
-            emit transactionUpdated(oldDate, date);
-            return true;
-        }
-
-    } else {
-        return false;
-    }
-
-}
- */
 void
 TestBook::testUpdateTransactionWrongAccount() {
     auto tran = std::make_shared<com::chancho::qml::Transaction>();
@@ -285,6 +241,7 @@ TestBook::testUpdateTransactionWrongAccount() {
     auto qmlTransaction = std::make_shared<com::chancho::qml::Transaction>();
 
     QSignalSpy spy(qmlBook.get(), SIGNAL(transactionUpdated(QDate, QDate)));
+    QSignalSpy accSpy(qmlBook.get(), SIGNAL(accountUpdated()));
 
     EXPECT_CALL(*book.get(), store(Matcher<com::chancho::TransactionPtr>(_)))
             .Times(0);
@@ -293,6 +250,7 @@ TestBook::testUpdateTransactionWrongAccount() {
 
     QVERIFY(!updated);
     QCOMPARE(spy.count(), 0);
+    QCOMPARE(accSpy.count(), 0);
 }
 
 void
@@ -310,6 +268,7 @@ TestBook::testUpdateTransactionWrongCategory() {
     auto qmlTransaction = std::make_shared<com::chancho::qml::Transaction>();
 
     QSignalSpy spy(qmlBook.get(), SIGNAL(transactionUpdated(QDate, QDate)));
+    QSignalSpy accSpy(qmlBook.get(), SIGNAL(accountUpdated()));
 
     EXPECT_CALL(*book.get(), store(Matcher<com::chancho::TransactionPtr>(_)))
             .Times(0);
@@ -318,6 +277,7 @@ TestBook::testUpdateTransactionWrongCategory() {
 
     QVERIFY(!updated);
     QCOMPARE(spy.count(), 0);
+    QCOMPARE(accSpy.count(), 0);
 }
 
 void
@@ -335,6 +295,7 @@ TestBook::testUpdateTransactionWrongObject() {
     auto qmlTransaction = std::make_shared<com::chancho::qml::Transaction>();
 
     QSignalSpy spy(qmlBook.get(), SIGNAL(transactionUpdated(QDate, QDate)));
+    QSignalSpy accSpy(qmlBook.get(), SIGNAL(accountUpdated()));
 
     EXPECT_CALL(*book.get(), store(Matcher<com::chancho::TransactionPtr>(_)))
             .Times(0);
@@ -343,6 +304,7 @@ TestBook::testUpdateTransactionWrongObject() {
 
     QVERIFY(!updated);
     QCOMPARE(spy.count(), 0);
+    QCOMPARE(accSpy.count(), 0);
 }
 
 void
@@ -363,6 +325,7 @@ TestBook::testUpdateTransactionNeedsUpdate() {
     auto qmlTransaction = std::make_shared<com::chancho::qml::Transaction>();
 
     QSignalSpy spy(qmlBook.get(), SIGNAL(transactionUpdated(QDate, QDate)));
+    QSignalSpy accSpy(qmlBook.get(), SIGNAL(accountUpdated()));
 
     EXPECT_CALL(*book.get(), store(Matcher<com::chancho::TransactionPtr>(_)))
             .Times(1);
@@ -375,6 +338,7 @@ TestBook::testUpdateTransactionNeedsUpdate() {
 
     QVERIFY(updated);
     QCOMPARE(spy.count(), 1);
+    QCOMPARE(accSpy.count(), 1);
 }
 
 void
@@ -392,6 +356,7 @@ TestBook::testUpdateTransactionBookError() {
     auto qmlTransaction = std::make_shared<com::chancho::qml::Transaction>();
 
     QSignalSpy spy(qmlBook.get(), SIGNAL(transactionUpdated(QDate, QDate)));
+    QSignalSpy accSpy(qmlBook.get(), SIGNAL(accountUpdated()));
 
     EXPECT_CALL(*book.get(), store(Matcher<com::chancho::TransactionPtr>(_)))
             .Times(1);
@@ -402,6 +367,226 @@ TestBook::testUpdateTransactionBookError() {
 
     auto updated = qmlBook->updateTransaction(tran.get(), account.get(), category.get(), date, conents, memo, amount);
 
+    QVERIFY(!updated);
+    QCOMPARE(spy.count(), 0);
+    QCOMPARE(accSpy.count(), 0);
+}
+
+void
+TestBook::testStoreAccountInitialAmount() {
+    QString name = "BBVA";
+    QString memo = "First test account";
+    QString color = "#fff";
+    double initialAmount = 34.20;
+
+    auto expectedAccount = std::make_shared<com::chancho::Account>(name, initialAmount, memo, color);
+    expectedAccount->initialAmount = initialAmount;
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(accountStored()));
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::AccountPtr>(AccountEquals(expectedAccount))))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto stored = qmlBook->storeAccount(name, memo, color, initialAmount);
+    QVERIFY(stored);
+    QCOMPARE(spy.count(), 1);
+}
+
+void
+TestBook::testStoreAccountNoInitialAmount() {
+    QString name = "BBVA";
+    QString memo = "First test account";
+    QString color = "#fff";
+    double initialAmount = 0;
+
+    auto expectedAccount = std::make_shared<com::chancho::Account>(name, initialAmount, memo, color);
+    expectedAccount->initialAmount = initialAmount;
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(accountStored()));
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::AccountPtr>(AccountEquals(expectedAccount))))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto stored = qmlBook->storeAccount(name, memo, color, initialAmount);
+    QVERIFY(stored);
+    QCOMPARE(spy.count(), 1);
+}
+
+void
+TestBook::testStoreAccountBookError() {
+    QString name = "BBVA";
+    QString memo = "First test account";
+    QString color = "#fff";
+    double initialAmount = 0;
+
+    auto expectedAccount = std::make_shared<com::chancho::Account>(name, initialAmount, memo, color);
+    expectedAccount->initialAmount = initialAmount;
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(accountStored()));
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::AccountPtr>(AccountEquals(expectedAccount))))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    auto stored = qmlBook->storeAccount(name, memo, color, initialAmount);
+    QVERIFY(!stored);
+    QCOMPARE(spy.count(), 0);
+}
+
+void
+TestBook::testRemoveAccountWrongObj() {
+    auto other = std::make_shared<com::chancho::qml::Category>();
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(accountRemoved()));
+
+    EXPECT_CALL(*book.get(), remove(Matcher<com::chancho::AccountPtr>(_)))
+            .Times(0);
+
+    auto removed = qmlBook->removeAccount(other.get());
+    QVERIFY(!removed);
+    QCOMPARE(spy.count(), 0);
+}
+
+void
+TestBook::testRemoveAccount() {
+    auto acc = std::make_shared<com::chancho::qml::Account>();
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(accountRemoved()));
+
+    EXPECT_CALL(*book.get(), remove(Matcher<com::chancho::AccountPtr>(_)))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto removed = qmlBook->removeAccount(acc.get());
+    QVERIFY(removed);
+    QCOMPARE(spy.count(), 1);
+}
+
+void
+TestBook::testRemoveAccountBookError() {
+    auto acc = std::make_shared<com::chancho::qml::Account>();
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(accountRemoved()));
+
+    EXPECT_CALL(*book.get(), remove(Matcher<com::chancho::AccountPtr>(_)))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    auto removed = qmlBook->removeAccount(acc.get());
+    QVERIFY(!removed);
+    QCOMPARE(spy.count(), 0);
+}
+
+void
+TestBook::testUpdateAccountWrongObj() {
+    auto other = std::make_shared<com::chancho::qml::Category>();
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(accountUpdated()));
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::AccountPtr>(_)))
+            .Times(0);
+
+    auto updated = qmlBook->updateAccount(other.get(), "New name", "New memo", "#fdf");
+    QVERIFY(!updated);
+    QCOMPARE(spy.count(), 0);
+}
+
+void
+TestBook::testUpdateAccountNoNeed() {
+    auto accPtr = std::make_shared<com::chancho::Account>("BBVA", 50.0, "Memo", "#ff");
+    auto other = std::make_shared<com::chancho::tests::PublicAccount>(accPtr);
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(accountUpdated()));
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::AccountPtr>(_)))
+            .Times(0);
+
+    auto updated = qmlBook->updateAccount(other.get(), accPtr->name, accPtr->memo, accPtr->color);
+    QVERIFY(!updated);
+    QCOMPARE(spy.count(), 0);
+}
+
+void
+TestBook::testUpdateAccount() {
+    auto accPtr = std::make_shared<com::chancho::Account>("BBVA", 50.0, "Memo", "#ff");
+    auto other = std::make_shared<com::chancho::tests::PublicAccount>(accPtr);
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(accountUpdated()));
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::AccountPtr>(_)))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto updated = qmlBook->updateAccount(other.get(), "New Name", accPtr->memo, accPtr->color);
+    QVERIFY(updated);
+    QCOMPARE(spy.count(), 1);
+}
+
+void
+TestBook::testUpdateAccountBookError() {
+    auto accPtr = std::make_shared<com::chancho::Account>("BBVA", 50.0, "Memo", "#ff");
+    auto other = std::make_shared<com::chancho::tests::PublicAccount>(accPtr);
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(accountUpdated()));
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::AccountPtr>(_)))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    auto updated = qmlBook->updateAccount(other.get(), "New Name", accPtr->memo, accPtr->color);
     QVERIFY(!updated);
     QCOMPARE(spy.count(), 0);
 }

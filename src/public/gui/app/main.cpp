@@ -43,6 +43,7 @@ int main(int argc, char** argv) {
 
     QQuickView view;
     view.setResizeMode(QQuickView::SizeRootObjectToView);
+    view.engine()->addImportPath(":/imports");
 
 /*    QObject::connect(view.engine(), SIGNAL(quit()), this, SLOT(quit()), Qt::QueuedConnection);
     qmlRegisterType<QAbstractItemModel>();

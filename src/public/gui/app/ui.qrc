@@ -1,13 +1,25 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource>
         <file>qml/MainWindow.qml</file>
+        <file>qml/components/AccountComponent.qml</file>
+        <file>qml/components/AccountForm.qml</file>
+        <file>qml/components/AccountsPage.qml</file>
         <file>qml/components/BillingPerDay.qml</file>
+        <file>qml/components/ColorChooser.qml</file>
         <file>qml/components/DateHeaderComponent.qml</file>
+        <file>qml/components/DefaultColors.qml</file>
+        <file>qml/components/EditAccount.qml</file>
         <file>qml/components/EditTransaction.qml</file>
         <file>qml/components/MainPage.qml</file>
+        <file>qml/components/NewAccount.qml</file>
         <file>qml/components/NewTransaction.qml</file>
         <file>qml/components/PageWithBottomEdge.qml</file>
         <file>qml/components/TransactionComponent.qml</file>
         <file>qml/components/TransactionForm.qml</file>
+    </qresource>
+    <qresource prefix="/imports">
+        <file alias="jbQuick/Charts/qmldir">qml/components/jbQuick/Chart/qmldir</file>
+        <file alias="jbQuick/Charts/QChart.js">qml/components/jbQuick/Chart/QChart.js</file>
+        <file alias="jbQuick/Charts/QChart.qml">qml/components/jbQuick/Chart/QChart.qml</file>
     </qresource>
 </RCC>

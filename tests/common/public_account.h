@@ -30,8 +30,8 @@ class PublicAccount : public com::chancho::Account {
     PublicAccount(QUuid id) : com::chancho::Account() {
         _dbId = id;
     }
-    PublicAccount(const QString& n, double a=0, const QString& m=QString::null)
-            : com::chancho::Account(n, a, m) {}
+    PublicAccount(const QString& n, double a=0, const QString& m=QString::null, const QString& c=QString::null)
+            : com::chancho::Account(n, a, m, c) {}
 
     using com::chancho::Account::_dbId;
 };

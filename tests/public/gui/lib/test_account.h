@@ -49,5 +49,9 @@ class TestAccount : public BaseTestCase {
     void testGetMemo();
     void testSetMemoNoSignal();
     void testSetMemoSignal();
+
+    void testGetColor();
+    void testSetColorNoSignal();
+    void testSetColorSignal();
 };
 
