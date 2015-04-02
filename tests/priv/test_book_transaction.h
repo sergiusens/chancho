@@ -101,4 +101,7 @@ class TestBookTransaction : public BaseTestCase {
 
     void testExpenseForDay_data();
     void testExpenseForDay();
+
+    void testMoveExpenseAccounts();
+    void testMoveIncomeAccounts();
 };

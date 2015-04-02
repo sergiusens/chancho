@@ -69,9 +69,14 @@ namespace {
         "BEGIN "\
         "UPDATE Accounts SET amount=AddStringNumbers(amount, new.amount) WHERE uuid=new.account; "\
         "END";  // AddStringNumbers is an extension added by the application to the db
-    const QString TRANSACTION_UPDATE_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionUpdate AFTER UPDATE ON Transactions "\
-        "BEGIN "\
+    const QString TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionUpdate AFTER UPDATE ON Transactions "\
+        "WHEN old.account = new.account BEGIN "\
         "UPDATE Accounts SET amount=AddStringNumbers(SubtractStringNumbers(amount, old.amount), new.amount) WHERE uuid=new.account; "\
+        "END";
+    const QString TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER = "CREATE TRIGGER UpdateMoveAccountAmountOnTransactionUpdate AFTER UPDATE ON Transactions "\
+        "WHEN old.account != new.account BEGIN "\
+        "UPDATE Accounts SET amount=SubtractStringNumbers(amount, old.amount) WHERE uuid=old.account; "\
+        "UPDATE Accounts SET amount=AddStringNumbers(amount, new.amount) WHERE uuid=new.account; "\
         "END";
     const QString TRANSACTION_DELETE_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionDelete AFTER DELETE ON Transactions "\
         "BEGIN "\
@@ -228,7 +233,8 @@ Book::initDatabse() {
         success &= query->exec(CATEGORIES_TABLE);
         success &= query->exec(TRANSACTION_TABLE);
         success &= query->exec(TRANSACTION_INSERT_TRIGGER);
-        success &= query->exec(TRANSACTION_UPDATE_TRIGGER);
+        success &= query->exec(TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER);
+        success &= query->exec(TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER);
         success &= query->exec(TRANSACTION_DELETE_TRIGGER);
         success &= query->exec(ACCOUNT_DELETE_TRIGGER);
         success &= query->exec(TRANSACTION_MONTH_INDEX);
