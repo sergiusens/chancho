@@ -45,5 +45,9 @@ class TestCategory : public BaseTestCase {
     void testGetType();
     void testSetTypeNoSignal();
     void testSetTypeSignal();
+
+    void testGetColor();
+    void testSetColorNoSignal();
+    void testSetColorSignal();
 };
 

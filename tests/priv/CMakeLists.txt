@@ -6,6 +6,7 @@ set(PRIVATE_TESTS
     test_book_mocked
     test_book_transaction
     test_category
+    test_stats
     test_transaction
 )
 
@@ -53,6 +54,6 @@ foreach(test ${PRIVATE_TESTS})
         ${PRIVATE_TESTS_LIBS}
     )
 
-    ADD_TEST(NAME ${test} COMMAND dbus-test-runner -m 180 --task=${CMAKE_CURRENT_BINARY_DIR}/${test})
+    ADD_TEST(NAME ${test} COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${test})
 
 endforeach(test)

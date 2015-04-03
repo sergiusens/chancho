@@ -49,6 +49,7 @@ namespace chancho {
     \since 0.1
 */
 class Book {
+    friend class Stats;
  public:
     Book();
     virtual ~Book();
@@ -176,6 +177,13 @@ class Book {
         return transactions(year, month, boost::optional<int>(day), boost::optional<int>(limit),
                 boost::optional<int>(offset));
     }
+
+    /*!
+        \fn virtual int numberOfTransactions();
+
+        Returns the number of all transactions that have been stored in the database.
+    */
+    virtual int numberOfTransactions();
 
     /*!
         \fn virtual int numberOfTransactions(int month, int year);

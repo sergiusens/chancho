@@ -77,6 +77,7 @@ class Month : public QAbstractListModel {
     void onTransactionStored(QDate date);
     void onTransactionRemoved(QDate date);
     void onTransactionUpdated(QDate oldDate, QDate date);
+    void onCategoryTypeUpdated();
 
  signals:
     void monthChanged(int month);

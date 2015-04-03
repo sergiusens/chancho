@@ -34,6 +34,7 @@ namespace chancho {
 
 class Account {
     friend class Book;
+    friend class Stats;
 
  public:
     Account() = default;

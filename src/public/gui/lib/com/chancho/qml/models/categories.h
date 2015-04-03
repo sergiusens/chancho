@@ -70,6 +70,10 @@ class Categories : public QAbstractListModel {
  protected:
     Categories(BookPtr book, QObject* parent = 0);
     Categories(qml::Book::TransactionType type, BookPtr book, QObject* parent = 0);
+    void onCategoryStored(qml::Book::TransactionType);
+    void onCategoryUpdated(qml::Book::TransactionType);
+    void onCategoryRemoved(qml::Book::TransactionType);
+    void onCategoryTypeUpdated();
 
  private:
     boost::optional<qml::Book::TransactionType> _type = boost::optional<qml::Book::TransactionType>();

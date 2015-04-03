@@ -591,4 +591,270 @@ TestBook::testUpdateAccountBookError() {
     QCOMPARE(spy.count(), 0);
 }
 
+void
+TestBook::testStoreCategoryIncome() {
+    QString name = "Test category";
+    QString color = "#123";
+    auto type = com::chancho::qml::Book::INCOME;
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(categoryStored(Book::TransactionType)));
+
+    auto cat = std::make_shared<com::chancho::Category>(name, com::chancho::Category::Type::EXPENSE, color);
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::CategoryPtr>(_)))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto stored = qmlBook->storeCategory(name, color, type);
+    QVERIFY(stored);
+    QCOMPARE(spy.count(), 1);
+}
+
+void
+TestBook::testStoreCategoryExpense() {
+    QString name = "Test category";
+    QString color = "#123";
+    auto type = com::chancho::qml::Book::EXPENSE;
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(categoryStored(Book::TransactionType)));
+
+    auto cat = std::make_shared<com::chancho::Category>(name, com::chancho::Category::Type::EXPENSE, color);
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::CategoryPtr>(_)))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto stored = qmlBook->storeCategory(name, color, type);
+    QVERIFY(stored);
+    QCOMPARE(spy.count(), 1);
+}
+
+void
+TestBook::testStoreCategoryBookError() {
+    QString name = "Test category";
+    QString color = "#123";
+    auto type = com::chancho::qml::Book::EXPENSE;
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(categoryStored(Book::TransactionType)));
+
+    auto cat = std::make_shared<com::chancho::Category>(name, com::chancho::Category::Type::EXPENSE, color);
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::CategoryPtr>(_)))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    auto stored = qmlBook->storeCategory(name, color, type);
+    QVERIFY(!stored);
+    QCOMPARE(spy.count(), 0);
+}
+
+void
+TestBook::testUpdateCategoryWrongObj() {
+    auto other = std::make_shared<com::chancho::qml::Account>();
+    QString name = "Test name";
+    QString color = "Test color";
+    auto type = com::chancho::qml::Book::EXPENSE;
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(categoryUpdated(Book::TransactionType)));
+
+    auto cat = std::make_shared<com::chancho::Category>(name, com::chancho::Category::Type::EXPENSE, color);
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::CategoryPtr>(_)))
+            .Times(0);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(0);
+
+    auto updated = qmlBook->updateCategory(other.get(), name, color, type);
+    QVERIFY(!updated);
+    QCOMPARE(spy.count(), 0);
+}
+
+void
+TestBook::testUpdateCategoryNoUpdate() {
+    QString name = "Test name";
+    QString color = "Test color";
+    auto type = com::chancho::qml::Book::EXPENSE;
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(categoryUpdated(Book::TransactionType)));
+
+    auto cat = std::make_shared<com::chancho::Category>(name, com::chancho::Category::Type::EXPENSE, color);
+    auto qmlCat = std::make_shared<com::chancho::tests::PublicCategory>(cat);
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::CategoryPtr>(_)))
+            .Times(0);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(0);
+
+    auto updated = qmlBook->updateCategory(qmlCat.get(), name, color, type);
+    QVERIFY(!updated);
+    QCOMPARE(spy.count(), 0);
+}
+
+void
+TestBook::testUpdateSameType() {
+    QString name = "Test name";
+    QString color = "Test color";
+    auto type = com::chancho::qml::Book::EXPENSE;
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(categoryUpdated(Book::TransactionType)));
+    QSignalSpy typeSpy(qmlBook.get(), SIGNAL(categoryTypeUpdated()));
+
+    auto cat = std::make_shared<com::chancho::Category>(name, com::chancho::Category::Type::EXPENSE, color);
+    auto qmlCat = std::make_shared<com::chancho::tests::PublicCategory>(cat);
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::CategoryPtr>(_)))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto updated = qmlBook->updateCategory(qmlCat.get(), "New name", color, type);
+    QVERIFY(updated);
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(typeSpy.count(), 0);
+}
+
+void
+TestBook::testUpdateDiffType() {
+    QString name = "Test name";
+    QString color = "Test color";
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(categoryUpdated(Book::TransactionType)));
+    QSignalSpy typeSpy(qmlBook.get(), SIGNAL(categoryTypeUpdated()));
+
+    auto cat = std::make_shared<com::chancho::Category>(name, com::chancho::Category::Type::EXPENSE, color);
+    auto qmlCat = std::make_shared<com::chancho::tests::PublicCategory>(cat);
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::CategoryPtr>(_)))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto updated = qmlBook->updateCategory(qmlCat.get(), "New name", color, com::chancho::qml::Book::INCOME);
+    QVERIFY(updated);
+    QCOMPARE(spy.count(), 0);
+    QCOMPARE(typeSpy.count(), 1);
+}
+
+void
+TestBook::testUpdateBookError() {
+    QString name = "Test name";
+    QString color = "Test color";
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(categoryUpdated(Book::TransactionType)));
+    QSignalSpy typeSpy(qmlBook.get(), SIGNAL(categoryTypeUpdated()));
+
+    auto cat = std::make_shared<com::chancho::Category>(name, com::chancho::Category::Type::EXPENSE, color);
+    auto qmlCat = std::make_shared<com::chancho::tests::PublicCategory>(cat);
+
+    EXPECT_CALL(*book.get(), store(Matcher<com::chancho::CategoryPtr>(_)))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    auto updated = qmlBook->updateCategory(qmlCat.get(), "New name", color, com::chancho::qml::Book::EXPENSE);
+    QVERIFY(!updated);
+    QCOMPARE(spy.count(), 0);
+    QCOMPARE(typeSpy.count(), 0);
+}
+
+void
+TestBook::testRemoveCategoryWrongObj() {
+    auto other = std::make_shared<com::chancho::qml::Account>();
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(categoryRemoved(Book::TransactionType)));
+
+    EXPECT_CALL(*book.get(), remove(Matcher<com::chancho::CategoryPtr>(_)))
+            .Times(0);
+
+    auto removed = qmlBook->removeCategory(other.get());
+    QVERIFY(!removed);
+    QCOMPARE(spy.count(), 0);
+}
+
+void
+TestBook::testRemoveCategory() {
+    auto qmlCat = std::make_shared<com::chancho::qml::Category>();
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(categoryRemoved(Book::TransactionType)));
+
+    EXPECT_CALL(*book.get(), remove(Matcher<com::chancho::CategoryPtr>(_)))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto removed = qmlBook->removeCategory(qmlCat.get());
+    QVERIFY(removed);
+    QCOMPARE(spy.count(), 1);
+}
+
+void
+TestBook::testRemoveCategoryBookError() {
+    auto qmlCat = std::make_shared<com::chancho::qml::Category>();
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto qmlBook = std::make_shared<com::chancho::qml::Book>(book);
+
+    QSignalSpy spy(qmlBook.get(), SIGNAL(categoryRemoved(Book::TransactionType)));
+
+    EXPECT_CALL(*book.get(), remove(Matcher<com::chancho::CategoryPtr>(_)))
+            .Times(1);
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    auto removed = qmlBook->removeCategory(qmlCat.get());
+    QVERIFY(!removed);
+    QCOMPARE(spy.count(), 0);
+}
+
 QTEST_MAIN(TestBook)

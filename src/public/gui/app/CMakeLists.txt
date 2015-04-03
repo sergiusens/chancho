@@ -24,13 +24,18 @@ set(QML_SOURCES
     qml/components/AccountForm.qml
     qml/components/AccountsPage.qml
     qml/components/BillingPerDay.qml
+    qml/components/CategoriesPage.qml
+    qml/components/CategoryComponent.qml
+    qml/components/CategoryForm.qml
     qml/components/ColorChooser.qml
     qml/components/DateHeaderComponent.qml
     qml/components/DefaultColors.qml
     qml/components/EditAccount.qml
+    qml/components/EditCategory.qml
     qml/components/EditTransaction.qml
     qml/components/MainPage.qml
     qml/components/NewAccount.qml
+    qml/components/NewCategory.qml
     qml/components/NewTransaction.qml
     qml/components/PageWithBottomEdge.qml
     qml/components/TransactionComponent.qml

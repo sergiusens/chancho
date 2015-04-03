@@ -52,6 +52,7 @@ namespace {
         "parent VARCHAR(40), "\
         "name TEXT NOT NULL,"\
         "type INT,"\
+        "color VARCHAR(7),"\
         "FOREIGN KEY(parent) REFERENCES Categories(uuid))";
     const QString TRANSACTION_TABLE = "CREATE TABLE IF NOT EXISTS Transactions("\
         "uuid VARCHAR(40) PRIMARY KEY, "\
@@ -86,6 +87,14 @@ namespace {
         "BEGIN "\
         "DELETE FROM Transactions WHERE account=old.uuid; "\
         "END";
+    const QString CATEGORY_DELETE_TRIGGER = "CREATE TRIGGER DeleteTransactionsOnCategoryDelete BEFORE DELETE ON Categories "\
+        "BEGIN "\
+        "DELETE FROM Transactions WHERE category=old.uuid; "\
+        "END";
+    const QString CATEGORY_UPDATE_DIFF_TYPE_TRIGGER = "CREATE TRIGGER UpdateTransactionsOnCategoryTypeUpdate AFTER UPDATE ON Categories "\
+        "WHEN old.type != new.type BEGIN "\
+        "UPDATE Transactions SET amount=NegateStringNumber(amount) WHERE category=new.uuid;"
+        "END";
     const QString TRANSACTION_MONTH_INDEX = "CREATE INDEX transaction_month_index ON Transactions(year, month);";
     const QString TRANSACTION_DAY_INDEX = "CREATE INDEX transaction_day_index ON Transactions(day, year, month);";
     const QString TRANSACTION_CATEGORY_INDEX = "CREATE INDEX transaction_category_index ON Transactions(category);";
@@ -93,8 +102,10 @@ namespace {
     const QString TRANSACTION_ACCOUNT_INDEX = "CREATE INDEX transaction_account_index ON Transactions(account);";
     const QString INSERT_UPDATE_ACCOUNT = "INSERT OR REPLACE INTO Accounts(uuid, name, memo, color, initialAmount, amount) " \
         "VALUES (:uuid, :name, :memo, :color, :initialAmount, :amount)";
-    const QString INSERT_UPDATE_CATEGORY = "INSERT OR REPLACE INTO Categories(uuid, parent, name, type) " \
-        "VALUES (:uuid, :parent, :name, :type)";
+    const QString INSERT_CATEGORY = "INSERT INTO Categories(uuid, parent, name, type, color) " \
+        "VALUES (:uuid, :parent, :name, :type, :color)";
+    const QString UPDATE_CATEGORY = "UPDATE Categories SET parent=:parent, name=:name, type=:type, color=:color " \
+        "WHERE uuid=:uuid";
     const QString INSERT_TRANSACTION = "INSERT INTO Transactions(uuid, amount, account, category, "\
         "day, month, year, contents, memo) VALUES (:uuid, :amount, :account, :category, :day, :month, :year, :contents, :memo)";
     const QString UPDATE_TRANSACTION = "UPDATE Transactions SET amount=:amount, account=:account, category=:category, "\
@@ -107,12 +118,12 @@ namespace {
     const QString SELECT_ALL_ACCOUNTS_LIMIT = "SELECT uuid, name, memo, color, initialAmount, amount FROM Accounts ORDER BY name ASC "\
         "LIMIT :limit OFFSET :offset";
     const QString SELECT_ACCOUNTS_COUNT = "SELECT count(*) FROM Accounts";
-    const QString SELECT_ALL_CATEGORIES = "SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC";
-    const QString SELECT_ALL_CATEGORIES_LIMIT = "SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC "\
+    const QString SELECT_ALL_CATEGORIES = "SELECT uuid, parent, name, type, color FROM Categories ORDER BY name ASC";
+    const QString SELECT_ALL_CATEGORIES_LIMIT = "SELECT uuid, parent, name, type, color FROM Categories ORDER BY name ASC "\
         "LIMIT :limit OFFSET :offset";
-    const QString SELECT_ALL_CATEGORIES_TYPE = "SELECT uuid, parent, name, type FROM Categories WHERE type=:type "\
+    const QString SELECT_ALL_CATEGORIES_TYPE = "SELECT uuid, parent, name, type, color FROM Categories WHERE type=:type "\
         "ORDER BY name ASC";
-    const QString SELECT_ALL_CATEGORIES_TYPE_LIMIT = "SELECT uuid, parent, name, type FROM Categories "
+    const QString SELECT_ALL_CATEGORIES_TYPE_LIMIT = "SELECT uuid, parent, name, type, color FROM Categories "
         "WHERE type=:type ORDER BY name ASC LIMIT :limit OFFSET :offset";
     const QString SELECT_CATEGORIES_COUNT = "SELECT count(*) FROM Categories";
     const QString SELECT_CATEGORIES_COUNT_TYPE = "SELECT count(*) FROM Categories WHERE type=:type";
@@ -124,6 +135,7 @@ namespace {
         "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset" ;
+    const QString SELECT_TRANSACTIONS_COUNT = "SELECT count(uuid) FROM Transactions";
     const QString SELECT_TRANSACTIONS_MONTH_COUNT = "SELECT count(uuid) FROM Transactions "\
         "WHERE month=:month AND year=:year";
     const QString SELECT_TRANSACTIONS_DAY = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
@@ -162,6 +174,9 @@ namespace {
     const QString SELECT_DAY_CATEGORY_TYPE_SUM = "SELECT SSUM(t.amount) FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid  WHERE c.type=:type AND t.day=:day AND "\
         "t.month=:month AND t.year=:year";
+    // views that are used by the stats, this are present to simplify the select statements
+    const QString ACCOUNT_MONTH_TOTAL_VIEW = "CREATE VIEW AccountsMonthTotal AS "\
+        "SELECT account, SSUM(amount) AS month_amount, month, year from Transactions GROUP BY account, month, year";
     const QString FOREIGN_KEY_SUPPORT = "PRAGMA foreign_keys = ON";
 
 }
@@ -236,12 +251,15 @@ Book::initDatabse() {
         success &= query->exec(TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER);
         success &= query->exec(TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER);
         success &= query->exec(TRANSACTION_DELETE_TRIGGER);
+        success &= query->exec(CATEGORY_DELETE_TRIGGER);
         success &= query->exec(ACCOUNT_DELETE_TRIGGER);
+        success &= query->exec(CATEGORY_UPDATE_DIFF_TYPE_TRIGGER);
         success &= query->exec(TRANSACTION_MONTH_INDEX);
         success &= query->exec(TRANSACTION_DAY_INDEX);
         success &= query->exec(TRANSACTION_CATEGORY_INDEX);
         success &= query->exec(TRANSACTION_CATEGORY_MONTH_INDEX);
         success &= query->exec(TRANSACTION_ACCOUNT_INDEX);
+        success &= query->exec(ACCOUNT_MONTH_TOTAL_VIEW);
 
         if (success)
             db->commit();
@@ -261,7 +279,6 @@ Book::Book() {
 }
 
 Book::~Book() {
-
 }
 
 void
@@ -318,17 +335,22 @@ Book::store(CategoryPtr cat) {
         return;
     }
 
-    // if a category is already present in the db the uuid will be present else is null
-    if (cat->_dbId.isNull()) {
+    auto isPresent = cat->wasStoredInDb();
+    if (!isPresent) {
         cat->_dbId = QUuid::createUuid();
     }
 
     // create the command and execute it
     auto query = _db->createQuery();
-    query->prepare(INSERT_UPDATE_CATEGORY);
+    if (!isPresent) {
+        query->prepare(INSERT_CATEGORY);
+    } else {
+        query->prepare(UPDATE_CATEGORY);
+    }
     query->bindValue(":uuid", cat->_dbId.toString());
     query->bindValue(":name", cat->name);
     query->bindValue(":type", static_cast<int>(cat->type));
+    query->bindValue(":color", cat->color);
 
     if (cat->parent) {
         query->bindValue(":parent", cat->parent->_dbId.toString());
@@ -668,19 +690,21 @@ Book::categories(boost::optional<Category::Type> type, boost::optional<int> limi
     }
 
 
-    // SELECT_ALL_CATEGORIES = "SELECT uuid, parent, name, type FROM Categories";
+    // SELECT_ALL_CATEGORIES = "SELECT uuid, parent, name, type, color FROM Categories ORDER BY name ASC";
     // therefore
     // index 0 => uuid
     // index 1 => parent
     // index 2 => name
     // index 3 => type
+    // index 4 => color
     // is more efficient to use indexes that strings
     while (query->next()) {
         auto uuid = QUuid(query->value(0).toString());
         auto parentVar = query->value(1);
         auto name = query->value(2).toString();
         auto type = static_cast<Category::Type>(query->value(3).toInt());
-        auto cat = std::make_shared<Category>(name, type);
+        auto color = query->value(4).toString();
+        auto cat = std::make_shared<Category>(name, type, color);
         cat->_dbId = uuid;
         LOG(INFO) << "Category found with id " << cat->_dbId.toString().toStdString();
         catsMap[cat->_dbId] = cat;
@@ -896,6 +920,33 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
     trans = parseTransactions(query);
     return trans;
 
+}
+
+int
+Book::numberOfTransactions() {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
+    int count = -1;
+
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return count;
+    }
+
+    auto query = _db->createQuery();
+    query->prepare(SELECT_TRANSACTIONS_COUNT);
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the transactions count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
 }
 
 int

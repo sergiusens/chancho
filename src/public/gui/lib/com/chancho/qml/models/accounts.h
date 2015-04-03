@@ -62,6 +62,7 @@ class Accounts : public QAbstractListModel {
     void onAccountStored();
     void onAccountRemoved();
     void onAccountUpdated();
+    void onCategoryTypeUpdated();
 
  private:
     BookPtr _book;
