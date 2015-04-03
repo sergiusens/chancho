@@ -31,7 +31,7 @@
 namespace sys = com::chancho::system;
 
 namespace {
-    const QString SELECT_CATEGORY_QUERY = "SELECT name, type, parent FROM Categories WHERE uuid=:uuid";
+    const QString SELECT_CATEGORY_QUERY = "SELECT name, type, color, parent FROM Categories WHERE uuid=:uuid";
 }
 
 void
@@ -54,18 +54,20 @@ void
 TestBookCategory::testStoreCategoryNoParent_data() {
     QTest::addColumn<QString>("name");
     QTest::addColumn<chancho::Category::Type>("type");
+    QTest::addColumn<QString>("color");
 
-    QTest::newRow("income-obj") << "Salary" << chancho::Category::Type::INCOME;
-    QTest::newRow("expense-obj") << "Food" << chancho::Category::Type::EXPENSE;
+    QTest::newRow("income-obj") << "Salary" << chancho::Category::Type::INCOME << "#ffee44";
+    QTest::newRow("expense-obj") << "Food" << chancho::Category::Type::EXPENSE << "#453";
 }
 
 void
 TestBookCategory::testStoreCategoryNoParent() {
     QFETCH(QString, name);
     QFETCH(chancho::Category::Type, type);
+    QFETCH(QString, color);
 
     // create the category and store it
-    auto category = std::make_shared<PublicCategory>(name, type);
+    auto category = std::make_shared<PublicCategory>(name, type, color);
     PublicBook book;
     book.store(category);
 
@@ -89,6 +91,7 @@ TestBookCategory::testStoreCategoryNoParent() {
     QVERIFY(success);
     QVERIFY(query->next());
     QCOMPARE(query->value("name").toString(), category->name);
+    QCOMPARE(query->value("color").toString(), category->color);
     QCOMPARE(query->value("type").toInt(), static_cast<int>(category->type));
     QVERIFY(query->value("parent").isNull());
 
@@ -99,20 +102,22 @@ void
 TestBookCategory::testStoreCategoryParentPresent_data() {
     QTest::addColumn<QString>("name");
     QTest::addColumn<chancho::Category::Type>("type");
+    QTest::addColumn<QString>("color");
 
-    QTest::newRow("income-obj") << "Salary" << chancho::Category::Type::INCOME;
-    QTest::newRow("expense-obj") << "Food" << chancho::Category::Type::EXPENSE;
+    QTest::newRow("income-obj") << "Salary" << chancho::Category::Type::INCOME << "#454";
+    QTest::newRow("expense-obj") << "Food" << chancho::Category::Type::EXPENSE << "#342";
 }
 
 void
 TestBookCategory::testStoreCategoryParentPresent() {
     QFETCH(QString, name);
     QFETCH(chancho::Category::Type, type);
+    QFETCH(QString, color);
 
     auto parentName = QString("Parent");
 
     // create the parent category and store it
-    auto parent = std::make_shared<PublicCategory>(parentName, chancho::Category::Type::INCOME);
+    auto parent = std::make_shared<PublicCategory>(parentName, chancho::Category::Type::INCOME, color);
     auto category = std::make_shared<PublicCategory>(name, type, parent);
 
     PublicBook book;
@@ -140,6 +145,7 @@ TestBookCategory::testStoreCategoryParentPresent() {
     QVERIFY(success);
     QVERIFY(query->next());
     QCOMPARE(query->value("name").toString(), category->name);
+    QCOMPARE(query->value("color").toString(), category->color);
     QCOMPARE(query->value("type").toInt(), static_cast<int>(category->type));
     QCOMPARE(query->value("parent").toString(), parent->_dbId.toString());
 
@@ -162,9 +168,11 @@ TestBookCategory::testUpdateCategory_data() {
     QTest::addColumn<QString>("name");
     QTest::addColumn<QString>("newName");
     QTest::addColumn<chancho::Category::Type>("type");
+    QTest::addColumn<QString>("color");
+    QTest::addColumn<QString>("newColor");
 
-    QTest::newRow("income-obj") << "Salary" << "Updated Salary" << chancho::Category::Type::INCOME;
-    QTest::newRow("expense-obj") << "Food" << "Updated food" << chancho::Category::Type::EXPENSE;
+    QTest::newRow("income-obj") << "Salary" << "Updated Salary" << chancho::Category::Type::INCOME << "#345" << "#234";
+    QTest::newRow("expense-obj") << "Food" << "Updated food" << chancho::Category::Type::EXPENSE << "#321" << "#fff";
 }
 
 void
@@ -172,9 +180,11 @@ TestBookCategory::testUpdateCategory() {
     QFETCH(QString, name);
     QFETCH(QString, newName);
     QFETCH(chancho::Category::Type, type);
+    QFETCH(QString, color);
+    QFETCH(QString, newColor);
 
     // create the category and store it
-    auto category = std::make_shared<PublicCategory>(name, type);
+    auto category = std::make_shared<PublicCategory>(name, type, color);
     PublicBook book;
     book.store(category);
 
@@ -182,6 +192,7 @@ TestBookCategory::testUpdateCategory() {
 
     // update the category and assert the values
     category->name = newName;
+    category->color = newColor;
     book.store(category);
 
     QVERIFY(category->wasStoredInDb());
@@ -204,6 +215,7 @@ TestBookCategory::testUpdateCategory() {
     QVERIFY(success);
     QVERIFY(query->next());
     QCOMPARE(query->value("name").toString(), newName);  // test against new name to be 100% sure
+    QCOMPARE(query->value("color").toString(), newColor);
     QCOMPARE(query->value("type").toInt(), static_cast<int>(category->type));
     QVERIFY(query->value("parent").isNull());
 
@@ -413,12 +425,12 @@ TestBookCategory::testGetCategoriesOneLevelParents() {
     QString firstParentName = "Food";
     QString secondParentName = "Salary";
     // create two parents to be provided to the diff children and assert that the parents are correctly set
-    auto firstParent = std::make_shared<PublicCategory>(firstParentName, chancho::Category::Type::EXPENSE);
-    auto secondParent = std::make_shared<PublicCategory>(secondParentName, chancho::Category::Type::INCOME);
+    auto firstParent = std::make_shared<PublicCategory>(firstParentName, chancho::Category::Type::EXPENSE, "#980");
+    auto secondParent = std::make_shared<PublicCategory>(secondParentName, chancho::Category::Type::INCOME, "#589");
 
-    auto first = std::make_shared<PublicCategory>("Restaurant", chancho::Category::Type::EXPENSE, firstParent);
-    auto second = std::make_shared<PublicCategory>("Bar", chancho::Category::Type::EXPENSE, firstParent);
-    auto last = std::make_shared<PublicCategory>("Bonus", chancho::Category::Type::INCOME, secondParent);
+    auto first = std::make_shared<PublicCategory>("Restaurant", chancho::Category::Type::EXPENSE, firstParent, "#234");
+    auto second = std::make_shared<PublicCategory>("Bar", chancho::Category::Type::EXPENSE, firstParent, "#ddf");
+    auto last = std::make_shared<PublicCategory>("Bonus", chancho::Category::Type::INCOME, secondParent, "#674");
 
     // store the diff cats and ensure that we do get the parents correctly
     PublicBook book;
@@ -471,15 +483,15 @@ TestBookCategory::testGetCategoriesSeveralLevels() {
     QString firstParentName = "Salary";
     QString secondParentName = "Food";
 
-    auto masterCatgeroy = std::make_shared<PublicCategory>(masterName, chancho::Category::Type::INCOME);
+    auto masterCatgeroy = std::make_shared<PublicCategory>(masterName, chancho::Category::Type::INCOME, "#210");
     auto firstParent = std::make_shared<PublicCategory>(
-            firstParentName, chancho::Category::Type::INCOME, masterCatgeroy);
+            firstParentName, chancho::Category::Type::INCOME, masterCatgeroy, "#267");
     auto secondParent =
-            std::make_shared<PublicCategory>(secondParentName, chancho::Category::Type::EXPENSE, masterCatgeroy);
+            std::make_shared<PublicCategory>(secondParentName, chancho::Category::Type::EXPENSE, masterCatgeroy, "#312");
 
-    auto first = std::make_shared<PublicCategory>("Restaurant", chancho::Category::Type::EXPENSE, firstParent);
-    auto second = std::make_shared<PublicCategory>("Bar", chancho::Category::Type::EXPENSE, firstParent);
-    auto last = std::make_shared<PublicCategory>("Bonus", chancho::Category::Type::INCOME, secondParent);
+    auto first = std::make_shared<PublicCategory>("Restaurant", chancho::Category::Type::EXPENSE, firstParent, "#983");
+    auto second = std::make_shared<PublicCategory>("Bar", chancho::Category::Type::EXPENSE, firstParent, "#765");
+    auto last = std::make_shared<PublicCategory>("Bonus", chancho::Category::Type::INCOME, secondParent, "#12");
 
     // store the diff cats and ensure that we do get the parents correctly
     PublicBook book;
@@ -548,9 +560,9 @@ TestBookCategory::testGetCategoriesSeveralLevels() {
 void
 TestBookCategory::testNumberOfCategories() {
     // add several cats and add them to the books
-    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
-    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE);
-    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#345");
+    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#987");
+    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#111");
 
     PublicBook book;
     book.store(first);
@@ -568,9 +580,9 @@ TestBookCategory::testNumberOfCategories() {
 void
 TestBookCategory::testNumberOfCategoriesType() {
     // add several cats and add them to the books
-    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
-    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE);
-    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#211");
+    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#111");
+    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#119");
 
     PublicBook book;
     book.store(first);
@@ -591,9 +603,9 @@ TestBookCategory::testNumberOfCategoriesType() {
 void
 TestBookCategory::testCategoriesLimit() {
     // add several cats and add them to the books
-    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
-    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE);
-    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#1rr");
+    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#178");
+    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#hhg");
 
     PublicBook book;
     book.store(first);
@@ -610,9 +622,9 @@ TestBookCategory::testCategoriesLimit() {
 
 void
 TestBookCategory::testCategoriesType() {
-    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
-    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE);
-    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#edf");
+    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#fll");
+    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#878");
 
     PublicBook book;
     book.store(first);
@@ -632,9 +644,9 @@ TestBookCategory::testCategoriesType() {
 
 void
 TestBookCategory::testCategoriesTypeLimit() {
-    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
-    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE);
-    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#ee");
+    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#ddd");
+    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#dih");
 
     PublicBook book;
     book.store(first);

@@ -81,9 +81,9 @@ Categories::rowCount(const QModelIndex&) const {
 
 QVariant
 Categories::data(int row, int role) const {
-    LOG(INFO) << "Requesting data";
+    DLOG(INFO) << "Requesting data for row" << row;
     if (_type) {
-        LOG(INFO) << "Filtering per type";
+        DLOG(INFO) << "Filtering per type";
     }
     auto count = _book->numberOfCategories();
     if (_book->isError()) {
@@ -91,14 +91,14 @@ Categories::data(int row, int role) const {
         return QVariant();
     }
     if (row > count) {
-        LOG(INFO) << "Querying data for to large index";
+        DLOG(INFO) << "Querying data for to large index";
         return QVariant();
     }
 
     if (role == Qt::DisplayRole) {
         auto type = boost::optional<chancho::Category::Type>();
         if (_type) {
-            LOG(INFO) << "Filtering categories per type " << *_type;
+            DLOG(INFO) << "Filtering categories per type " << *_type;
             if (*_type == qml::Book::TransactionType::EXPENSE) {
                 type = chancho::Category::Type::EXPENSE;
             } else {
@@ -111,11 +111,11 @@ Categories::data(int row, int role) const {
             return QVariant();
         }
         if (cats.count() > 0) {
-            LOG(INFO) << "Returning category " << cats.at(0)->name.toStdString();
+            DLOG(INFO) << "Returning category " << cats.at(0)->name.toStdString();
             auto model = new qml::Category(cats.at(0));
             return QVariant::fromValue(model);
         } else {
-            LOG(INFO) << "No category was found.";
+            DLOG(INFO) << "No category was found.";
             return QVariant();
         }
     } else {
@@ -126,7 +126,7 @@ Categories::data(int row, int role) const {
 QVariant
 Categories::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) {
-        LOG(INFO) << "Querying data for not valid index.";
+        DLOG(INFO) << "Querying data for not valid index.";
         return QVariant();
     }
     return data(index.row(), role);
@@ -203,6 +203,66 @@ Categories::getIndex(QObject* category) {
     }
 
     return -1;
+}
+
+void
+Categories::onCategoryStored(qml::Book::TransactionType type) {
+    if (_type) {
+        DLOG(INFO) << "Model has a type " << *_type << " and sent type is " << type;
+        if (*_type == type) {
+            DLOG(INFO) << "Sending update because types are equal";
+            // just deal with this only when we have the same type
+            beginResetModel();
+            endResetModel();
+        }
+    } else {
+        DLOG(INFO) << "Sending update because we have no type";
+        // since we have not type, we are always interested
+        beginResetModel();
+        endResetModel();
+    }
+}
+
+void
+Categories::onCategoryUpdated(qml::Book::TransactionType type) {
+    if (_type) {
+        DLOG(INFO) << "Model has a type " << *_type << " and sent type is " << type;
+        if (*_type == type) {
+            DLOG(INFO) << "Sending update because types are equal";
+            // just deal with this only when we have the same type
+            beginResetModel();
+            endResetModel();
+        }
+    } else {
+        DLOG(INFO) << "Sending update because we have no type";
+        // since we have not type, we are always interested
+        beginResetModel();
+        endResetModel();
+    }
+}
+
+void
+Categories::onCategoryRemoved(qml::Book::TransactionType type) {
+    if (_type) {
+        DLOG(INFO) << "Model has a type " << *_type << " and sent type is " << type;
+        if (*_type == type) {
+            DLOG(INFO) << "Sending update because types are equal";
+            // just deal with this only when we have the same type
+            beginResetModel();
+            endResetModel();
+        }
+    } else {
+        DLOG(INFO) << "Sending update because we have no type";
+        // since we have not type, we are always interested
+        beginResetModel();
+        endResetModel();
+    }
+}
+
+void
+Categories::onCategoryTypeUpdated() {
+    beginResetModel();
+    endResetModel();
 }
 
 }

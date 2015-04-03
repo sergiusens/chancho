@@ -28,77 +28,61 @@ import Ubuntu.Components.Pickers 0.1
 import Ubuntu.Components.Popups 1.0
 import Ubuntu.Components.ListItems 1.0 as ListItems
 
-import jbQuick.Charts 1.0
-
 import com.chancho 1.0
-import "js/accounts.js" as AccountsJs
 
 PageStack {
-    id: accountsPageStack
+    id: categoriesPageStack
+    Component.onCompleted: push(mainPage)
 
-    Component.onCompleted: {
-        push(mainPage);
-
-        // connect to the diff signals to ensure that we do redraw the graph
-        Book.transactionStored.connect(redrawGraph);
-        Book.transactionRemoved.connect(redrawGraph);
-        Book.transactionUpdated.connect(redrawGraph);
-
-        Book.accountStored.connect(redrawGraph);
-        Book.accountRemoved.connect(redrawGraph);
-        Book.accountUpdated.connect(redrawGraph);
-    }
-
-    function redrawGraph() {
-        var date = new Date();
-        AccountsJs.redrawGraph(Book, chart, date);
-    }
-
-    EditAccount {
-        id: editAccount
+    EditCategory {
+        id: editCategory
 
         visible: false
     }
 
     PageWithBottomEdge {
        id: mainPage
-       title: i18n.tr("Accounts")
+       title: i18n.tr("Categories")
 
-       property var accountsModel: Book.accountsModel()
-
+       property var incomeModel: Book.categoriesModelForType(Book.INCOME)
+       property var expenseModel: Book.categoriesModelForType(Book.EXPENSE)
 
        ColumnLayout {
            anchors.fill: parent
            anchors.margins: units.gu(2) /* two unit so that we have the same as the main page. */
            spacing: units.gu(2)
+
+           Label {
+               id: incomeLabel
+               anchors.left: parent.left
+               anchors.right: parent.right
+               text: i18n.tr("Income categories:")
+           }
+
            UbuntuShape {
-               id: accounts
+               id: income
                color: "white"
                Layout.fillHeight: true
                anchors.left: parent.left
                anchors.right: parent.right
+
                UbuntuListView {
-                   id: daysList
+                   id: incomeList
                    anchors.fill: parent
                    anchors.topMargin: units.gu(1)
                    anchors.bottomMargin: units.gu(1)
                    spacing: units.gu(1)
-                   model: mainPage.accountsModel
-                   property var numberOfAccounts: mainPage.accountsModel.numberOfAccounts()
-                   delegate: AccountComponent {
-                       anchors.left: parent.left
-                       anchors.right: parent.right
-                       anchors.margins: units.gu(1)
-                       color: model.display.color
+                   model: mainPage.incomeModel
+                   delegate: CategoryComponent {
                        name: model.display.name
-                       memo: model.display.memo
-                       amount: model.display.amount
-                       numberOfAccounts: parent.numberOfAccounts
+                       color: model.display.color
+                       numberOfCategories: 9
+
                        MouseArea {
                            anchors.fill: parent
                            onClicked: {
                                parent.selected = !parent.selected;
-                               accountsPageStack.push(editAccount, {"account": model.display});
+                               categoriesPageStack.push(editCategory, {"category": model.display});
                                parent.selected = !parent.selected;
                            }
                        }
@@ -106,38 +90,47 @@ PageStack {
                } // List View
            } // UbuntuShape for list
 
-           UbuntuShape {
-               id: chartShape
-               Layout.fillHeight: true
-               Layout.fillWidth: true
-
+           Label {
+               id: expenseLabel
                anchors.left: parent.left
                anchors.right: parent.right
-               height: childrenRect.height
+               text: i18n.tr("Expense categories:")
+           }
+
+           UbuntuShape {
+               id: expense
                color: "white"
+               Layout.fillHeight: true
+               anchors.left: parent.left
+               anchors.right: parent.right
 
-               Chart {
-                   id: chart
+               UbuntuListView {
+                   id: expenseList
                    anchors.fill: parent
+                   anchors.topMargin: units.gu(1)
+                   anchors.bottomMargin: units.gu(1)
+                   spacing: units.gu(1)
+                   model: mainPage.expenseModel
+                   delegate: CategoryComponent {
+                       name: model.display.name
+                       color: model.display.color
+                       numberOfCategories: 9
 
-                   chartAnimated: true;
-                   chartAnimationEasing: Easing.InOutElastic;
-                   chartAnimationDuration: 2000;
-                   chartType: Charts.ChartType.LINE;
-
-                    Component.onCompleted: {
-                        var accounts = Book.accounts();
-                        var date = new Date();
-                        var data = AccountsJs.calculateGraphData(Book, accounts, date);
-                        chart.chartData = data;
-                    }
-               }
-           }  // chart u shape
+                       MouseArea {
+                           anchors.fill: parent
+                           onClicked: {
+                               parent.selected = !parent.selected;
+                               categoriesPageStack.push(editCategory, {"category": model.display});
+                               parent.selected = !parent.selected;
+                           }
+                       }
+                   }
+               } // List View
+           } // Ubuntu shape list view
        } // ColumnLayout
 
 
-       bottomEdgePageComponent: NewAccount {}
-       bottomEdgeTitle: i18n.tr("Add new account")
+       bottomEdgePageComponent: NewCategory {}
+       bottomEdgeTitle: i18n.tr("Add new category")
     }
 } // page stack
-

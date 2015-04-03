@@ -1,17 +1,25 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource>
+        <file>qml/components/js/accounts.js</file>
+        <file>qml/components/js/categories.js</file>
         <file>qml/MainWindow.qml</file>
         <file>qml/components/AccountComponent.qml</file>
         <file>qml/components/AccountForm.qml</file>
         <file>qml/components/AccountsPage.qml</file>
         <file>qml/components/BillingPerDay.qml</file>
+        <file>qml/components/CategoriesPage.qml</file>
+        <file>qml/components/CategoryComponent.qml</file>
+        <file>qml/components/CategoryForm.qml</file>
+        <file>qml/components/CategoryStatsPage.qml</file>
         <file>qml/components/ColorChooser.qml</file>
         <file>qml/components/DateHeaderComponent.qml</file>
         <file>qml/components/DefaultColors.qml</file>
         <file>qml/components/EditAccount.qml</file>
+        <file>qml/components/EditCategory.qml</file>
         <file>qml/components/EditTransaction.qml</file>
         <file>qml/components/MainPage.qml</file>
         <file>qml/components/NewAccount.qml</file>
+        <file>qml/components/NewCategory.qml</file>
         <file>qml/components/NewTransaction.qml</file>
         <file>qml/components/PageWithBottomEdge.qml</file>
         <file>qml/components/TransactionComponent.qml</file>

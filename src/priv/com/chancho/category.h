@@ -37,6 +37,7 @@ class Book;
 class Category {
 
  friend class Book;
+ friend class Stats;
 
  public:
     enum class Type {
@@ -45,8 +46,8 @@ class Category {
     };
 
     Category() = default;
-    Category(const QString& n, Category::Type t);
-    Category(const QString& n, Category::Type t, std::shared_ptr<Category> p);
+    Category(const QString& n, Category::Type t, const QString& c=QString::null);
+    Category(const QString& n, Category::Type t, std::shared_ptr<Category> p, const QString& c=QString::null);
     Category(const Category& other);
     virtual ~Category() = default;
 
@@ -54,6 +55,7 @@ class Category {
     QString name = QString::null;
     Category::Type type;
     std::shared_ptr<Category> parent;
+    QString color = QString::null;
 
     virtual bool wasStoredInDb() const;
     bool operator==(const Category& rhs);

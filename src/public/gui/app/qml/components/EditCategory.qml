@@ -28,19 +28,19 @@ import Ubuntu.Components.Pickers 0.1
 import Ubuntu.Components.Popups 1.0
 
 import com.chancho 1.0
-import "js/accounts.js" as AccountsJs
 
 Page {
     id: page
-    property var account
+    property var category
 
-    onAccountChanged: {
-        var date = new Date();
-        var graphData = AccountsJs.calculateGraphData(Book, [account], date);
-        form.graphData = graphData;
-        form.name = account.name;
-        form.memo = account.memo;
-        form.color = account.color;
+    onCategoryChanged: {
+        form.name = category.name;
+        if (category.type == Book.EXPENSE) {
+            form.categoryTypeSelectedIndex = 0;
+        } else {
+            form.categoryTypeSelectedIndex = 1;
+        }
+        form.color = category.color;
     }
 
     title: "Edit account"
@@ -73,9 +73,9 @@ Page {
                  text: i18n.tr("ok")
                  color: UbuntuColors.orange
                  onClicked: {
-                    Book.removeAccount(account);
+                    Book.removeCategory(category);
                     PopupUtils.close(dialogue);
-                    accountsPageStack.pop();
+                    categoriesPageStack.pop();
                  }
              }
              Button {
@@ -98,8 +98,10 @@ Page {
                  text: i18n.tr("ok")
                  color: UbuntuColors.orange
                  onClicked: {
-                    Book.updateAccount(account, form.name, form.memo, form.color);
-                    accountsPageStack.pop();
+                    var type = form.categoryTypeModel.get(form.categoryTypeSelectedIndex);
+                    type = type.enumType
+                    Book.updateCategory(category, form.name, form.color, type);
+                    categoriesPageStack.pop();
                     PopupUtils.close(dialogue);
                  }
              }
@@ -112,11 +114,9 @@ Page {
          }
     }
 
-    AccountForm {
+    CategoryForm {
         id: form
         anchors.fill: parent
         anchors.margins: units.gu(1)
-
-        showInitialAmount: false
     }
 }

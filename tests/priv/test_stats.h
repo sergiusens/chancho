@@ -22,24 +22,34 @@
 
 #pragma once
 
-#include <gmock/gmock.h>
 
-#include <QString>
+#include "base_testcase.h"
+#include "public_account.h"
 
-MATCHER_P(QStringEqual, value, "Returns if two QStrings are equal.") {
-    auto argStr = static_cast<QString>(arg);
-    auto valueStr = static_cast<QString>(value);
-    return argStr == valueStr;
-}
+class TestStats : public BaseTestCase {
+    Q_OBJECT
 
+ public:
+    explicit TestStats(QObject *parent = 0)
+            : BaseTestCase("TestStats", parent) { }
 
-MATCHER_P(AccountEquals, value, "Returns if the two accounts are equal.") {
-    return arg->name == value->name && arg->amount == value->amount
-            && arg->initialAmount == value->initialAmount && arg->memo == value->memo
-            && arg->color == value->color;
-}
+ private slots:
 
-MATCHER_P(CategoryEquals, value, "Returns if the two categories are equal.") {
-    return arg->name == value->name && arg->type == value->type && arg->color == value->color;
-}
+    void init() override;
+    void cleanup() override;
+
+    void testMonthTotalsForAccountComplete_data();
+    void testMonthTotalsForAccountComplete();
+
+    void testMonthTotalsForAccountOnlyFirst_data();
+    void testMonthTotalsForAccountOnlyFirst();
+
+    void testMonthTotalsForAccountOnlyLast_data();
+    void testMonthTotalsForAccountOnlyLast();
+
+    void testMonthTotalsForAccountScattered_data();
+    void testMonthTotalsForAccountScattered();
+
+    void testCategoriesPercentage();
+};
 

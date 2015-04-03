@@ -46,6 +46,7 @@ class Category : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(com::chancho::qml::Book::TransactionType type READ getType WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(QString color READ getColor WRITE setColor NOTIFY colorChanged)
 
     friend class models::Categories;
     friend class qml::Book;
@@ -54,6 +55,7 @@ class Category : public QObject {
  public:
     explicit Category(QObject* parent=0);
     Category(QString name, qml::Book::TransactionType type, QObject* parent =0);
+    Category(QString name, qml::Book::TransactionType type, QString color, QObject* parent =0);
 
     QString getName() const;
     void setName(QString name);
@@ -61,9 +63,13 @@ class Category : public QObject {
     com::chancho::qml::Book::TransactionType getType() const;
     void setType(com::chancho::qml::Book::TransactionType type);
 
+    QString getColor() const;
+    void setColor(QString color);
+
  signals:
     void nameChanged(QString);
     void typeChanged(com::chancho::qml::Book::TransactionType type);
+    void colorChanged(QString);
 
  protected:
     Category(CategoryPtr cat, QObject* parent=0);

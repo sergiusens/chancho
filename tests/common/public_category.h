@@ -36,11 +36,11 @@ class PublicCategory : public chancho::Category {
         _dbId = id;
     }
 
-    PublicCategory(const QString& n, Category::Type t)
-            : chancho::Category(n, t) {}
+    PublicCategory(const QString& n, Category::Type t, const QString& c=QString::null)
+            : chancho::Category(n, t, c) {}
 
-    PublicCategory(const QString& n, Category::Type t, std::shared_ptr<Category> p)
-            : chancho::Category(n, t, p) {}
+    PublicCategory(const QString& n, Category::Type t, std::shared_ptr<Category> p, const QString& c=QString::null)
+            : chancho::Category(n, t, p, c) {}
 
     virtual ~PublicCategory() = default;
 
