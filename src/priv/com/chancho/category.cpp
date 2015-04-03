@@ -26,21 +26,24 @@ namespace com {
 
 namespace chancho {
 
-Category::Category(const QString& n, Category::Type t)
-    : name(n),
-      type(t) {
-}
-
-Category::Category(const QString& n, Category::Type t, std::shared_ptr<Category> p)
+Category::Category(const QString& n, Category::Type t, const QString& c)
     : name(n),
       type(t),
-      parent(p){
+      color(c) {
+}
+
+Category::Category(const QString& n, Category::Type t, std::shared_ptr<Category> p, const QString& c)
+    : name(n),
+      type(t),
+      parent(p),
+      color(c) {
 }
 
 Category::Category(const Category& other)
         : name(other.name),
           type(other.type),
-          parent(other.parent) {
+          parent(other.parent),
+          color(other.color) {
 }
 
 bool

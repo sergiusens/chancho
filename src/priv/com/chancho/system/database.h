@@ -69,6 +69,19 @@ static void subtractStringNumbers(sqlite3_context *context, int argc, sqlite3_va
     }
 }
 
+static void negateStringNumber(sqlite3_context *context, int argc, sqlite3_value **argv) {
+    DLOG(INFO) << __PRETTY_FUNCTION__;
+    if (argc == 1) {
+        auto first = reinterpret_cast<const char*>(sqlite3_value_text(argv[0]));
+        if (first) {
+            auto firstAmount = QString::fromUtf8(first).toDouble();
+            auto result = QString::number(-1 * firstAmount);
+            sqlite3_result_text(context, result.toStdString().c_str(), -1, SQLITE_TRANSIENT);
+            return;
+        }
+    }
+}
+
 static void stringSumStep(sqlite3_context *context, int, sqlite3_value** argv) {
     double *amount = (double *) sqlite3_aggregate_context(context, sizeof(double));
 
@@ -291,11 +304,20 @@ class Database {
             return false;
         }
 
-        added = sqlite3_create_function_v2(handler, "SSUM", 1, SQLITE_ANY, NULL, NULL, stringSumStep, stringSumFinal, NULL);
+        added = sqlite3_create_function_v2(handler, "SSUM", 1, SQLITE_ANY, nullptr, nullptr, stringSumStep, stringSumFinal, nullptr);
         if (added == SQLITE_OK) {
             DLOG(INFO) << "SSUM added";
         } else {
             LOG(WARNING) << "Cannot create SQLite functions: SSUM";
+            return false;
+        }
+
+        added = sqlite3_create_function(handler, "NegateStringNumber", 1, SQLITE_UTF8, nullptr, &negateStringNumber, nullptr, nullptr);
+
+        if (added == SQLITE_OK) {
+            DLOG(INFO) << "NegateStringNumber added";
+        } else {
+            LOG(WARNING) << "Cannot create SQLite functions: NegateStringNumber";
             return false;
         }
 

@@ -108,5 +108,43 @@ TestCategory::testSetTypeSignal() {
     QCOMPARE(spy.count(), 1);
 }
 
+void
+TestCategory::testGetColor() {
+    QString name = "Bankia";
+    auto type = com::chancho::qml::Book::EXPENSE;
+    QString color = "#fef";
+
+    auto cat = std::make_shared<com::chancho::qml::Category>(name, type, color);
+    QCOMPARE(cat->getColor(), color);
+}
+
+void
+TestCategory::testSetColorNoSignal() {
+    QString name = "Bankia";
+    auto type = com::chancho::qml::Book::EXPENSE;
+    QString color = "#001";
+
+    auto cat = std::make_shared<com::chancho::qml::Category>(name, type, color);
+    QCOMPARE(cat->getColor(), color);
+
+    QSignalSpy spy(cat.get(), SIGNAL(colorChanged(QString)));
+    cat->setColor(color);
+    QCOMPARE(spy.count(), 0);
+}
+
+void
+TestCategory::testSetColorSignal() {
+    QString name = "Bankia";
+    auto type = com::chancho::qml::Book::EXPENSE;
+    QString color = "#001";
+
+    auto cat = std::make_shared<com::chancho::qml::Category>(name, type, color);
+    QCOMPARE(cat->getColor(), color);
+
+    QSignalSpy spy(cat.get(), SIGNAL(colorChanged(QString)));
+    cat->setColor(color + "90");
+    QCOMPARE(spy.count(), 1);
+}
+
 QTEST_MAIN(TestCategory)
 

@@ -108,7 +108,7 @@ UbuntuShape {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            model: Book.categoriesModeForType(Book.EXPENSE)
+            model: Book.categoriesModelForType(Book.EXPENSE)
             delegate: categoriesDelegate
         }
 

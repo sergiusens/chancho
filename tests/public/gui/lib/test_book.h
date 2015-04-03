@@ -65,4 +65,18 @@ class TestBook : public BaseTestCase {
     void testUpdateAccountNoNeed();
     void testUpdateAccount();
     void testUpdateAccountBookError();
+
+    void testStoreCategoryIncome();
+    void testStoreCategoryExpense();
+    void testStoreCategoryBookError();
+
+    void testUpdateCategoryWrongObj();
+    void testUpdateCategoryNoUpdate();
+    void testUpdateSameType();
+    void testUpdateDiffType();
+    void testUpdateBookError();
+
+    void testRemoveCategoryWrongObj();
+    void testRemoveCategory();
+    void testRemoveCategoryBookError();
 };

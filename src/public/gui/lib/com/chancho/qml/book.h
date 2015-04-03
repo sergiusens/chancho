@@ -57,7 +57,10 @@ class Book : public QObject {
     Q_INVOKABLE bool updateTransaction(QObject* transaction, QObject* accModel, QObject* catModel, QDate date,
                                        QString contents, QString memo, double amount);
     Q_INVOKABLE QObject* categoriesModel();
-    Q_INVOKABLE QObject* categoriesModeForType(TransactionType type);
+    Q_INVOKABLE QObject* categoriesModelForType(TransactionType type);
+    Q_INVOKABLE bool storeCategory(QString name, QString color, Book::TransactionType type);
+    Q_INVOKABLE bool updateCategory(QObject* category, QString name, QString color, Book::TransactionType type);
+    Q_INVOKABLE bool removeCategory(QObject* category);
     Q_INVOKABLE QObject* dayModel(int day, int month, int year);
     Q_INVOKABLE QObject* monthModel(QDate date);
 
@@ -65,6 +68,10 @@ class Book : public QObject {
     void accountStored();
     void accountRemoved();
     void accountUpdated();
+    void categoryStored(Book::TransactionType type);
+    void categoryUpdated(Book::TransactionType type);
+    void categoryRemoved(Book::TransactionType type);
+    void categoryTypeUpdated();
     void transactionStored(QDate date);
     void transactionRemoved(QDate date);
     void transactionUpdated(QDate oldDate, QDate newDate);

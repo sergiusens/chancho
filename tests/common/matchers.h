@@ -39,3 +39,7 @@ MATCHER_P(AccountEquals, value, "Returns if the two accounts are equal.") {
             && arg->color == value->color;
 }
 
+MATCHER_P(CategoryEquals, value, "Returns if the two categories are equal.") {
+    return arg->name == value->name && arg->type == value->type && arg->color == value->color;
+}
+
