@@ -37,6 +37,7 @@ class Book;
 class Category {
 
  friend class Book;
+ friend class Stats;
 
  public:
     enum class Type {

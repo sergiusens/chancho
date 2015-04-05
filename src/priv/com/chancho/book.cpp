@@ -174,6 +174,9 @@ namespace {
     const QString SELECT_DAY_CATEGORY_TYPE_SUM = "SELECT SSUM(t.amount) FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid  WHERE c.type=:type AND t.day=:day AND "\
         "t.month=:month AND t.year=:year";
+    // views that are used by the stats, this are present to simplify the select statements
+    const QString ACCOUNT_MONTH_TOTAL_VIEW = "CREATE VIEW AccountsMonthTotal AS "\
+        "SELECT account, SSUM(amount) AS month_amount, month, year from Transactions GROUP BY account, month, year";
     const QString FOREIGN_KEY_SUPPORT = "PRAGMA foreign_keys = ON";
 
 }
@@ -256,6 +259,7 @@ Book::initDatabse() {
         success &= query->exec(TRANSACTION_CATEGORY_INDEX);
         success &= query->exec(TRANSACTION_CATEGORY_MONTH_INDEX);
         success &= query->exec(TRANSACTION_ACCOUNT_INDEX);
+        success &= query->exec(ACCOUNT_MONTH_TOTAL_VIEW);
 
         if (success)
             db->commit();
@@ -275,7 +279,6 @@ Book::Book() {
 }
 
 Book::~Book() {
-
 }
 
 void

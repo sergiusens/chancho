@@ -49,6 +49,7 @@ namespace chancho {
     \since 0.1
 */
 class Book {
+    friend class Stats;
  public:
     Book();
     virtual ~Book();

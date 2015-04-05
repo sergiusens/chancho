@@ -22,48 +22,34 @@
 
 #pragma once
 
-#include <memory>
 
-#include <QMetaType>
-#include <QString>
-#include <QUuid>
+#include "base_testcase.h"
+#include "public_account.h"
 
-namespace com {
-
-namespace chancho {
-
-class Account {
-    friend class Book;
-    friend class Stats;
+class TestStats : public BaseTestCase {
+    Q_OBJECT
 
  public:
-    Account() = default;
-    Account(const QString& n, double a=0, const QString& m=QString::null, const QString& c=QString::null);
-    virtual ~Account() = default;
+    explicit TestStats(QObject *parent = 0)
+            : BaseTestCase("TestStats", parent) { }
 
- public:
-    QString name = QString::null;
-    double amount = 0;
-    double initialAmount = 0;
-    QString memo = QString::null;
-    QString color = QString::null;
+ private slots:
 
-    virtual bool wasStoredInDb() const;
-    bool operator==(const Account& rhs);
-    bool operator!=(const Account& rhs);
+    void init() override;
+    void cleanup() override;
 
- protected:
-    // optional so that we know if a category was added to the db or not
-    QUuid _dbId;
+    void testMonthTotalsForAccountComplete_data();
+    void testMonthTotalsForAccountComplete();
+
+    void testMonthTotalsForAccountOnlyFirst_data();
+    void testMonthTotalsForAccountOnlyFirst();
+
+    void testMonthTotalsForAccountOnlyLast_data();
+    void testMonthTotalsForAccountOnlyLast();
+
+    void testMonthTotalsForAccountScattered_data();
+    void testMonthTotalsForAccountScattered();
+
+    void testCategoriesPercentage();
 };
 
-typedef std::shared_ptr<Account> AccountPtr;
-
-bool operator==(const AccountPtr& lhs, const AccountPtr& rhs);
-bool operator!=(const AccountPtr& lhs, const AccountPtr& rhs);
-
-}
-
-}
-
-Q_DECLARE_METATYPE(std::shared_ptr<com::chancho::Account>)
