@@ -44,7 +44,7 @@ class Day;
 
 class Transaction : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QString account READ getAccount)
+    Q_PROPERTY(QString account READ getAccount NOTIFY accountChanged)
     Q_PROPERTY(QObject* accountModel READ getAccountModel WRITE setAccountModel)
     Q_PROPERTY(double amount READ getAmount WRITE setAmount NOTIFY amountChanged)
     Q_PROPERTY(QString category READ getCategory NOTIFY categoryChanged)
@@ -90,6 +90,7 @@ class Transaction : public QObject {
     Transaction(TransactionPtr transactionPtr, QObject* parent=0);
 
  signals:
+    void accountChanged(QString account);
     void amountChanged(double amount);
     void categoryChanged(QString category);
     void dateChanged(QDate date);

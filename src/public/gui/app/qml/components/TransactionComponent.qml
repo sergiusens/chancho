@@ -62,24 +62,34 @@ Item {
                 anchors.right: parent.right
                 height: childrenRect.height
 
-                Label {
-                    id: categoryLabel
+                ColumnLayout {
+                    id: categoryInfo
                     width: units.gu(20)
-
                     anchors.left: parent.left
                     anchors.top: parent.top
 
-                    text: model.display.category
-                    elide: Text.ElideRight
-                    font.bold: true
-                    horizontalAlignment: Text.AlignLeft
+                    Label {
+                        id: categoryLabel
+                        text: model.display.category
+                        elide: Text.ElideRight
+                        font.bold: true
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    Label {
+                        id: accountLabel
+                        text: model.display.account
+                        fontSize: "small"
+                        elide: Text.ElideRight
+                        horizontalAlignment: Text.AlignLeft
+                    }
                 }
 
                 Label {
                     id: contentsLabel
-                    anchors.left: categoryLabel.right
+                    anchors.left: categoryInfo.right
                     anchors.top: parent.top
-                    width: parent.width - categoryLabel.width - amountLabel.width
+                    width: parent.width - categoryInfo.width - amountLabel.width
 
                     text: model.display.contents
                     elide: Text.ElideRight

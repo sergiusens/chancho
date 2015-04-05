@@ -132,6 +132,7 @@ Transaction::setAccountModel(QObject* account) {
     auto acc = qobject_cast<qml::Account*>(account);
     if(acc != nullptr) {
         _transaction->account = acc->getAccount();
+        emit accountChanged(_transaction->account->name);
     }
 }
 

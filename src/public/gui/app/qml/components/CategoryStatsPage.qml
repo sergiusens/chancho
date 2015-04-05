@@ -125,7 +125,7 @@ PageStack {
                    chartAnimationDuration: 1000;
                    chartOptions: {"segmentStrokeColor": "#ECECEC"};
 
-                    Component.onCompleted: {
+                   Component.onCompleted: {
                         var accounts = Book.accounts();
                         var date = new Date();
                         var percentages = CategoriesJs.calculateGraphData(Book, date);
