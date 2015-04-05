@@ -128,7 +128,8 @@ UbuntuShape {
                 anchors.fill: parent
 
                 onClicked: {
-                    PickerPanel.openDatePicker(datePicker, "date");
+                    var popup = PickerPanel.openDatePicker(dateTitle, "date", "Years|Months");
+                    popup.picker.minimum = new Date(1900, 1, 1);
                 }
             }
         }
