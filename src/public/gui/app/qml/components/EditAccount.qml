@@ -68,14 +68,22 @@ Page {
          Dialog {
              id: dialogue
              title: i18n.tr("Delete entry")
-             text: i18n.tr("Do you want to remove this entry?")
+             text: i18n.tr("Do you want to remove this account?")
              Button {
                  text: i18n.tr("ok")
                  color: UbuntuColors.orange
                  onClicked: {
-                    Book.removeAccount(account);
-                    PopupUtils.close(dialogue);
-                    accountsPageStack.pop();
+                    var allAccounts = Book.accounts()
+                    if (allAccounts.length > 1) {
+                        Book.removeAccount(account);
+                        PopupUtils.close(dialogue);
+                        accountsPageStack.pop();
+                    } else {
+                        PopupUtils.close(dialogue);
+                        var title = i18n.tr("Error");
+                        var text = i18n.tr("You must have at least one account in the system.");
+                        PopupUtils.open(errorDialog, page, {"title": title, "text": text});
+                    }
                  }
              }
              Button {
@@ -83,6 +91,19 @@ Page {
                  onClicked: {
                     PopupUtils.close(dialogue);
                  }
+             }
+         }
+    }
+
+    Component {
+         id: errorDialog
+
+         Dialog {
+             id: dialogue
+             Button {
+                 text: "ok"
+                 color: UbuntuColors.orange
+                 onClicked: PopupUtils.close(dialogue)
              }
          }
     }
