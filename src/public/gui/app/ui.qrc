@@ -1,5 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource>
+        <file>qml/components/js/accounts.js</file>
+        <file>qml/components/js/categories.js</file>
         <file>qml/MainWindow.qml</file>
         <file>qml/components/AccountComponent.qml</file>
         <file>qml/components/AccountForm.qml</file>
@@ -8,6 +10,7 @@
         <file>qml/components/CategoriesPage.qml</file>
         <file>qml/components/CategoryComponent.qml</file>
         <file>qml/components/CategoryForm.qml</file>
+        <file>qml/components/CategoryStatsPage.qml</file>
         <file>qml/components/ColorChooser.qml</file>
         <file>qml/components/DateHeaderComponent.qml</file>
         <file>qml/components/DefaultColors.qml</file>

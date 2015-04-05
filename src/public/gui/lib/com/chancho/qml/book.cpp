@@ -20,6 +20,8 @@
  * THE SOFTWARE.
  */
 
+#include <com/chancho/stats.h>
+
 #include "models/accounts.h"
 #include "models/categories.h"
 #include "models/day.h"
@@ -57,6 +59,38 @@ Book::accountsModel() {
     connect(this, &Book::categoryTypeUpdated, model, &models::Accounts::onCategoryTypeUpdated);
 
     return model;
+}
+
+QVariantList
+Book::accounts() {
+    QVariantList result;
+    auto accs = _book->accounts();
+
+    if (_book->isError()) {
+        return result;
+    }
+
+    foreach(const com::chancho::AccountPtr& acc, accs) {
+        auto qmlAcc = new com::chancho::qml::Account(acc);
+        result.append(QVariant::fromValue(qmlAcc));
+    }
+    return result;
+}
+
+QVariantList
+Book::monthsTotalForAccount(QObject* acc, int year) {
+    QVariantList result;
+    auto stats = _book->stats();
+    auto qmlAcc = qobject_cast<qml::Account *>(acc);
+    if (qmlAcc == nullptr) {
+        return result;
+    }
+    auto doubleList = stats->monthsTotalForAccount(qmlAcc->getAccount(), year);
+    foreach(double amount, doubleList) {
+        result.append(QVariant(amount));
+    }
+
+    return result;
 }
 
 bool
@@ -238,6 +272,22 @@ Book::categoriesModelForType(TransactionType type) {
     connect(this, &Book::categoryRemoved, model, &models::Categories::onCategoryRemoved);
     connect(this, &Book::categoryTypeUpdated, model, &models::Categories::onCategoryTypeUpdated);
     return model;
+}
+
+QVariantList
+Book::categoryPercentagesForMonth(int month, int year) {
+    QVariantList result;
+    auto stats = _book->stats();
+    auto statsForMonth = stats->categoryPercentages(month, year);
+    foreach(const com::chancho::Stats::CategoryPercentage info, statsForMonth.second) {
+        // create a variant map that will contains the category and the value
+        QVariantMap map;
+        map["category"] = QVariant::fromValue(new com::chancho::qml::Category(info.category));
+        map["amount"] = (info.amount < 0)? -1 * info.amount: info.amount;
+        result.append(map);
+    }
+
+    return result;
 }
 
 bool

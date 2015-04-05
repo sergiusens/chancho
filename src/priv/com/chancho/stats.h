@@ -36,6 +36,8 @@ namespace com {
 
 namespace chancho {
 
+class Book;
+
 /*!
    \class Stats
    \brief The Stats class allows to perform queries about different stats related to the data stored in the
@@ -43,6 +45,8 @@ namespace chancho {
    \since 0.1
 */
 class Stats {
+    friend class Book;
+
  public:
 
     struct CategoryPercentage {
@@ -92,9 +96,14 @@ class Stats {
     virtual QString lastError();
 
  protected:
+    Stats(std::shared_ptr<system::Database> db);
+
+ private:
     std::shared_ptr<system::Database> _db;
     QString _lastError = QString::null;
 };
+
+typedef std::shared_ptr<Stats> StatsPtr;
 
 }
 

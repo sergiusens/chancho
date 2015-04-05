@@ -47,8 +47,12 @@ Stats::Stats() {
     _db->setDatabaseName(dbPath);
 }
 
-Stats::~Stats() {
+Stats::Stats(std::shared_ptr<system::Database> db):
+    _db(db) {
 
+}
+
+Stats::~Stats() {
 }
 
 

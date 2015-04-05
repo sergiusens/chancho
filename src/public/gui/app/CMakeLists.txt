@@ -19,6 +19,8 @@ set(SOURCES
 )
 
 set(QML_SOURCES
+    qml/components/js/accounts.js
+    qml/components/js/categories.js
     qml/MainWindow.qml
     qml/components/AccountComponent.qml
     qml/components/AccountForm.qml
@@ -27,6 +29,7 @@ set(QML_SOURCES
     qml/components/CategoriesPage.qml
     qml/components/CategoryComponent.qml
     qml/components/CategoryForm.qml
+    qml/components/CategoryStatsPage.qml
     qml/components/ColorChooser.qml
     qml/components/DateHeaderComponent.qml
     qml/components/DefaultColors.qml

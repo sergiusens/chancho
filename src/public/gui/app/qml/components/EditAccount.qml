@@ -28,12 +28,16 @@ import Ubuntu.Components.Pickers 0.1
 import Ubuntu.Components.Popups 1.0
 
 import com.chancho 1.0
+import "js/accounts.js" as AccountsJs
 
 Page {
     id: page
     property var account
 
     onAccountChanged: {
+        var date = new Date();
+        var graphData = AccountsJs.calculateGraphData(Book, [account], date);
+        form.graphData = graphData;
         form.name = account.name;
         form.memo = account.memo;
         form.color = account.color;

@@ -44,9 +44,11 @@ class Book : public QObject {
     Q_ENUMS(TransactionType)
 
     explicit Book(QObject* parent=0);
-    explicit Book(BookPtr book, QObject* parent=0);
+    Book(BookPtr book, QObject* parent=0);
 
     Q_INVOKABLE QObject* accountsModel();
+    Q_INVOKABLE QVariantList accounts();
+    Q_INVOKABLE QVariantList monthsTotalForAccount(QObject* account, int year);
     Q_INVOKABLE bool storeAccount(QString name, QString memo, QString color, double initialAmount);
     Q_INVOKABLE bool removeAccount(QObject* account);
     Q_INVOKABLE bool updateAccount(QObject* account, QString name, QString memo, QString color);
@@ -58,6 +60,7 @@ class Book : public QObject {
                                        QString contents, QString memo, double amount);
     Q_INVOKABLE QObject* categoriesModel();
     Q_INVOKABLE QObject* categoriesModelForType(TransactionType type);
+    Q_INVOKABLE QVariantList categoryPercentagesForMonth(int month, int year);
     Q_INVOKABLE bool storeCategory(QString name, QString color, Book::TransactionType type);
     Q_INVOKABLE bool updateCategory(QObject* category, QString name, QString color, Book::TransactionType type);
     Q_INVOKABLE bool removeCategory(QObject* category);

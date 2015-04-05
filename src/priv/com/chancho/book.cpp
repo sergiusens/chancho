@@ -32,6 +32,7 @@
 #include <com/chancho/system/database_lock.h>
 #include <com/chancho/system/database_factory.h>
 
+#include "stats.h"
 #include "book.h"
 
 namespace com {
@@ -1272,6 +1273,14 @@ Book::incomeForDay(int day, int month, int year) {
 double
 Book::expenseForDay(int day, int month, int year) {
     return amountForTypeInDay(day, month, year, Category::Type::EXPENSE);
+}
+
+std::shared_ptr<Stats>
+Book::stats() {
+    auto stats = new Stats(_db);
+    std::shared_ptr<Stats> result;
+    result.reset(stats);
+    return result;
 }
 
 bool

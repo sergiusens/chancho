@@ -42,6 +42,8 @@ namespace com {
 
 namespace chancho {
 
+class Stats;
+
  /*!
     \class Book
     \brief The Book class allows to perform the queries to the backend databse used to store the different transactions
@@ -50,6 +52,7 @@ namespace chancho {
 */
 class Book {
     friend class Stats;
+
  public:
     Book();
     virtual ~Book();
@@ -259,6 +262,8 @@ class Book {
         Returns expense that was added in an specific day.
     */
     virtual double expenseForDay(int day, int month, int year);
+
+    virtual std::shared_ptr<Stats> stats();
 
     static void initDatabse();
 

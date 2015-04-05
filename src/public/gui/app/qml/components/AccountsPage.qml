@@ -31,10 +31,28 @@ import Ubuntu.Components.ListItems 1.0 as ListItems
 import jbQuick.Charts 1.0
 
 import com.chancho 1.0
+import "js/accounts.js" as AccountsJs
 
 PageStack {
     id: accountsPageStack
-    Component.onCompleted: push(mainPage)
+
+    Component.onCompleted: {
+        push(mainPage);
+
+        // connect to the diff signals to ensure that we do redraw the graph
+        Book.transactionStored.connect(redrawGraph);
+        Book.transactionRemoved.connect(redrawGraph);
+        Book.transactionUpdated.connect(redrawGraph);
+
+        Book.accountStored.connect(redrawGraph);
+        Book.accountRemoved.connect(redrawGraph);
+        Book.accountUpdated.connect(redrawGraph);
+    }
+
+    function redrawGraph() {
+        var date = new Date();
+        AccountsJs.redrawGraph(Book, chart, date);
+    }
 
     EditAccount {
         id: editAccount
@@ -47,6 +65,7 @@ PageStack {
        title: i18n.tr("Accounts")
 
        property var accountsModel: Book.accountsModel()
+
 
        ColumnLayout {
            anchors.fill: parent
@@ -106,43 +125,12 @@ PageStack {
                    chartAnimationDuration: 2000;
                    chartType: Charts.ChartType.LINE;
 
-                   Component.onCompleted: {
-                       chartData = {
-                           labels: [
-                               i18n.tr("January"),
-                               i18n.tr("February"),
-                               i18n.tr("March"),
-                               i18n.tr("April"),
-                               i18n.tr("May"),
-                               i18n.tr("June"),
-                               i18n.tr("July"),
-                               i18n.tr("August"),
-                               i18n.tr("September"),
-                               i18n.tr("October"),
-                               i18n.tr("November"),
-                               i18n.tr("December")],
-                           datasets: [{
-                               label: "My First dataset",
-                               fillColor: "orange",
-                               strokeColor: "orange",
-                               pointColor: "orange",
-                               pointStrokeColor: "#fff",
-                               pointHighlightFill: "#fff",
-                               pointHighlightStroke: "rgba(220,220,220,1)",
-                               data: [65, -59, 80.5, 81, -156, 55, 140, 90, 45, 12, 98, 25]
-                           }, {
-
-                               label: "My First dataset",
-                               fillColor: "blue",
-                               strokeColor: "blue",
-                               pointColor: "blue",
-                               pointStrokeColor: "#fff",
-                               pointHighlightFill: "#fff",
-                               pointHighlightStroke: "rgba(220,220,220,1)",
-                               data: [5, -19, 9.5, 81, -15, 85, 121, 220, 48, 14, 102, 35]
-                           }]
-                       }
-                   }
+                    Component.onCompleted: {
+                        var accounts = Book.accounts();
+                        var date = new Date();
+                        var data = AccountsJs.calculateGraphData(Book, accounts, date);
+                        chart.chartData = data;
+                    }
                }
            }  // chart u shape
        } // ColumnLayout

@@ -35,6 +35,7 @@ import com.chancho 1.0
 UbuntuShape {
     id: topShape
 
+    property var graphData
     property alias color: colorChooser.color
     property alias name: nameField.text
     property alias memo: memoTextArea.text
@@ -42,11 +43,42 @@ UbuntuShape {
     property alias initialAmount: initialAmount.text
 
     onColorChanged: {
-        colorChooser.lightColor = Qt.lighter(color, 1.6);
-        colorChooser.darkColor = Qt.darker(color, 1.2);
+        if (graphData) {
+            colorChooser.lightColor = Qt.lighter(color, 1.6);
+            colorChooser.lightColor.a = 0.5;
+            colorChooser.darkColor = Qt.darker(color, 1.2);
 
-        chart.chartData.datasets[0]["fillColor"] = colorChooser.lightColor;
-        chart.chartData.datasets[0]["pointColor"] = colorChooser.darkColor;
+            chart.chartData.datasets[0]["fillColor"] = colorChooser.lightColor;
+            chart.chartData.datasets[0]["strokeColor"] = colorChooser.color;
+            chart.chartData.datasets[0]["pointColor"] = colorChooser.darkColor;
+        }
+    }
+
+    Component.onCompleted: {
+        // grab the accounts and set the diff data
+        if (!topShape.graphData) {
+            var chartData = {
+                labels: [
+                    i18n.tr("January"),
+                    i18n.tr("February"),
+                    i18n.tr("March"),
+                    i18n.tr("April"),
+                    i18n.tr("May"),
+                    i18n.tr("June"),
+                    i18n.tr("July"),
+                    i18n.tr("August"),
+                    i18n.tr("September"),
+                    i18n.tr("October"),
+                    i18n.tr("November"),
+                    i18n.tr("December")],
+                datasets: []
+            }
+        }
+        topShape.graphData = chartData;
+    }
+
+    onGraphDataChanged: {
+        chart.chartData =  topShape.graphData;
     }
 
     Component {
@@ -158,31 +190,8 @@ UbuntuShape {
                 chartType: Charts.ChartType.LINE;
 
                 Component.onCompleted: {
-                    chartData = {
-                        labels: [
-                            i18n.tr("January"),
-                            i18n.tr("February"),
-                            i18n.tr("March"),
-                            i18n.tr("April"),
-                            i18n.tr("May"),
-                            i18n.tr("June"),
-                            i18n.tr("July"),
-                            i18n.tr("August"),
-                            i18n.tr("September"),
-                            i18n.tr("October"),
-                            i18n.tr("November"),
-                            i18n.tr("December")],
-                        datasets: [{
-                            label: nameField.text,
-                            fillColor: colorChooser.lightColor,
-                            strokeColor: colorChooser.color,
-                            pointColor: colorChooser.darkColor,
-                            pointStrokeColor: "#fff",
-                            pointHighlightFill: "#fff",
-                            pointHighlightStroke: "rgba(220,220,220,1)",
-                            data: [65, -59, 80.5, 81, -156, 55, 140, 90, 45, 12, 98, 25]
-                        }]
-                    }
+                    // grab the accounts and set the diff data
+                    chart.chartData = topShape.graphData;
                 }
             }
         }  // chart u shape
