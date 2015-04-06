@@ -67,18 +67,24 @@ Page {
             iconName: "delete"
             text: i18n.tr("Delete")
             onTriggered: {
-                var deleteEntryCb = function() {
-                    Book.removeAccount(account);
-                    PopupUtils.close(dialogue);
-                    accountsPageStack.pop();
-                };
-                var properties = {
-                    "title": i18n.tr("Delete entry"),
-                    "text": i18n.tr("Do you want to remove this entry?"),
-                    "okCallback": deleteEntryCb
-                };
+                var allAccounts = Book.accounts()
+                if (allAccounts.length > 1) {
+                    var deleteEntryCb = function() {
+                        Book.removeAccount(account);
+                        accountsPageStack.pop();
+                    };
+                    var properties = {
+                        "title": i18n.tr("Delete entry"),
+                        "text": i18n.tr("Do you want to remove this entry?"),
+                        "okCallback": deleteEntryCb
+                    };
 
-                PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+                    PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+                } else {
+                    var title = i18n.tr("Error");
+                    var text = i18n.tr("You must have at least one account in the system.");
+                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
+                }
             }
         }
     ]
