@@ -61,6 +61,7 @@ class Book : public QObject {
     Q_INVOKABLE QObject* categoriesModel();
     Q_INVOKABLE QObject* categoriesModelForType(TransactionType type);
     Q_INVOKABLE QVariantList categoryPercentagesForMonth(int month, int year);
+    Q_INVOKABLE QVariantList monthsTotalForCategory(QObject* category, int year);
     Q_INVOKABLE bool storeCategory(QString name, QString color, Book::TransactionType type);
     Q_INVOKABLE bool updateCategory(QObject* category, QString name, QString color, Book::TransactionType type);
     Q_INVOKABLE bool removeCategory(QObject* category);

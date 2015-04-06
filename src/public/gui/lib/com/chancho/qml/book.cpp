@@ -290,6 +290,22 @@ Book::categoryPercentagesForMonth(int month, int year) {
     return result;
 }
 
+QVariantList
+Book::monthsTotalForCategory(QObject* category, int year) {
+    QVariantList result;
+    auto stats = _book->stats();
+    auto qmlCat = qobject_cast<qml::Category*>(category);
+    if (qmlCat == nullptr) {
+        return result;
+    }
+    auto doubleList = stats->monthsTotalForCategory(qmlCat->getCategory(), year);
+    foreach(double amount, doubleList) {
+        result.append(QVariant(amount));
+    }
+
+    return result;
+}
+
 bool
 Book::storeCategory(QString name, QString color, Book::TransactionType type) {
     DLOG(INFO) << __PRETTY_FUNCTION__ << " " << name.toStdString() << " " << color.toStdString();
