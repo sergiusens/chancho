@@ -20,42 +20,28 @@
  * THE SOFTWARE.
  */
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.1
-
-import Ubuntu.Components 1.1
-import Ubuntu.Components.Pickers 0.1
-import Ubuntu.Components.Popups 1.0
-
-import com.chancho 1.0
-
-Page {
-    id: page
-
-    title: "Add new category"
-
-    head.actions: [
-        Action {
-            iconName: "add"
-            text: i18n.tr("Add")
-            onTriggered: {
-                var type = form.categoryTypeModel.get(form.categoryTypeSelectedIndex);
-                type = type.enumType
-                var success = Book.storeCategory(form.name, form.color, type);
-                if (success) {
-                    categoriesPageStack.pop();
-                } else {
-                    var title = i18n.tr("Internal Error");
-                    var text = i18n.tr("The category could not be stored.");
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
-                }
-            }
-        }
-    ]
-
-    CategoryForm {
-        id: form
-        anchors.fill: parent
-        anchors.margins: units.gu(1)
+/**
+ * Callback to be executed when the user clicks the add button in the categories page in the wizard. The callback
+ * reads all the information and updates the correct model according to the user selection.
+ *
+ * @param nameField The field where the user types the name of the category.
+ * @param typeOptionPicker The option picker that states the type of category.
+ * @param colorChooser The components that is used to display the color that the category is going to use.
+ * @param incomeModel The model used to show the income categories.
+ * @param expenseModel The model used to show the expense categories.
+ */
+function onAddCategoryOkClicked(nameField, typeOptionPicker, colorChooser, incomeModel, expenseModel) {
+    var model = expenseModel;
+    if (typeOptionPicker.selectedIndex == 1) {
+        model = incomeModel;
     }
+
+    var color = "" + colorChooser.color;
+    console.log("Adding new category to wizard "
+        + "{'name': " + nameField.text + ", 'color': " + color);
+
+    model.append({
+        "name": nameField.text,
+        "color": color
+    });
 }

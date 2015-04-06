@@ -44,7 +44,7 @@ Page {
                     // we must have the amount
                     var title = i18n.tr("Error: amount is missing");
                     var text = i18n.tr("Transactions must have an amount.");
-                    PopupUtils.open(dialog, page, {"title": title, "text": text});
+                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
                 } else {
                     var account = form.accountModel.get(form.accountIndex);
                     amount = amount.replace(",", ".");
@@ -58,25 +58,12 @@ Page {
                     } else {
                         var title = i18n.tr("Internal Error");
                         var text = i18n.tr("The transaction could not be stored.");
-                        PopupUtils.open(dialog, page, {"title": title, "text": text});
+                        PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
                     }
                 }
             }
         }
     ]
-
-    Component {
-         id: dialog
-
-         Dialog {
-             id: dialogue
-             Button {
-                 text: "ok"
-                 color: UbuntuColors.orange
-                 onClicked: PopupUtils.close(dialogue)
-             }
-         }
-    }
 
     TransactionForm {
         id: form

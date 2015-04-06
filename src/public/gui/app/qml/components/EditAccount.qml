@@ -50,88 +50,44 @@ Page {
             iconName: "edit"
             text: i18n.tr("Edit")
             onTriggered: {
-                PopupUtils.open(editDialog, page);
+                var updateEntryCb = function() {
+                    Book.updateAccount(account, form.name, form.memo, form.color);
+                    accountsPageStack.pop();
+                };
+                var properties = {
+                    "title": i18n.tr("Edit entry"),
+                    "text": i18n.tr("Do you want to update this entry?"),
+                    "okCallback": updateEntryCb
+                };
+
+                PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
             }
         },
         Action {
             iconName: "delete"
             text: i18n.tr("Delete")
             onTriggered: {
-                PopupUtils.open(deleteDialog, page);
+                var allAccounts = Book.accounts()
+                if (allAccounts.length > 1) {
+                    var deleteEntryCb = function() {
+                        Book.removeAccount(account);
+                        accountsPageStack.pop();
+                    };
+                    var properties = {
+                        "title": i18n.tr("Delete entry"),
+                        "text": i18n.tr("Do you want to remove this entry?"),
+                        "okCallback": deleteEntryCb
+                    };
+
+                    PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+                } else {
+                    var title = i18n.tr("Error");
+                    var text = i18n.tr("You must have at least one account in the system.");
+                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
+                }
             }
         }
     ]
-
-    Component {
-         id: deleteDialog
-
-         Dialog {
-             id: dialogue
-             title: i18n.tr("Delete entry")
-             text: i18n.tr("Do you want to remove this account?")
-             Button {
-                 text: i18n.tr("ok")
-                 color: UbuntuColors.orange
-                 onClicked: {
-                    var allAccounts = Book.accounts()
-                    if (allAccounts.length > 1) {
-                        Book.removeAccount(account);
-                        PopupUtils.close(dialogue);
-                        accountsPageStack.pop();
-                    } else {
-                        PopupUtils.close(dialogue);
-                        var title = i18n.tr("Error");
-                        var text = i18n.tr("You must have at least one account in the system.");
-                        PopupUtils.open(errorDialog, page, {"title": title, "text": text});
-                    }
-                 }
-             }
-             Button {
-                 text: i18n.tr("cancel")
-                 onClicked: {
-                    PopupUtils.close(dialogue);
-                 }
-             }
-         }
-    }
-
-    Component {
-         id: errorDialog
-
-         Dialog {
-             id: dialogue
-             Button {
-                 text: "ok"
-                 color: UbuntuColors.orange
-                 onClicked: PopupUtils.close(dialogue)
-             }
-         }
-    }
-
-    Component {
-         id: editDialog
-
-         Dialog {
-             id: dialogue
-             title: i18n.tr("Edit entry")
-             text: i18n.tr("Do you want to update this entry?")
-             Button {
-                 text: i18n.tr("ok")
-                 color: UbuntuColors.orange
-                 onClicked: {
-                    Book.updateAccount(account, form.name, form.memo, form.color);
-                    accountsPageStack.pop();
-                    PopupUtils.close(dialogue);
-                 }
-             }
-             Button {
-                 text: i18n.tr("cancel")
-                 onClicked: {
-                    PopupUtils.close(dialogue);
-                 }
-             }
-         }
-    }
 
     AccountForm {
         id: form

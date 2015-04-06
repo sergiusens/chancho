@@ -1,7 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource>
-        <file>qml/components/js/accounts.js</file>
-        <file>qml/components/js/categories.js</file>
         <file>qml/MainWindow.qml</file>
         <file>qml/components/AccountComponent.qml</file>
         <file>qml/components/AccountForm.qml</file>
@@ -13,7 +11,6 @@
         <file>qml/components/CategoryStatsPage.qml</file>
         <file>qml/components/ColorChooser.qml</file>
         <file>qml/components/DateHeaderComponent.qml</file>
-        <file>qml/components/DefaultColors.qml</file>
         <file>qml/components/EditAccount.qml</file>
         <file>qml/components/EditCategory.qml</file>
         <file>qml/components/EditTransaction.qml</file>
@@ -24,6 +21,26 @@
         <file>qml/components/PageWithBottomEdge.qml</file>
         <file>qml/components/TransactionComponent.qml</file>
         <file>qml/components/TransactionForm.qml</file>
+        <file>qml/components/Walkthrough.qml</file>
+        <file>qml/components/WelcomeWizard.qml</file>
+        <file>qml/components/WizardAccountsPage.qml</file>
+        <file>qml/components/WizardCategoriesPage.qml</file>
+        <file>qml/components/WizardLastPage.qml</file>
+        <file>qml/components/dialogs/ErrorDialog.qml</file>
+        <file>qml/components/dialogs/ConfirmationDialog.qml</file>
+        <file>qml/components/dialogs/WizardNewAccountDialog.qml</file>
+        <file>qml/components/dialogs/WizardNewCategoryDialog.qml</file>
+        <file>qml/components/dialogs/js/accounts_wizard.js</file>
+        <file>qml/components/dialogs/js/categories_wizard.js</file>
+        <file>qml/components/js/accounts.js</file>
+        <file>qml/components/js/accounts_wizard.js</file>
+        <file>qml/components/js/categories.js</file>
+        <file>qml/components/js/categories_wizard.js</file>
+        <file>qml/components/js/last_page_wizard.js</file>
+        <file>qml/components/models/CategoryTypeModel.qml</file>
+        <file>qml/components/models/DefaultColors.qml</file>
+        <file>qml/components/models/DefaultExpenseModel.qml</file>
+        <file>qml/components/models/DefaultIncomeModel.qml</file>
     </qresource>
     <qresource prefix="/imports">
         <file alias="jbQuick/Charts/qmldir">qml/components/jbQuick/Chart/qmldir</file>

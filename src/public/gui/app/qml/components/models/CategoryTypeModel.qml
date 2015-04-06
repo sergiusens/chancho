@@ -21,45 +21,16 @@
  */
 
 import QtQuick 2.0
-import QtQuick.Layouts 1.1
-
-import Ubuntu.Components 1.1
-import Ubuntu.Components.Pickers 0.1
-import Ubuntu.Components.Popups 1.0
 
 import com.chancho 1.0
 
-Page {
-    id: page
-
-    title: "Add new account"
-
-    head.actions: [
-        Action {
-            iconName: "add"
-            text: i18n.tr("Add")
-            onTriggered: {
-                console.log("Add account!");
-                var initialAmount = 0;
-                if (form.initialAmount != "") {
-                    initialAmount = form.initialAmount.replace(",", ".")
-                    initialAmount = parseFloat(initialAmount)
-                }
-                var success = Book.storeAccount(form.name, form.memo, form.color, initialAmount);
-                if (success) {
-                    accountsPageStack.pop();
-                } else {
-                    var title = i18n.tr("Internal Error");
-                    var text = i18n.tr("The account could not be stored.");
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
-                }
-            }
-        }
-    ]
-
-    AccountForm {
-        id: form
-        anchors.fill: parent
-        anchors.margins: units.gu(1)
+ListModel {
+    ListElement {
+        name: "Expense";
+        enumType: Book.EXPENSE;
+    }
+    ListElement {
+        name: "Income";
+        enumType: Book.INCOME;
     }
 }

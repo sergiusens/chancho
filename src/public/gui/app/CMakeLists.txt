@@ -19,8 +19,6 @@ set(SOURCES
 )
 
 set(QML_SOURCES
-    qml/components/js/accounts.js
-    qml/components/js/categories.js
     qml/MainWindow.qml
     qml/components/AccountComponent.qml
     qml/components/AccountForm.qml
@@ -32,7 +30,6 @@ set(QML_SOURCES
     qml/components/CategoryStatsPage.qml
     qml/components/ColorChooser.qml
     qml/components/DateHeaderComponent.qml
-    qml/components/DefaultColors.qml
     qml/components/EditAccount.qml
     qml/components/EditCategory.qml
     qml/components/EditTransaction.qml
@@ -43,9 +40,29 @@ set(QML_SOURCES
     qml/components/PageWithBottomEdge.qml
     qml/components/TransactionComponent.qml
     qml/components/TransactionForm.qml
+    qml/components/Walkthrough.qml
+    qml/components/WelcomeWizard.qml
+    qml/components/WizardAccountsPage.qml
+    qml/components/WizardCategoriesPage.qml
+    qml/components/WizardLastPage.qml
+    qml/components/dialogs/ConfirmationDialog.qml
+    qml/components/dialogs/ErrorDialog.qml
+    qml/components/dialogs/WizardNewAccountDialog.qml
+    qml/components/dialogs/WizardNewCategoryDialog.qml
+    qml/components/dialogs/js/accounts_wizard.js
+    qml/components/dialogs/js/categories_wizard.js
     qml/components/jbQuick/Chart/qmldir
     qml/components/jbQuick/Chart/QChart.js
     qml/components/jbQuick/Chart/QChart.qml
+    qml/components/js/accounts.js
+    qml/components/js/accounts_wizard.js
+    qml/components/js/categories.js
+    qml/components/js/categories_wizard.js
+    qml/components/js/last_page_wizard.js
+    qml/components/models/CategoryTypeModel.qml
+    qml/components/models/DefaultColors.qml
+    qml/components/models/DefaultExpenseModel.qml
+    qml/components/models/DefaultIncomeModel.qml
 )
 
 qt5_add_resources(chancho-app-resources ui.qrc)

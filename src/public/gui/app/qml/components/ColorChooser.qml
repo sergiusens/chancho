@@ -28,8 +28,12 @@ import Ubuntu.Components.Pickers 0.1
 import Ubuntu.Components.Popups 1.0
 import Ubuntu.Components.ListItems 1.0 as ListItems
 
+import "models"
+
 Popover {
     id: popover
+    property var shapeWidth
+    property var shapeHeight
     property var color
 
     onColorChanged: {
@@ -63,8 +67,8 @@ Popover {
 
                 UbuntuShape {
                     color: option
-                    width: colorChooser.width
-                    height: colorChooser.height
+                    width: shapeWidth
+                    height: shapeHeight
 
                     MouseArea {
                         anchors.fill: parent
@@ -94,8 +98,8 @@ Popover {
             UbuntuShape {
                 id: colorSample
                 color: popover.color
-                width: colorChooser.width;
-                height: colorChooser.height
+                width: shapeWidth
+                height: shapeHeight
             }
 
             TextField {
