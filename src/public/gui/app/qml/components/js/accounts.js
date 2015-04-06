@@ -60,9 +60,10 @@ function calculateGraphData(book, accounts, date) {
         }
 
         graphData = graphData.reverse();
+        console.log("Graph data is " + graphData);
         // we need to remove the info about all those months we yet have not lived, so, is usually the last x months
         var month = date.getMonth();
-        graphData = graphData.slice(0, month + 1);
+        graphData = graphData.slice(0, month + 2);
 
         var color = account.color;
         var darkColor = Qt.darker(color, 1.2);
