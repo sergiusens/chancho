@@ -707,7 +707,7 @@ Book::categories(boost::optional<Category::Type> type, boost::optional<int> limi
         auto color = query->value(4).toString();
         auto cat = std::make_shared<Category>(name, type, color);
         cat->_dbId = uuid;
-        LOG(INFO) << "Category found with id " << cat->_dbId.toString().toStdString();
+        DLOG(INFO) << "Category found with id " << cat->_dbId.toString().toStdString();
         catsMap[cat->_dbId] = cat;
 
         if(!parentVar.isNull()) {
@@ -722,7 +722,7 @@ Book::categories(boost::optional<Category::Type> type, boost::optional<int> limi
                 parentChildMap[parent] = childList;
             }
         } else {
-            LOG(INFO) << "Parent not found";
+            DLOG(INFO) << "Parent not found";
         }
         orderedIds.append(uuid);
     }

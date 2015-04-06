@@ -50,8 +50,10 @@ PageStack {
     }
 
     function redrawGraph() {
+        console.log("Redraw graph!");
         var date = new Date();
-        AccountsJs.redrawGraph(Book, chart, date);
+        var accounts = Book.accounts();
+        AccountsJs.redrawGraph(Book, chart, accounts, date);
     }
 
     EditAccount {

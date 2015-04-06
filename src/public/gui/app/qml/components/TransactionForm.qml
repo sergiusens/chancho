@@ -114,6 +114,7 @@ UbuntuShape {
 
             placeholderText: i18n.tr("Date")
             onDateChanged: {
+                console.log("Date changed!");
                 datePicker.text = Qt.formatDateTime(date, "dd/MM/yyyy");
             }
 
@@ -121,7 +122,7 @@ UbuntuShape {
                 anchors.fill: parent
 
                 onClicked: {
-                    var popup = PickerPanel.openDatePicker(dateTitle, "date", "Years|Months");
+                    var popup = PickerPanel.openDatePicker(datePicker, "date", "Days|Years|Months");
                     popup.picker.minimum = new Date(1900, 1, 1);
                 }
             }
