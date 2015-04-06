@@ -21,41 +21,65 @@
  */
 
 import QtQuick 2.0
-import QtQuick.Layouts 1.1
 
-import Ubuntu.Components 1.1
-import Ubuntu.Components.Pickers 0.1
-import Ubuntu.Components.Popups 1.0
+ListModel {
+    ListElement {
+        name: "Food"
+        color: "purple"
+    }
 
-import com.chancho 1.0
+    ListElement {
+        name: "Social Life"
+        color: "fuchsia"
+    }
 
-Page {
-    id: page
+    ListElement {
+        name: "Self-development"
+        color: "navy"
+    }
 
-    title: "Add new category"
+    ListElement {
+        name: "Transportation"
+        color: "blue"
+    }
 
-    head.actions: [
-        Action {
-            iconName: "add"
-            text: i18n.tr("Add")
-            onTriggered: {
-                var type = form.categoryTypeModel.get(form.categoryTypeSelectedIndex);
-                type = type.enumType
-                var success = Book.storeCategory(form.name, form.color, type);
-                if (success) {
-                    categoriesPageStack.pop();
-                } else {
-                    var title = i18n.tr("Internal Error");
-                    var text = i18n.tr("The category could not be stored.");
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
-                }
-            }
-        }
-    ]
+    ListElement {
+        name: "Culture"
+        color: "teal"
+    }
 
-    CategoryForm {
-        id: form
-        anchors.fill: parent
-        anchors.margins: units.gu(1)
+    ListElement {
+        name: "Household"
+        color: "aqua"
+    }
+
+    ListElement {
+        name: "Apparel"
+        color: "green"
+    }
+
+    ListElement {
+        name: "Beauty"
+        color: "lime"
+    }
+
+    ListElement {
+        name: "Health"
+        color: "yellow"
+    }
+
+    ListElement {
+        name: "Education"
+        color: "maroon"
+    }
+
+    ListElement {
+        name: "Gift"
+        color: "red"
+    }
+
+    ListElement {
+        name: "Other"
+        color: "gold"
     }
 }

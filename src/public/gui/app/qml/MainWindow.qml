@@ -41,6 +41,7 @@ import "components"
 MainView {
     // objectName for functional testing purposes (autopilot-qt5)
     objectName: "mainView"
+    id: mainView
 
     // Note! applicationName needs to match the "name" field of the click manifest
     applicationName: "com.ubuntu.developer.mandel.chancho"
@@ -55,43 +56,65 @@ MainView {
     width: units.gu(100)
     height: units.gu(75)
 
-    Tabs {
-        id: tabs
-        Tab {
-            id: tab1
-            title: "Bills"
-            page: MainPage {}
-        } // tab
+    PageStack {
+        id: pagestack
+    }
 
-        Tab {
-            id: statsTab
-            title: "Stats"
-            page: CategoryStatsPage {}
-        }
-        Tab {
-            id: accountsTab
-            title: "Accounts"
-            page: AccountsPage {}
-        }
+    Component {
+        id: pageComponent
+        WelcomeWizard {}
+    }
 
-        Tab {
-            id: categoriesTab
-            title: "Categories"
-            page: CategoriesPage {}
-        }
+    Component {
+        id: tabsComponent
+        Tabs {
+            id: tabs
+            Tab {
+                id: tab1
+                title: "Bills"
+                page: MainPage {}
+            } // tab
 
-        Tab {
-            id: settingsTab
-            title: "Settings"
-            page: Page {
-                Button {
-                        anchors.centerIn: parent
-                        onClicked: pageStack.push(page3)
-                        text: "Press"
+            Tab {
+                id: statsTab
+                title: "Stats"
+                page: CategoryStatsPage {}
+            }
+            Tab {
+                id: accountsTab
+                title: "Accounts"
+                page: AccountsPage {}
+            }
+
+            Tab {
+                id: categoriesTab
+                title: "Categories"
+                page: CategoriesPage {}
+            }
+
+            Tab {
+                id: settingsTab
+                title: "Settings"
+                page: Page {
+                    Button {
+                            anchors.centerIn: parent
+                            onClicked: pageStack.push(page3)
+                            text: "Press"
+                    }
                 }
             }
+        }// tabs
+    }
+
+    Component.onCompleted: {
+        var accounts = Book.accounts()
+        if (accounts.length == 0) {
+            pagestack.push(tabsComponent);
+            pagestack.push(pageComponent)
+        } else {
+            pagestack.push(tabsComponent)
         }
-    }// tabs
+    }
 
 }
 

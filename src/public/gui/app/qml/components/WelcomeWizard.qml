@@ -27,39 +27,37 @@ import Ubuntu.Components 1.1
 import Ubuntu.Components.Pickers 0.1
 import Ubuntu.Components.Popups 1.0
 
-import com.chancho 1.0
+import "models"
 
-Page {
-    id: page
+Walkthrough {
+    id: walkthrough
 
-    title: "Add new account"
+    appName: "Chancho"
+	showSkipLabel:false
+	completeColor: UbuntuColors.orange
 
-    head.actions: [
-        Action {
-            iconName: "add"
-            text: i18n.tr("Add")
-            onTriggered: {
-                console.log("Add account!");
-                var initialAmount = 0;
-                if (form.initialAmount != "") {
-                    initialAmount = form.initialAmount.replace(",", ".")
-                    initialAmount = parseFloat(initialAmount)
-                }
-                var success = Book.storeAccount(form.name, form.memo, form.color, initialAmount);
-                if (success) {
-                    accountsPageStack.pop();
-                } else {
-                    var title = i18n.tr("Internal Error");
-                    var text = i18n.tr("The account could not be stored.");
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
-                }
-            }
-        }
-    ]
-
-    AccountForm {
-        id: form
-        anchors.fill: parent
-        anchors.margins: units.gu(1)
+    ListModel {
+        id: accountsModel
     }
+
+    DefaultIncomeModel {
+        id: incomeModel
+    }
+
+    DefaultExpenseModel {
+        id: expenseModel
+    }
+
+    onFinished: {
+        console.log("Welcome Wizard Complete!")
+        // Here perhaps save isFirstRun variable to the disk
+        pagestack.pop()
+        pagestack.push(tabsComponent)
+    }
+
+    model: [
+        WizardAccountsPage {},
+        WizardCategoriesPage {},
+        WizardLastPage {}
+    ]
 }

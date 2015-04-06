@@ -28,6 +28,7 @@ import Ubuntu.Components.Pickers 0.1
 import Ubuntu.Components.Popups 1.0
 
 import com.chancho 1.0
+import "models"
 
 UbuntuShape {
 
@@ -53,16 +54,8 @@ UbuntuShape {
             }
         }
 
-        ListModel {
+        CategoryTypeModel {
             id: typeModel
-            ListElement {
-                name: "Expense";
-                enumType: Book.EXPENSE;
-            }
-            ListElement {
-                name: "Income";
-                enumType: Book.INCOME;
-            }
         }
 
         OptionSelector {

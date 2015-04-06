@@ -1,6 +1,6 @@
 {
-    "name": "PageWithBottomEdge",
-    "description": "This component provides a bottom edge which can be used to house common actions.",
+    "name": "WelcomeWizard",
+    "description": "This widget adds a welcome wizard to help introduce the app to users.",
     "version": "1.0",
-    "documentation_url": "http://ubuntu-component-store.readthedocs.org/en/latest/_components/pagewithbottomedge.html"
+    "documentation_url": "http://ubuntu-component-store.readthedocs.org/en/latest/_components/welcomewizard.html"
 }

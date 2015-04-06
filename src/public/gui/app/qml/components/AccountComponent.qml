@@ -27,15 +27,29 @@ import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0 as ListItems
 
 Item {
+    // get and set the name of the account
     property alias name: nameLabel.text
+
+    // get and set the memo of the account
     property alias memo: memoLabel.text
+
+    // get and set the amount present inthe account
     property alias amount: amountLabel.text
+
+    // color used to identify the account
     property alias color: accountColor.color
+
+    // if the component is selected
     property bool selected: false
+
+    // the total number of accounts, used to decide if the last separator is used
     property var numberOfAccounts
 
-    anchors.left: parent.left
-    anchors.right: parent.right
+    anchors {
+        left: parent.left
+        right: parent.right
+    }
+
     height: childrenRect.height
 
     onSelectedChanged: {
@@ -49,36 +63,53 @@ Item {
     Rectangle {
         id: background
 
+        anchors {
+            left: parent.left
+            right: parent.right
+        }
+
         height: childrenRect.height
-        anchors.left: parent.left
-        anchors.right: parent.right
 
         ColumnLayout {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.margins: units.gu(1)
+            anchors {
+                left: parent.left
+                right: parent.right
+                margins: units.gu(1)
+            }
+
             spacing: units.gu(1)
 
             Item {
-                anchors.left: parent.left
-                anchors.right: parent.right
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                }
+
                 height: childrenRect.height
 
                 UbuntuShape {
                     id: accountColor
-                    anchors.top: parent.top
-                    anchors.left: parent.left
 
-                    color: "orange"
+                    anchors {
+                        top: parent.top
+                        left: parent.left
+                    }
+
                     height: units.gu(2)
                     width: units.gu(2)
+
+                    color: "orange"
                 }
 
                 Label {
                     id: nameLabel
-                    anchors.top: parent.top
-                    anchors.left: accountColor.right
-                    anchors.leftMargin: units.gu(1)
+
+                    anchors{
+                        top: parent.top
+                        left: accountColor.right
+                        leftMargin: units.gu(1)
+                    }
+
                     width: units.gu(20)
 
                     elide: Text.ElideRight
@@ -88,8 +119,12 @@ Item {
 
                 Label {
                     id: memoLabel
-                    anchors.top: parent.top
-                    anchors.left: nameLabel.right
+
+                    anchors {
+                        top: parent.top
+                        left: nameLabel.right
+                    }
+
                     width: parent.width - nameLabel.width - amountLabel.width - accountColor.width
 
                     elide: Text.ElideRight
@@ -98,11 +133,15 @@ Item {
 
                 Label {
                     id: amountLabel
-                    anchors.top: parent.top
-                    anchors.right: parent.right
+
+                    anchors {
+                        top: parent.top
+                        right: parent.right
+                    }
+
                     width: units.gu(10)
 
-                    color: (model.display.amount > 0)? "green" : "red"
+                    color: (parseFloat(amount) > 0)? "green" : "red"
                     horizontalAlignment: Text.AlignRight
                 }
             }

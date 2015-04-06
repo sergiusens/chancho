@@ -21,41 +21,25 @@
  */
 
 import QtQuick 2.0
-import QtQuick.Layouts 1.1
 
-import Ubuntu.Components 1.1
-import Ubuntu.Components.Pickers 0.1
-import Ubuntu.Components.Popups 1.0
+ListModel {
+    ListElement {
+        name: "Allowance"
+        color: "purple"
+    }
 
-import com.chancho 1.0
+    ListElement {
+        name: "Salary"
+        color: "green"
+    }
 
-Page {
-    id: page
+    ListElement {
+        name: "Bonus"
+        color: "yellow"
+    }
 
-    title: "Add new category"
-
-    head.actions: [
-        Action {
-            iconName: "add"
-            text: i18n.tr("Add")
-            onTriggered: {
-                var type = form.categoryTypeModel.get(form.categoryTypeSelectedIndex);
-                type = type.enumType
-                var success = Book.storeCategory(form.name, form.color, type);
-                if (success) {
-                    categoriesPageStack.pop();
-                } else {
-                    var title = i18n.tr("Internal Error");
-                    var text = i18n.tr("The category could not be stored.");
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
-                }
-            }
-        }
-    ]
-
-    CategoryForm {
-        id: form
-        anchors.fill: parent
-        anchors.margins: units.gu(1)
+    ListElement {
+        name: "Other"
+        color: "red"
     }
 }

@@ -36,6 +36,7 @@ UbuntuShape {
     id: topShape
 
     property var graphData
+    property alias showGraph: chartShape.visible
     property alias color: colorChooser.color
     property alias name: nameField.text
     property alias memo: memoTextArea.text
@@ -48,9 +49,11 @@ UbuntuShape {
             colorChooser.lightColor.a = 0.5;
             colorChooser.darkColor = Qt.darker(color, 1.2);
 
-            chart.chartData.datasets[0]["fillColor"] = colorChooser.lightColor;
-            chart.chartData.datasets[0]["strokeColor"] = colorChooser.color;
-            chart.chartData.datasets[0]["pointColor"] = colorChooser.darkColor;
+            if (showGraph) {
+                chart.chartData.datasets[0]["fillColor"] = colorChooser.lightColor;
+                chart.chartData.datasets[0]["strokeColor"] = colorChooser.color;
+                chart.chartData.datasets[0]["pointColor"] = colorChooser.darkColor;
+            }
         }
     }
 
@@ -87,35 +90,48 @@ UbuntuShape {
             onColorChanged: {
                 colorChooser.color = color;
                 colorChooser.lightColor = Qt.lighter(color, 1.6);
+                colorChooser.lightColor.a = 0.5
                 colorChooser.darkColor = Qt.darker(color, 1.2);
 
-                // update the chart colors
-                chart.chartData.datasets[0]["fillColor"] = colorChooser.lightColor;
-                chart.chartData.datasets[0]["pointColor"] = colorChooser.darkColor;
+                if (showGraph) {
+                    // update the chart colors
+                    chart.chartData.datasets[0]["fillColor"] = colorChooser.lightColor;
+                    chart.chartData.datasets[0]["pointColor"] = colorChooser.darkColor;
+                }
             }
         }
     }
 
 
     ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: units.gu(1)
+        anchors {
+            fill: parent
+            margins: units.gu(1)
+        }
 
         Item {
             id: nameAndColor
-            anchors.margins: units.gu(1)
-            anchors.left: parent.left
-            anchors.right: parent.right
+
+            anchors {
+                left: parent.left
+                right: parent.right
+                margins: units.gu(1)
+            }
+
             height: childrenRect.height
 
             UbuntuShape {
                 id: colorChooser
-                anchors.top: parent.top
-                anchors.left: parent.left
 
-                color: "orange"
                 property var lightColor: Qt.lighter(color, 1.6)
                 property var darkColor: Qt.darker(color, 1.2)
+
+                anchors {
+                    top: parent.top
+                    left: parent.left
+                }
+
+                color: "orange"
 
                 height: nameField.height
                 width: nameField.height
@@ -124,7 +140,12 @@ UbuntuShape {
                     anchors.fill: parent
 
                     onClicked: {
-                        PopupUtils.open(popoverComponent, colorChooser, {"color": colorChooser.color})
+                        var properties = {
+                            "shapeWidth": colorChooser.width,
+                            "shapeHeight": colorChooser.height,
+                            "color": colorChooser.color
+                        };
+                        PopupUtils.open(popoverComponent, colorChooser, properties);
                     }
                 }
 
@@ -135,24 +156,31 @@ UbuntuShape {
 
             TextField {
                 id: nameField
-                anchors.top: parent.top
-                anchors.left: colorChooser.right
-                anchors.right: parent.right
-                anchors.leftMargin: units.gu(1)
+
+                anchors {
+                    top: parent.top
+                    left: colorChooser.right
+                    right: parent.right
+                    leftMargin: units.gu(1)
+                }
 
                 placeholderText: i18n.tr("Name")
 
                 onTextChanged: {
-                    chart.chartData.datasets[0]["label"] = text;
+                    if (showGraph)
+                        chart.chartData.datasets[0]["label"] = text;
                 }
             }
         }
 
         TextField {
             id: initialAmount
-            anchors.margins: units.gu(1)
-            anchors.left: parent.left
-            anchors.right: parent.right
+
+            anchors {
+                margins: units.gu(1)
+                left: parent.left
+                right: parent.right
+            }
 
             validator: DoubleValidator {}
 
@@ -162,21 +190,27 @@ UbuntuShape {
         TextField {
             id: memoTextArea
 
-            anchors.margins: units.gu(1)
-            anchors.left: parent.left
-            anchors.right: parent.right
+            anchors {
+                margins: units.gu(1)
+                left: parent.left
+                right: parent.right
+            }
 
             placeholderText: i18n.tr("Memo")
         }
 
         UbuntuShape {
             id: chartShape
+
             Layout.fillHeight: true
             Layout.fillWidth: true
 
-            anchors.margins: units.gu(1)
-            anchors.left: parent.left
-            anchors.right: parent.right
+            anchors {
+                margins: units.gu(1)
+                left: parent.left
+                right: parent.right
+            }
+
             height: childrenRect.height
             color: "white"
 

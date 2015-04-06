@@ -50,67 +50,38 @@ Page {
             iconName: "edit"
             text: i18n.tr("Edit")
             onTriggered: {
-                PopupUtils.open(editDialog, page);
+                var updateEntryCb = function() {
+                    Book.updateAccount(account, form.name, form.memo, form.color);
+                    accountsPageStack.pop();
+                };
+                var properties = {
+                    "title": i18n.tr("Edit entry"),
+                    "text": i18n.tr("Do you want to update this entry?"),
+                    "okCallback": updateEntryCb
+                };
+
+                PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
             }
         },
         Action {
             iconName: "delete"
             text: i18n.tr("Delete")
             onTriggered: {
-                PopupUtils.open(deleteDialog, page);
-            }
-        }
-    ]
-
-    Component {
-         id: deleteDialog
-
-         Dialog {
-             id: dialogue
-             title: i18n.tr("Delete entry")
-             text: i18n.tr("Do you want to remove this entry?")
-             Button {
-                 text: i18n.tr("ok")
-                 color: UbuntuColors.orange
-                 onClicked: {
+                var deleteEntryCb = function() {
                     Book.removeAccount(account);
                     PopupUtils.close(dialogue);
                     accountsPageStack.pop();
-                 }
-             }
-             Button {
-                 text: i18n.tr("cancel")
-                 onClicked: {
-                    PopupUtils.close(dialogue);
-                 }
-             }
-         }
-    }
+                };
+                var properties = {
+                    "title": i18n.tr("Delete entry"),
+                    "text": i18n.tr("Do you want to remove this entry?"),
+                    "okCallback": deleteEntryCb
+                };
 
-    Component {
-         id: editDialog
-
-         Dialog {
-             id: dialogue
-             title: i18n.tr("Edit entry")
-             text: i18n.tr("Do you want to update this entry?")
-             Button {
-                 text: i18n.tr("ok")
-                 color: UbuntuColors.orange
-                 onClicked: {
-                    Book.updateAccount(account, form.name, form.memo, form.color);
-                    accountsPageStack.pop();
-                    PopupUtils.close(dialogue);
-                 }
-             }
-             Button {
-                 text: i18n.tr("cancel")
-                 onClicked: {
-                    PopupUtils.close(dialogue);
-                 }
-             }
-         }
-    }
+                PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+            }
+        }
+    ]
 
     AccountForm {
         id: form

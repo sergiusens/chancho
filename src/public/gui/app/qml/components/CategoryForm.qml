@@ -31,6 +31,7 @@ import Ubuntu.Components.ListItems 0.1 as ListItems
 import jbQuick.Charts 1.0
 
 import com.chancho 1.0
+import "models"
 
 UbuntuShape {
     id: topShape
@@ -92,7 +93,12 @@ UbuntuShape {
                     anchors.fill: parent
 
                     onClicked: {
-                        PopupUtils.open(popoverComponent, colorChooser, {"color": colorChooser.color})
+                        var properties = {
+                            "shapeWidth": colorChooser.width,
+                            "shapeHeight": colorChooser.height,
+                            "color": colorChooser.color
+                        };
+                        PopupUtils.open(popoverComponent, colorChooser, properties);
                     }
                 }
 
@@ -123,16 +129,8 @@ UbuntuShape {
             }
         }
 
-        ListModel {
+        CategoryTypeModel {
             id: typeModel
-            ListElement {
-                name: "Expense";
-                enumType: Book.EXPENSE;
-            }
-            ListElement {
-                name: "Income";
-                enumType: Book.INCOME;
-            }
         }
 
         OptionSelector {

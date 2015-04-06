@@ -20,42 +20,39 @@
  * THE SOFTWARE.
  */
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.1
-
-import Ubuntu.Components 1.1
-import Ubuntu.Components.Pickers 0.1
-import Ubuntu.Components.Popups 1.0
-
-import com.chancho 1.0
-
-Page {
-    id: page
-
-    title: "Add new category"
-
-    head.actions: [
-        Action {
-            iconName: "add"
-            text: i18n.tr("Add")
-            onTriggered: {
-                var type = form.categoryTypeModel.get(form.categoryTypeSelectedIndex);
-                type = type.enumType
-                var success = Book.storeCategory(form.name, form.color, type);
-                if (success) {
-                    categoriesPageStack.pop();
-                } else {
-                    var title = i18n.tr("Internal Error");
-                    var text = i18n.tr("The category could not be stored.");
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
-                }
-            }
+/**
+ * Returns if there are any accounts selected in the given model.
+ *
+ * @param model The model that contains all the accounts added so far.
+ * @returns {boolean} If there are any accounts with the selected flag set to true.
+ *
+ */
+function areAccountsSelected(model) {
+    for(var index=0; index < model.count; index++) {
+        var acc = model.get(index);
+        if (acc.selected) {
+            return true;
         }
-    ]
+    }
+    return false;
+}
 
-    CategoryForm {
-        id: form
-        anchors.fill: parent
-        anchors.margins: units.gu(1)
+/**
+ * Deletes all those selected accounts from the passed model.
+ *
+ * @param model The model that contains al the idfferent categories.
+ */
+function deleteAccountsCallback(model) {
+    var accIndexes = [];
+    for(var index=0; index < model.count; index++) {
+        var acc = model.get(index);
+        if (acc.selected) {
+            accIndexes.push(index);
+        }
+    }
+    accIndexes.reverse();
+    for(var index=0; index < accIndexes.length; index++) {
+        model.remove(accIndexes[index]);
     }
 }
+
