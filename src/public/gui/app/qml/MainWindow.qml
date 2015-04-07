@@ -44,7 +44,7 @@ MainView {
     id: mainView
 
     // Note! applicationName needs to match the "name" field of the click manifest
-    applicationName: "com.ubuntu.developer.mandel.chancho"
+    applicationName: "chancho.mandel"
 
     /*
      This property enables the application to change orientation

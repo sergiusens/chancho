@@ -28,13 +28,6 @@
 #include "com/chancho/chancho_app.h"
 
 int main(int argc, char** argv) {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
-
-    QCoreApplication::setOrganizationName("TheMacaque");
-    QCoreApplication::setOrganizationDomain("themacaque.com");
-    QCoreApplication::setApplicationName("Chancho Personal Finance");
-
     com::chancho::ChanchoApp application(argc, argv);
 
     if (!application.setup()) {
