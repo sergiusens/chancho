@@ -82,6 +82,7 @@ UbuntuShape {
 
     onGraphDataChanged: {
         chart.chartData =  topShape.graphData;
+        chart.repaint();
     }
 
     Component {
