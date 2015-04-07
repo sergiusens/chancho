@@ -36,7 +36,7 @@ import "js/categories.js" as CategoriesJs
 PageStack {
     id: mainPageStack
     Component.onCompleted: {
-        var updateGraphOnStoreDelete = function(transactionsDate) {
+        var updateGraphOnStoreDelete = function() {
             // TODO: be smarter
             CategoriesJs.redrawGraph(Book, chart, legendModel, dateTitle.date);
         };
@@ -44,6 +44,12 @@ PageStack {
         Book.transactionStored.connect(updateGraphOnStoreDelete);
         Book.transactionRemoved.connect(updateGraphOnStoreDelete);
         Book.transactionUpdated.connect(updateGraphOnStoreDelete);
+
+        Book.categoryUpdated.connect(updateGraphOnStoreDelete);
+        Book.categoryRemoved.connect(updateGraphOnStoreDelete);
+
+        Book.accountRemoved.connect(updateGraphOnStoreDelete);
+        Book.accountUpdated.connect(updateGraphOnStoreDelete);
 
         push(mainPage);
     }
