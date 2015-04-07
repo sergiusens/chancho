@@ -34,6 +34,8 @@ namespace {
     const QString SELECT_OCURRENCES_FOR_MONTH = "SELECT c.uuid AS uuid, c.name AS name, c.type AS type, "\
         "c.color AS color, COUNT(*) AS ocurrences, SSUM(t.amount) FROM Transactions AS t INNER JOIN Categories AS c WHERE "\
         "t.category=c.uuid AND t.year=:year AND t.month=:month GROUP BY t.category";
+    const QString SELECT_OCURRENCES_FOR_CATEGORY = "SELECT month, sum(amount) FROM Transactions "\
+        "WHERE year=:year AND category=:category GROUP BY category, month ORDER BY month ASC";
 }
 
 namespace com {
@@ -166,6 +168,67 @@ Stats::categoryPercentages(int month, int year) {
 
     // set the total info
     result.first.count = result.second.count();
+
+    return result;
+}
+
+QList<double>
+Stats::monthsTotalForCategory(CategoryPtr cat, int year) {
+    QList<double> result;
+
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return result;
+    }
+
+    auto query = _db->createQuery();
+
+    // SELECT_OCURRENCES_FOR_CATEGORY = SELECT month, sum(amount) FROM Transactions
+    //    WHERE year=:year AND category=:category GROUP BY category, month ORDER BY month ASC"
+    query->prepare(SELECT_OCURRENCES_FOR_CATEGORY);
+    query->bindValue(":category", cat->_dbId);
+    query->bindValue(":year", year);
+
+    auto sucess = query->exec();
+    if (!sucess) {
+        _lastError = _db->lastError().text();
+        DLOG(INFO) << "Error retrieving the amounts " << _lastError.toStdString();
+        return result;
+    }
+
+    // index 0 => month
+    // index 1 => month_amount
+
+    // keep track of the month, we do that by starting an index if the next month is not the expected
+    // one, we append as many 0 as needed
+    auto index = 0;
+    while (query->next()) {
+        auto month = query->value(0).toInt();
+        auto currentAmount = query->value(1).toString().toDouble();
+        if (currentAmount < -1) {
+            currentAmount = -1 * currentAmount;
+        }
+        DLOG(INFO) << "Month is " << month << " with amount " << currentAmount;
+        if (month != (index + 1)) {
+            // we need to add 0 until we get there
+            while(index != month -1) {
+                result.append(0.0);
+                index++;
+            }
+        }
+        result.append(currentAmount);
+        index = month;
+    }
+
+    if (result.count() != 12) {
+        DLOG(INFO) << "We just have " << result.count() << " instead of 12";
+        while(result.count() < 12) {
+            result.append(0);
+        }
+    }
 
     return result;
 }

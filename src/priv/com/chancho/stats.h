@@ -67,7 +67,7 @@ class Stats {
     /*!
         \fn virtual QList<int> monthsTotalForAccount(AccountPtr acc, int year);
 
-        Returns a list with the values of the total amount used in each month for an app during the \a year. If
+        Returns a list with the values of the total amount used in each month for an acc during the \a year. If
         there are no transactions in a month the method will add the needed 0 values. The result can be assume to
         allways return 12 doubles.
 
@@ -80,6 +80,16 @@ class Stats {
         Returns a list of the categories for a month and the number of types the have occurred;
     */
     virtual QPair<CategoryPercentageTotal, QList<CategoryPercentage>> categoryPercentages(int month, int year);
+
+    /*!
+        \fn virtual QList<double> monthsTotalForCategory(CategoryPtr acc, int year);
+
+        Returns a list with the values of the total amount used in each month for a category during the \a year. If
+        there are no transactions in a month the method will add the needed 0 values. The result can be assume to
+        allways return 12 doubles.
+
+    */
+    virtual QList<double> monthsTotalForCategory(CategoryPtr cat, int year);
 
     /*!
         \fn virtual bool isError();

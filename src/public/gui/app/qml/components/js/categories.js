@@ -57,3 +57,40 @@ function redrawGraph(book, chart, legendModel, date) {
 
     chart.repaint();
 }
+
+function calculateGraphBarData(book, category, date) {
+    var year = date.getFullYear();
+    var categoryStats = book.monthsTotalForCategory(category, year);
+    var color = category.color;
+    var darkColor = Qt.darker(color, 1.2);
+    var lightColor = Qt.lighter(color, 1.6);
+    lightColor.a = 0.5;
+
+    var item  = {
+        label: category.name,
+        fillColor: lightColor,
+        strokeColor: color,
+        pointColor: darkColor,
+        pointStrokeColor: "#fff",
+        pointHighlightFill: "#fff",
+        pointHighlightStroke: "rgba(220,220,220,1)",
+        data: categoryStats
+    };
+    var chartData = {
+        labels: [
+            i18n.tr("January"),
+            i18n.tr("February"),
+            i18n.tr("March"),
+            i18n.tr("April"),
+            i18n.tr("May"),
+            i18n.tr("June"),
+            i18n.tr("July"),
+            i18n.tr("August"),
+            i18n.tr("September"),
+            i18n.tr("October"),
+            i18n.tr("November"),
+            i18n.tr("December")],
+        datasets: [item]
+    }
+    return chartData;
+}

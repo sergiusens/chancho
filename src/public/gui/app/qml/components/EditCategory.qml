@@ -28,10 +28,34 @@ import Ubuntu.Components.Pickers 0.1
 import Ubuntu.Components.Popups 1.0
 
 import com.chancho 1.0
+import "js/categories.js" as CategoriesJs
 
 Page {
     id: page
     property var category
+
+    Component.onCompleted: {
+        // connect to the diff signals to ensure that we do redraw the graph
+        Book.transactionStored.connect(redrawGraph);
+        Book.transactionRemoved.connect(redrawGraph);
+        Book.transactionUpdated.connect(redrawGraph);
+
+        Book.categoryStored.connect(redrawGraph);
+        Book.categoryUpdated.connect(redrawGraph);
+        Book.categoryRemoved.connect(redrawGraph);
+
+        Book.accountStored.connect(redrawGraph);
+        Book.accountRemoved.connect(redrawGraph);
+        Book.accountUpdated.connect(redrawGraph);
+    }
+
+    function redrawGraph() {
+        console.log("Redraw graph bar graph!");
+        var date = new Date();
+        var graphData = CategoriesJs.calculateGraphBarData(Book, category, date);
+        form.graphData = graphData;
+        form.color = category.color;
+    }
 
     onCategoryChanged: {
         form.name = category.name;
@@ -40,6 +64,9 @@ Page {
         } else {
             form.categoryTypeSelectedIndex = 1;
         }
+        var date = new Date();
+        var graphData = CategoriesJs.calculateGraphBarData(Book, category, date);
+        form.graphData = graphData;
         form.color = category.color;
     }
 
