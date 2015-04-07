@@ -70,76 +70,57 @@ Page {
         form.color = category.color;
     }
 
-    title: "Edit account"
+    title: "Edit category"
 
     head.actions: [
         Action {
             iconName: "edit"
             text: i18n.tr("Edit")
             onTriggered: {
-                PopupUtils.open(editDialog, page);
+                var deleteCategoriesCb = function() {
+                    var type = form.categoryTypeModel.get(form.categoryTypeSelectedIndex);
+                    type = type.enumType
+                    Book.updateCategory(category, form.name, form.color, type);
+                    categoriesPageStack.pop();
+                    PopupUtils.close(dialogue);
+                };
+                var properties = {
+                    "title": i18n.tr("Edit entry"),
+                    "text": i18n.tr("Do you want to update this entry?"),
+                    "okCallback": deleteCategoriesCb
+                };
+                PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
             }
         },
         Action {
             iconName: "delete"
             text: i18n.tr("Delete")
             onTriggered: {
-                PopupUtils.open(deleteDialog, page);
+                // grab the number of categories we have and if we are trying to remove the last one
+                // we will stop the user
+                var numberOfCats = Book.numberOfCategories(category.type);
+                if (numberOfCats == 1) {
+                    console.log("Trying to delete the last category.");
+                    var properties = {
+                        "title": i18n.tr("Removal Error"),
+                        "text": i18n.tr("You cannot delete all categories in the system. You must have at least one of each type")
+                    };
+                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, properties);
+                } else {
+                    var deleteCategoriesCb = function() {
+                        Book.removeCategory(category);
+                        categoriesPageStack.pop();
+                    };
+                    var properties = {
+                        "title": i18n.tr("Delete category"),
+                        "text": i18n.tr("Do you want to remove this category?"),
+                        "okCallback": deleteCategoriesCb
+                    };
+                    PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+                }
             }
         }
     ]
-
-    Component {
-         id: deleteDialog
-
-         Dialog {
-             id: dialogue
-             title: i18n.tr("Delete entry")
-             text: i18n.tr("Do you want to remove this entry?")
-             Button {
-                 text: i18n.tr("ok")
-                 color: UbuntuColors.orange
-                 onClicked: {
-                    Book.removeCategory(category);
-                    PopupUtils.close(dialogue);
-                    categoriesPageStack.pop();
-                 }
-             }
-             Button {
-                 text: i18n.tr("cancel")
-                 onClicked: {
-                    PopupUtils.close(dialogue);
-                 }
-             }
-         }
-    }
-
-    Component {
-         id: editDialog
-
-         Dialog {
-             id: dialogue
-             title: i18n.tr("Edit entry")
-             text: i18n.tr("Do you want to update this entry?")
-             Button {
-                 text: i18n.tr("ok")
-                 color: UbuntuColors.orange
-                 onClicked: {
-                    var type = form.categoryTypeModel.get(form.categoryTypeSelectedIndex);
-                    type = type.enumType
-                    Book.updateCategory(category, form.name, form.color, type);
-                    categoriesPageStack.pop();
-                    PopupUtils.close(dialogue);
-                 }
-             }
-             Button {
-                 text: i18n.tr("cancel")
-                 onClicked: {
-                    PopupUtils.close(dialogue);
-                 }
-             }
-         }
-    }
 
     CategoryForm {
         id: form

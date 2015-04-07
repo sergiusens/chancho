@@ -252,6 +252,21 @@ Book::updateTransaction(QObject* tranObj, QObject* accObj, QObject* catObj, QDat
 
 }
 
+int
+Book::numberOfCategories(TransactionType type) {
+    boost::optional<com::chancho::Category::Type> chanchoType;
+    if (type == TransactionType::EXPENSE) {
+        chanchoType = com::chancho::Category::Type::EXPENSE;
+    } else {
+        chanchoType = com::chancho::Category::Type::INCOME;
+    }
+    auto number = _book->numberOfCategories(chanchoType);
+    if (_book->isError()) {
+        return -1;
+    }
+    return number;
+}
+
 QObject*
 Book::categoriesModel() {
     auto model = new models::Categories(qml::Book::TransactionType::EXPENSE,  _book);
