@@ -73,10 +73,13 @@ PageStack {
                    anchors.bottomMargin: units.gu(1)
                    spacing: units.gu(1)
                    model: mainPage.incomeModel
+
+                   property var numberOfCategories: Book.numberOfCategories(Book.INCOME)
+
                    delegate: CategoryComponent {
                        name: model.display.name
                        color: model.display.color
-                       numberOfCategories: 9
+                       numberOfCategories: parent.numberOfCategories
 
                        MouseArea {
                            anchors.fill: parent
@@ -111,10 +114,13 @@ PageStack {
                    anchors.bottomMargin: units.gu(1)
                    spacing: units.gu(1)
                    model: mainPage.expenseModel
+
+                   property var numberOfCategories: Book.numberOfCategories(Book.EXPENSE)
+
                    delegate: CategoryComponent {
                        name: model.display.name
                        color: model.display.color
-                       numberOfCategories: 9
+                       numberOfCategories: parent.numberOfCategories
 
                        MouseArea {
                            anchors.fill: parent
