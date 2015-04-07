@@ -101,6 +101,7 @@ UbuntuShape {
             anchors.left: parent.left
             anchors.right: parent.right
 
+            containerHeight: itemHeight * 4
             model: Book.categoriesModelForType(Book.EXPENSE)
             delegate: categoriesDelegate
         }
