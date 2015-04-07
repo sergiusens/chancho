@@ -161,10 +161,9 @@ Component {
                     pagestack.pop()
                 } else {
                     // show an error!
-                    var text = i18n.tr("The category could not be stored.");
                     var properties = {
                         "title": i18n.tr("Init Error"),
-                        "text": i18n.tr("Make sure that you have added at least one account and a category of eact type.")
+                        "text": i18n.tr("Make sure that you have added at least one account and a category of each type.")
                     };
                     PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, properties);
                 }

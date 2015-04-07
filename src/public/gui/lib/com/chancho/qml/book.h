@@ -58,6 +58,7 @@ class Book : public QObject {
 
     Q_INVOKABLE bool updateTransaction(QObject* transaction, QObject* accModel, QObject* catModel, QDate date,
                                        QString contents, QString memo, double amount);
+    Q_INVOKABLE int numberOfCategories(TransactionType type);
     Q_INVOKABLE QObject* categoriesModel();
     Q_INVOKABLE QObject* categoriesModelForType(TransactionType type);
     Q_INVOKABLE QVariantList categoryPercentagesForMonth(int month, int year);
