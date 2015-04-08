@@ -63,11 +63,6 @@ PerformanceOverlay {
     }
 
     Component {
-        id: pageComponent
-        WelcomeWizard {}
-    }
-
-    Component {
         id: tabsComponent
         Tabs {
             id: tabs
@@ -116,7 +111,7 @@ PerformanceOverlay {
         var accounts = Book.accounts()
         if (accounts.length == 0) {
             pagestack.push(tabsComponent);
-            pagestack.push(pageComponent)
+            pagestack.push(Qt.resolvedUrl("components/WelcomeWizard.qml"));
         } else {
             pagestack.push(tabsComponent)
         }
