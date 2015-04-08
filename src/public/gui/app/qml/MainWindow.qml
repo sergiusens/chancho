@@ -67,26 +67,58 @@ MainView {
         Tabs {
             id: tabs
             Tab {
-                id: tab1
+                id: mainTab
                 title: "Bills"
-                page: MainPage {}
+                page: Loader {
+                    parent: mainTab
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        bottom: parent.bottom
+                    }
+                    source: (tabs.selectedTab === mainTab) ? Qt.resolvedUrl("components/MainPage.qml") : ""
+                }
             } // tab
 
             Tab {
                 id: statsTab
                 title: "Stats"
-                page: CategoryStatsPage {}
+                page: Loader {
+                    parent: statsTab
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        bottom: parent.bottom
+                    }
+                    source: (tabs.selectedTab === statsTab) ? Qt.resolvedUrl("components/CategoryStatsPage.qml") : ""
+                }
             }
             Tab {
                 id: accountsTab
                 title: "Accounts"
-                page: AccountsPage {}
+                page: Loader {
+                    parent: accountsTab
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        bottom: parent.bottom
+                    }
+                    source: (tabs.selectedTab === accountsTab) ? Qt.resolvedUrl("components/AccountsPage.qml") : ""
+                }
             }
 
             Tab {
                 id: categoriesTab
                 title: "Categories"
-                page: CategoriesPage {}
+                page: Loader {
+                    parent: categoriesTab
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        bottom: parent.bottom
+                    }
+                    source: (tabs.selectedTab === categoriesTab) ? Qt.resolvedUrl("components/CategoriesPage.qml") : ""
+                }
             }
         }// tabs
     }
