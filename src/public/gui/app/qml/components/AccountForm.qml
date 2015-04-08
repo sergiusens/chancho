@@ -119,6 +119,7 @@ UbuntuShape {
             flickable.contentHeight = mainColumn.height;
         }
         ColumnLayout {
+            id: mainColumn
             anchors {
                 left: parent.left
                 right: parent.right

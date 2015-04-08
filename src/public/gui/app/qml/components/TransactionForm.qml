@@ -58,6 +58,7 @@ UbuntuShape {
         }
 
         ColumnLayout {
+            id: mainColumn
             spacing: units.gu(1)
             anchors {
                 left: parent.left
