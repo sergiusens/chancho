@@ -66,9 +66,7 @@ UbuntuShape {
                     anchors.fill: parent
 
                     onClicked: {
-                        parent.selected = !parent.selected;
                         mainPageStack.push(editTransaction, {"transaction": transaction});
-                        parent.selected = !parent.selected;
                     }
                 }
             }
