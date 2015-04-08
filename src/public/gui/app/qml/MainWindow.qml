@@ -43,15 +43,12 @@ MainView {
     objectName: "mainView"
     id: mainView
 
-    // Note! applicationName needs to match the "name" field of the click manifest
     applicationName: "chancho.mandel"
 
-    /*
-     This property enables the application to change orientation
-     when the device is rotated. The default is false.
-    */
     //automaticOrientation: true
     useDeprecatedToolbar: false
+
+    anchorToKeyboard: true
 
     width: units.gu(100)
     height: units.gu(75)
