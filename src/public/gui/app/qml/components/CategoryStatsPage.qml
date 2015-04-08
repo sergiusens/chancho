@@ -168,6 +168,7 @@ PageStack {
                    anchors.fill: parent
                    anchors.topMargin: units.gu(1)
                    anchors.bottomMargin: units.gu(1)
+                   clip: true
                    spacing: units.gu(1)
                    model: legendModel
                    delegate: CategoryComponent{

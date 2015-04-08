@@ -76,6 +76,8 @@ Component {
                 anchors.fill: parent
                 anchors.topMargin: units.gu(1)
                 anchors.bottomMargin: units.gu(1)
+                clip: true
+
                 spacing: units.gu(1)
                 model: incomeModel
                 delegate: CategoryComponent {
@@ -113,6 +115,7 @@ Component {
                 anchors.fill: parent
                 anchors.topMargin: units.gu(1)
                 anchors.bottomMargin: units.gu(1)
+                clip: true
                 spacing: units.gu(1)
                 model: expenseModel
                 delegate: CategoryComponent {

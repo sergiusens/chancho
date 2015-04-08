@@ -68,7 +68,9 @@ Component {
                 anchors.topMargin: units.gu(1)
                 anchors.bottomMargin: units.gu(1)
                 model: accountsModel
+                clip: true
                 spacing: units.gu(1)
+
                 delegate: AccountComponent {
                     anchors.left: parent.left
                     anchors.right: parent.right
