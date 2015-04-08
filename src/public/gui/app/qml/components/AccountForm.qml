@@ -200,6 +200,8 @@ UbuntuShape {
                     right: parent.right
                 }
 
+                inputMethodHints: Qt.ImhFormattedNumbersOnly
+
                 validator: DoubleValidator {}
 
                 placeholderText: i18n.tr("Initial amount")

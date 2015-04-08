@@ -154,6 +154,7 @@ UbuntuShape {
 
                 anchors.left: parent.left
                 anchors.right: parent.right
+                inputMethodHints: Qt.ImhFormattedNumbersOnly
 
                 validator: DoubleValidator {}
 
