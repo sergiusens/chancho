@@ -30,7 +30,6 @@ import Ubuntu.Components.ListItems 1.0 as ListItems
 
 import com.chancho 1.0
 
-import Ubuntu.PerformanceMetrics 0.1
 import "components"
 
 /*!
@@ -44,10 +43,6 @@ MainView {
     objectName: "mainView"
     id: mainView
 
-PerformanceOverlay {
-    active: true
-    z: 300
-}
     applicationName: "chancho.mandel"
 
     //automaticOrientation: true
