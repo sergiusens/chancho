@@ -44,17 +44,6 @@ PageStack {
        id: mainPage
        title: i18n.tr("Bills")
 
-       head.actions: [
-           Action {
-               iconName: "search"
-               text: i18n.tr("Search")
-           },
-           Action {
-               iconName: "settings"
-               text: i18n.tr("Settings")
-           }
-       ]
-
        ColumnLayout {
            id: dateTitle
            property date date: new Date()
