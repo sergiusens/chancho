@@ -58,35 +58,46 @@ MainView {
     }
 
     Component {
-        id: pageComponent
-        WelcomeWizard {}
-    }
-
-    Component {
         id: tabsComponent
         Tabs {
             id: tabs
             Tab {
-                id: tab1
+                id: mainTab
                 title: "Bills"
-                page: MainPage {}
+                page: Loader {
+                    parent: mainTab
+                    anchors.fill: parent
+                    source: (tabs.selectedTab === mainTab) ? Qt.resolvedUrl("components/MainPage.qml") : ""
+                }
             } // tab
 
             Tab {
                 id: statsTab
                 title: "Stats"
-                page: CategoryStatsPage {}
+                page: Loader {
+                    parent: statsTab
+                    anchors.fill: parent
+                    source: (tabs.selectedTab === statsTab) ? Qt.resolvedUrl("components/CategoryStatsPage.qml") : ""
+                }
             }
             Tab {
                 id: accountsTab
                 title: "Accounts"
-                page: AccountsPage {}
+                page: Loader {
+                    parent: accountsTab
+                    anchors.fill: parent
+                    source: (tabs.selectedTab === accountsTab) ? Qt.resolvedUrl("components/AccountsPage.qml") : ""
+                }
             }
 
             Tab {
                 id: categoriesTab
                 title: "Categories"
-                page: CategoriesPage {}
+                page: Loader {
+                    parent: categoriesTab
+                    anchors.fill: parent
+                    source: (tabs.selectedTab === categoriesTab) ? Qt.resolvedUrl("components/CategoriesPage.qml") : ""
+                }
             }
         }// tabs
     }
@@ -95,7 +106,7 @@ MainView {
         var accounts = Book.accounts()
         if (accounts.length == 0) {
             pagestack.push(tabsComponent);
-            pagestack.push(pageComponent)
+            pagestack.push(Qt.resolvedUrl("components/WelcomeWizard.qml"));
         } else {
             pagestack.push(tabsComponent)
         }

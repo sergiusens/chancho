@@ -70,7 +70,7 @@ PageStack {
 
            onDateChanged: {
                monthLabel.text = Qt.formatDateTime(date, "MMMM yyyy");
-               monthModel.date = date;
+               monthModel.date = dateTitle.date;
            }
 
            Label {
@@ -112,9 +112,16 @@ PageStack {
                    visible: dateTitle.monthModel.daysCount > 0
 
                    model: dateTitle.monthModel
-                   delegate: BillingPerDay {
-                       z: -1
-                       dayModel: Book.dayModel(model.display.day, model.display.month, model.display.year)
+                   delegate: Component {
+                       Loader {
+                           anchors {
+                               left: parent.left
+                               right: parent.right
+                           }
+                           sourceComponent: BillingPerDay {
+                               dayModel: Book.dayModel(model.display.day, model.display.month, model.display.year)
+                           }
+                       }
                    }
                }
 

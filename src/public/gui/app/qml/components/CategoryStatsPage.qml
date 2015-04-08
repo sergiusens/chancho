@@ -85,9 +85,13 @@ PageStack {
            anchors.fill: parent
            anchors.margins: units.gu(1)
 
+           Component.onCompleted: {
+               date = new Date()
+           }
+
            onDateChanged: {
                monthLabel.text = Qt.formatDateTime(date, "MMMM yyyy");
-               monthModel.date = date;
+               monthModel.date = parent.date;
 
                CategoriesJs.redrawGraph(Book, chart, legendModel, date);
            }

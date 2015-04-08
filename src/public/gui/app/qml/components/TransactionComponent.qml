@@ -30,7 +30,6 @@ Item {
     property alias category: categoryLabel.text
     property alias contents: contentsLabel.text
     property alias amount: amountLabel.text
-    property alias color: background.color
     property bool selected: false
     property var numberOfTransactions
 
@@ -38,15 +37,7 @@ Item {
     anchors.left: parent.left
     anchors.right: parent.right
 
-    onSelectedChanged: {
-        if (selected) {
-            background.color = "Light grey";
-        } else {
-            background.color = "white";
-        }
-    }
-
-    Rectangle {
+    Item {
         id: background
 
         height: childrenRect.height

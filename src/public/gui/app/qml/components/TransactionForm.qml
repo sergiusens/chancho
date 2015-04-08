@@ -31,7 +31,6 @@ import com.chancho 1.0
 import "models"
 
 UbuntuShape {
-
     property alias selectedTypeIndex: typeSelector.selectedIndex
     property alias accountModel: accountSelector.model
     property alias accountIndex: accountSelector.selectedIndex
@@ -41,6 +40,13 @@ UbuntuShape {
     property alias contents: contentsField.text;
     property alias memo: memoTextArea.text;
     property alias amount: amountField.text;
+
+    onHeightChanged: {
+        // hacky way to fix the flickable size on a phone
+        if (height > flickable.contentHeight) {
+            flickable.contentHeight = height;
+        }
+    }
 
     Flickable {
         id: flickable
@@ -52,14 +58,11 @@ UbuntuShape {
         }
         clip: true
 
-        Component.onCompleted: {
-            console.log("Height is " + mainColumn.height);
-            flickable.contentHeight = mainColumn.height;
-        }
-
         ColumnLayout {
             id: mainColumn
             spacing: units.gu(1)
+            anchors.fill: parent
+
             anchors {
                 left: parent.left
                 right: parent.right
