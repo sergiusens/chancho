@@ -1,0 +1,16 @@
+{
+    "architecture": "armhf",
+    "description": "Chancho a personal finance manager.",
+    "framework": "ubuntu-sdk-14.04",
+    "hooks": {
+        "@APP_NAME@": {
+            "apparmor": "apparmor.json",
+            "desktop": "@DESKTOP_FILE@"
+        }
+    },
+    "icon": "@ICON@",
+    "maintainer": "Manuel de la Peña <manuel.delapena@themacaque.com>",
+    "name": "@PROJECT_NAME@",
+    "title": "Chancho",
+    "version": "@CHANCHO_VERSION_MAJOR@.@CHANCHO_VERSION_MINOR@.@CHANCHO_VERSION_PATCH@"
+}

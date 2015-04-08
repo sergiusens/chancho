@@ -25,6 +25,8 @@ IF(CMAKE_BUILD_TYPE MATCHES [cC][oO][vV][eE][rR][aA][gG][eE])
   ENABLE_COVERAGE_REPORT(TARGETS ${movie-tracker-priv} ${movie-tracker-cli})
 ENDIF(CMAKE_BUILD_TYPE MATCHES [cC][oO][vV][eE][rR][aA][gG][eE])
 
+option(CLICK_MODE "Installs to a contained location" off)
+
 execute_process(
     COMMAND qmake -query QT_INSTALL_QML
     OUTPUT_VARIABLE QT_INSTALL_QML

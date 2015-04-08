@@ -8,7 +8,7 @@ before_install:
   - sudo add-apt-repository --yes ppa:boost-latest/ppa
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
   - sudo apt-get update
-  - sudo apt-get install cmake doxygen dbus-test-runner google-mock qt5-default qtbase5-dev libqt5sql5 libqt5sql5-sqlite libboost1.54-dev libboost-program-options1.54-dev libgoogle-glog-dev qtdeclarative5-dev qtdeclarative5-dev-tools qtdeclarative5-test-plugin gcc-4.9 g++-4.9 python-pip
+  - sudo apt-get install cmake doxygen dbus-test-runner google-mock qt5-default qtbase5-dev libqt5sql5 libqt5sql5-sqlite libboost1.54-dev libboost-program-options1.54-dev libgoogle-glog-dev qtdeclarative5-dev qtdeclarative5-dev-tools qtdeclarative5-test-plugin gcc-4.9 g++-4.9 python-pip libsqlite3-dev
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 50
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 50
   - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 50
