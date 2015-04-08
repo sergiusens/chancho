@@ -64,7 +64,7 @@ Item {
 
                 ColumnLayout {
                     id: categoryInfo
-                    width: units.gu(20)
+                    width: units.gu(10)
                     anchors.left: parent.left
                     anchors.top: parent.top
 
