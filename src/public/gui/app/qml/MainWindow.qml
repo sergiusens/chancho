@@ -91,18 +91,6 @@ MainView {
                 title: "Categories"
                 page: CategoriesPage {}
             }
-
-            Tab {
-                id: settingsTab
-                title: "Settings"
-                page: Page {
-                    Button {
-                            anchors.centerIn: parent
-                            onClicked: pageStack.push(page3)
-                            text: "Press"
-                    }
-                }
-            }
         }// tabs
     }
 
