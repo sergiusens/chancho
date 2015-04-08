@@ -103,111 +103,130 @@ UbuntuShape {
         }
     }
 
+    Flickable {
+        id: flickable
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+            bottom: parent.bottom
+        }
+        clip: true
 
-    ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: units.gu(1)
+        Component.onCompleted: {
+            console.log("Height is " + mainColumn.height);
+            flickable.contentHeight = mainColumn.height;
+        }
+        ColumnLayout {
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                bottom: parent.bottom
+                margins: units.gu(1)
+            }
 
-        Item {
-            id: nameAndColor
-            anchors.margins: units.gu(1)
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: childrenRect.height
-
-            UbuntuShape {
-                id: colorChooser
-                anchors.top: parent.top
+            Item {
+                id: nameAndColor
+                anchors.margins: units.gu(1)
                 anchors.left: parent.left
+                anchors.right: parent.right
+                height: childrenRect.height
 
-                color: "orange"
-                property var lightColor: Qt.lighter(color, 1.6)
-                property var darkColor: Qt.darker(color, 1.2)
+                UbuntuShape {
+                    id: colorChooser
+                    anchors.top: parent.top
+                    anchors.left: parent.left
 
-                height: nameField.height
-                width: nameField.height
+                    color: "orange"
+                    property var lightColor: Qt.lighter(color, 1.6)
+                    property var darkColor: Qt.darker(color, 1.2)
 
-                MouseArea {
-                    anchors.fill: parent
+                    height: nameField.height
+                    width: nameField.height
 
-                    onClicked: {
-                        var properties = {
-                            "shapeWidth": colorChooser.width,
-                            "shapeHeight": colorChooser.height,
-                            "color": colorChooser.color
-                        };
-                        PopupUtils.open(popoverComponent, colorChooser, properties);
+                    MouseArea {
+                        anchors.fill: parent
+
+                        onClicked: {
+                            var properties = {
+                                "shapeWidth": colorChooser.width,
+                                "shapeHeight": colorChooser.height,
+                                "color": colorChooser.color
+                            };
+                            PopupUtils.open(popoverComponent, colorChooser, properties);
+                        }
+                    }
+
+                    onColorChanged: {
+                        chart.repaint();
                     }
                 }
 
-                onColorChanged: {
-                    chart.repaint();
+                TextField {
+                    id: nameField
+                    anchors.top: parent.top
+                    anchors.left: colorChooser.right
+                    anchors.right: parent.right
+                    anchors.leftMargin: units.gu(1)
+
+                    placeholderText: i18n.tr("Name")
+
+                    onTextChanged: {
+                        if (showGraph)
+                            chart.chartData.datasets[0]["label"] = text;
+                    }
                 }
             }
 
-            TextField {
-                id: nameField
-                anchors.top: parent.top
-                anchors.left: colorChooser.right
+            Component {
+                id: typeDelegate
+                OptionSelectorDelegate {
+                    text: name;
+                }
+            }
+
+            CategoryTypeModel {
+                id: typeModel
+            }
+
+            OptionSelector {
+                id: typeSelector
+
+                anchors.margins: units.gu(1)
+                anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.leftMargin: units.gu(1)
 
-                placeholderText: i18n.tr("Name")
+                model: typeModel
+                delegate: typeDelegate
+            }
 
-                onTextChanged: {
-                    if (showGraph)
-                        chart.chartData.datasets[0]["label"] = text;
+            UbuntuShape {
+                id: chartShape
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+
+                anchors.margins: units.gu(1)
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: childrenRect.height
+                color: "white"
+
+                Chart {
+                    id: chart
+                    anchors.fill: parent
+
+                    chartAnimated: true;
+                    chartAnimationEasing: Easing.InOutElastic;
+                    chartAnimationDuration: 2000;
+                    chartType: Charts.ChartType.BAR;
+
+                    Component.onCompleted: {
+                        // grab the accounts and set the diff data
+                        chart.chartData = topShape.graphData;
+                    }
                 }
-            }
+            }  // chart u shape
         }
-
-        Component {
-            id: typeDelegate
-            OptionSelectorDelegate {
-                text: name;
-            }
-        }
-
-        CategoryTypeModel {
-            id: typeModel
-        }
-
-        OptionSelector {
-            id: typeSelector
-
-            anchors.margins: units.gu(1)
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            model: typeModel
-            delegate: typeDelegate
-        }
-
-        UbuntuShape {
-            id: chartShape
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-
-            anchors.margins: units.gu(1)
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: childrenRect.height
-            color: "white"
-
-            Chart {
-                id: chart
-                anchors.fill: parent
-
-                chartAnimated: true;
-                chartAnimationEasing: Easing.InOutElastic;
-                chartAnimationDuration: 2000;
-                chartType: Charts.ChartType.BAR;
-
-                Component.onCompleted: {
-                    // grab the accounts and set the diff data
-                    chart.chartData = topShape.graphData;
-                }
-            }
-        }  // chart u shape
     }
 }

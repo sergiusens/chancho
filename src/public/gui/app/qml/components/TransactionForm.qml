@@ -42,124 +42,145 @@ UbuntuShape {
     property alias memo: memoTextArea.text;
     property alias amount: amountField.text;
 
-    ColumnLayout {
-        spacing: units.gu(1)
-        anchors.fill: parent
-        anchors.margins: units.gu(1)
+    Flickable {
+        id: flickable
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+            bottom: parent.bottom
+        }
+        clip: true
 
-        Component {
-            id: typeDelegate
-            OptionSelectorDelegate {
-                text: name;
-            }
+        Component.onCompleted: {
+            console.log("Height is " + mainColumn.height);
+            flickable.contentHeight = mainColumn.height;
         }
 
-        CategoryTypeModel {
-            id: typeModel
-        }
-
-        OptionSelector {
-            id: typeSelector
-
-            anchors.left: parent.left
-            anchors.right: parent.right
-            width: parent.width
-
-            model: typeModel
-            delegate: typeDelegate
-
-            onSelectedIndexChanged : {
-                categorySelector.model.categoryType = model.get(selectedIndex).enumType;
-            }
-        }
-
-        Component {
-            id: accountsDelegate
-            OptionSelectorDelegate {
-                text: model.display.name;
-            }
-        }
-
-        OptionSelector {
-            id: accountSelector
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            model: Book.accountsModel()
-            delegate: accountsDelegate
-        }
-
-        Component {
-            id: categoriesDelegate
-            OptionSelectorDelegate {
-                text: model.display.name;
-            }
-        }
-
-        OptionSelector {
-            id: categorySelector
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            containerHeight: itemHeight * 4
-            model: Book.categoriesModelForType(Book.EXPENSE)
-            delegate: categoriesDelegate
-        }
-
-        TextField {
-            id: datePicker
-            property date date: new Date()
-
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            placeholderText: i18n.tr("Date")
-            onDateChanged: {
-                console.log("Date changed!");
-                datePicker.text = Qt.formatDateTime(date, "dd/MM/yyyy");
+        ColumnLayout {
+            spacing: units.gu(1)
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                bottom: parent.bottom
+                margins: units.gu(1)
             }
 
-            MouseArea {
-                anchors.fill: parent
-
-                onClicked: {
-                    var popup = PickerPanel.openDatePicker(datePicker, "date", "Days|Years|Months");
-                    popup.picker.minimum = new Date(1900, 1, 1);
+            Component {
+                id: typeDelegate
+                OptionSelectorDelegate {
+                    text: name;
                 }
             }
-        }
 
-        TextField {
-            id: amountField
+            CategoryTypeModel {
+                id: typeModel
+            }
 
-            anchors.left: parent.left
-            anchors.right: parent.right
+            OptionSelector {
+                id: typeSelector
 
-            validator: DoubleValidator {}
+                anchors.left: parent.left
+                anchors.right: parent.right
+                width: parent.width
 
-            placeholderText: i18n.tr("Amount")
-        }
+                model: typeModel
+                delegate: typeDelegate
 
-        TextField {
-            id: contentsField
+                onSelectedIndexChanged : {
+                    categorySelector.model.categoryType = model.get(selectedIndex).enumType;
+                }
+            }
 
-            anchors.left: parent.left
-            anchors.right: parent.right
+            Component {
+                id: accountsDelegate
+                OptionSelectorDelegate {
+                    text: model.display.name;
+                }
+            }
 
-            placeholderText: i18n.tr("Contents")
-        }
+            OptionSelector {
+                id: accountSelector
+                anchors.left: parent.left
+                anchors.right: parent.right
 
-        TextArea {
-            id: memoTextArea
-            anchors.left: parent.left
-            anchors.right: parent.right
+                model: Book.accountsModel()
+                delegate: accountsDelegate
+            }
 
-            Layout.fillHeight: true
+            Component {
+                id: categoriesDelegate
+                OptionSelectorDelegate {
+                    text: model.display.name;
+                }
+            }
 
-            width: parent.width
-            autoSize: true
+            OptionSelector {
+                id: categorySelector
+                anchors.left: parent.left
+                anchors.right: parent.right
 
-            placeholderText: i18n.tr("Memo")
+                containerHeight: itemHeight * 4
+                model: Book.categoriesModelForType(Book.EXPENSE)
+                delegate: categoriesDelegate
+            }
+
+            TextField {
+                id: datePicker
+                property date date: new Date()
+
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                placeholderText: i18n.tr("Date")
+                onDateChanged: {
+                    console.log("Date changed!");
+                    datePicker.text = Qt.formatDateTime(date, "dd/MM/yyyy");
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+
+                    onClicked: {
+                        var popup = PickerPanel.openDatePicker(datePicker, "date", "Days|Years|Months");
+                        popup.picker.minimum = new Date(1900, 1, 1);
+                    }
+                }
+            }
+
+            TextField {
+                id: amountField
+
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                validator: DoubleValidator {}
+
+                placeholderText: i18n.tr("Amount")
+            }
+
+            TextField {
+                id: contentsField
+
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                placeholderText: i18n.tr("Contents")
+            }
+
+            TextArea {
+                id: memoTextArea
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                Layout.fillHeight: true
+
+                width: parent.width
+                autoSize: true
+
+                placeholderText: i18n.tr("Memo")
+            }
         }
     }
 }
