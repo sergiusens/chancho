@@ -150,6 +150,8 @@ UbuntuShape {
                         anchors.fill: parent
 
                         onClicked: {
+                            // hide the input to make things work nicer in smaller screens
+                            Qt.inputMethod.hide();
                             var properties = {
                                 "shapeWidth": colorChooser.width,
                                 "shapeHeight": colorChooser.height,
