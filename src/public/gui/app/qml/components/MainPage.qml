@@ -118,11 +118,13 @@ PageStack {
                    anchors.fill: parent
                    anchors.margins: units.gu(1)
                    spacing: units.gu(2)
+                   clip: true
 
                    visible: dateTitle.monthModel.daysCount > 0
 
                    model: dateTitle.monthModel
                    delegate: BillingPerDay {
+                       z: -1
                        dayModel: Book.dayModel(model.display.day, model.display.month, model.display.year)
                    }
                }
