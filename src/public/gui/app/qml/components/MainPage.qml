@@ -70,7 +70,7 @@ PageStack {
 
            onDateChanged: {
                monthLabel.text = Qt.formatDateTime(date, "MMMM yyyy");
-               monthModel.date = date;
+               monthModel.date = dateTitle.date;
            }
 
            Label {

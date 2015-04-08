@@ -30,6 +30,7 @@ import Ubuntu.Components.ListItems 1.0 as ListItems
 
 import com.chancho 1.0
 
+import Ubuntu.PerformanceMetrics 0.1
 import "components"
 
 /*!
@@ -43,6 +44,10 @@ MainView {
     objectName: "mainView"
     id: mainView
 
+PerformanceOverlay {
+    active: true
+    z: 300
+}
     applicationName: "chancho.mandel"
 
     //automaticOrientation: true
@@ -71,11 +76,7 @@ MainView {
                 title: "Bills"
                 page: Loader {
                     parent: mainTab
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                        bottom: parent.bottom
-                    }
+                    anchors.fill: parent
                     source: (tabs.selectedTab === mainTab) ? Qt.resolvedUrl("components/MainPage.qml") : ""
                 }
             } // tab
@@ -85,11 +86,7 @@ MainView {
                 title: "Stats"
                 page: Loader {
                     parent: statsTab
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                        bottom: parent.bottom
-                    }
+                    anchors.fill: parent
                     source: (tabs.selectedTab === statsTab) ? Qt.resolvedUrl("components/CategoryStatsPage.qml") : ""
                 }
             }
@@ -98,11 +95,7 @@ MainView {
                 title: "Accounts"
                 page: Loader {
                     parent: accountsTab
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                        bottom: parent.bottom
-                    }
+                    anchors.fill: parent
                     source: (tabs.selectedTab === accountsTab) ? Qt.resolvedUrl("components/AccountsPage.qml") : ""
                 }
             }
@@ -112,11 +105,7 @@ MainView {
                 title: "Categories"
                 page: Loader {
                     parent: categoriesTab
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                        bottom: parent.bottom
-                    }
+                    anchors.fill: parent
                     source: (tabs.selectedTab === categoriesTab) ? Qt.resolvedUrl("components/CategoriesPage.qml") : ""
                 }
             }

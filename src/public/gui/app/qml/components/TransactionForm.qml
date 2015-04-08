@@ -52,13 +52,14 @@ UbuntuShape {
         }
         clip: true
 
-        Component.onCompleted: {
-            console.log("Height is " + mainColumn.height);
-            flickable.contentHeight = mainColumn.height;
-        }
-
         ColumnLayout {
+            id: mainColumn
             spacing: units.gu(1)
+
+            Component.onCompleted: {
+                flickable.contentHeight = childrenRect.height;
+            }
+
             anchors {
                 left: parent.left
                 right: parent.right
