@@ -82,7 +82,6 @@ Page {
                     type = type.enumType
                     Book.updateCategory(category, form.name, form.color, type);
                     categoriesPageStack.pop();
-                    PopupUtils.close(dialogue);
                 };
                 var properties = {
                     "title": i18n.tr("Edit entry"),
