@@ -72,16 +72,6 @@ Page {
         visible: false
     }
 
-   head.actions: [
-       Action {
-           iconName: "search"
-           text: i18n.tr("Search")
-       },
-       Action {
-           iconName: "settings"
-           text: i18n.tr("Settings")
-       }
-   ]
 
    ColumnLayout {
        id: dateTitle
