@@ -77,7 +77,7 @@ Page {
             iconName: "edit"
             text: i18n.tr("Edit")
             onTriggered: {
-                var editCategoriesCb = function() {
+                var deleteCategoriesCb = function() {
                     var type = form.categoryTypeModel.get(form.categoryTypeSelectedIndex);
                     type = type.enumType
                     Book.updateCategory(category, form.name, form.color, type);
@@ -86,7 +86,7 @@ Page {
                 var properties = {
                     "title": i18n.tr("Edit entry"),
                     "text": i18n.tr("Do you want to update this entry?"),
-                    "okCallback": editCategoriesCb
+                    "okCallback": deleteCategoriesCb
                 };
                 PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
             }

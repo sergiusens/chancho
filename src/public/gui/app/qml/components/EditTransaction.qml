@@ -59,7 +59,54 @@ Page {
             iconName: "edit"
             text: i18n.tr("Edit")
             onTriggered: {
-                var editTransactionCb = function() {
+                PopupUtils.open(editDialog, page);
+            }
+        },
+        Action {
+            iconName: "delete"
+            text: i18n.tr("Delete")
+            onTriggered: {
+                PopupUtils.open(deleteDialog, page);
+            }
+        }
+    ]
+
+    Component {
+         id: deleteDialog
+
+         Dialog {
+             id: dialogue
+             title: i18n.tr("Delete entry")
+             text: i18n.tr("Do you want to remove this entry?")
+             Button {
+                 text: i18n.tr("ok")
+                 color: UbuntuColors.orange
+                 onClicked: {
+                    Book.removeTransaction(transaction);
+                    PopupUtils.close(dialogue);
+                    mainPageStack.pop();
+                 }
+             }
+             Button {
+                 text: i18n.tr("cancel")
+                 onClicked: {
+                    PopupUtils.close(dialogue);
+                 }
+             }
+         }
+    }
+
+    Component {
+         id: editDialog
+
+         Dialog {
+             id: dialogue
+             title: i18n.tr("Edit entry")
+             text: i18n.tr("Do you want to update this entry?")
+             Button {
+                 text: i18n.tr("ok")
+                 color: UbuntuColors.orange
+                 onClicked: {
                     var accountModel = form.accountModel.get(form.accountIndex);
                     var categoryModel = form.categoryModel.get(form.categoryIndex);
                     var date = form.date;
@@ -69,33 +116,18 @@ Page {
                     amount = amount.replace(",", ".");
 
                     Book.updateTransaction(transaction, accountModel, categoryModel, date, contents, memo, amount);
+                    PopupUtils.close(dialogue);
                     mainPageStack.pop();
-                };
-                var properties = {
-                    "title": i18n.tr("Edit entry"),
-                    "text": i18n.tr("Do you want to update this entry?"),
-                    "okCallback": editTransactionCb
-                };
-                PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
-            }
-        },
-        Action {
-            iconName: "delete"
-            text: i18n.tr("Delete")
-            onTriggered: {
-                var deleteCategoriesCb = function() {
-                    Book.removeTransaction(transaction);
-                    mainPageStack.pop();
-                };
-                var properties = {
-                    "title": i18n.tr("Delete category"),
-                    "text": i18n.tr("Do you want to remove this category?"),
-                    "okCallback": deleteCategoriesCb
-                };
-                PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
-            }
-        }
-    ]
+                 }
+             }
+             Button {
+                 text: i18n.tr("cancel")
+                 onClicked: {
+                    PopupUtils.close(dialogue);
+                 }
+             }
+         }
+    }
 
     TransactionForm {
         id: form

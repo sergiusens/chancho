@@ -58,46 +58,35 @@ MainView {
     }
 
     Component {
+        id: pageComponent
+        WelcomeWizard {}
+    }
+
+    Component {
         id: tabsComponent
         Tabs {
             id: tabs
             Tab {
-                id: mainTab
+                id: tab1
                 title: "Bills"
-                page: Loader {
-                    parent: mainTab
-                    anchors.fill: parent
-                    source: (tabs.selectedTab === mainTab) ? Qt.resolvedUrl("components/MainPage.qml") : ""
-                }
+                page: MainPage {}
             } // tab
 
             Tab {
                 id: statsTab
                 title: "Stats"
-                page: Loader {
-                    parent: statsTab
-                    anchors.fill: parent
-                    source: (tabs.selectedTab === statsTab) ? Qt.resolvedUrl("components/CategoryStatsPage.qml") : ""
-                }
+                page: CategoryStatsPage {}
             }
             Tab {
                 id: accountsTab
                 title: "Accounts"
-                page: Loader {
-                    parent: accountsTab
-                    anchors.fill: parent
-                    source: (tabs.selectedTab === accountsTab) ? Qt.resolvedUrl("components/AccountsPage.qml") : ""
-                }
+                page: AccountsPage {}
             }
 
             Tab {
                 id: categoriesTab
                 title: "Categories"
-                page: Loader {
-                    parent: categoriesTab
-                    anchors.fill: parent
-                    source: (tabs.selectedTab === categoriesTab) ? Qt.resolvedUrl("components/CategoriesPage.qml") : ""
-                }
+                page: CategoriesPage {}
             }
         }// tabs
     }
@@ -106,7 +95,7 @@ MainView {
         var accounts = Book.accounts()
         if (accounts.length == 0) {
             pagestack.push(tabsComponent);
-            pagestack.push(Qt.resolvedUrl("components/WelcomeWizard.qml"));
+            pagestack.push(pageComponent)
         } else {
             pagestack.push(tabsComponent)
         }

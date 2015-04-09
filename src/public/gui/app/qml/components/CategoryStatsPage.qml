@@ -33,9 +33,23 @@ import jbQuick.Charts 1.0
 import com.chancho 1.0
 import "js/categories.js" as CategoriesJs
 
-PageStack {
-    id: mainPageStack
+Page {
+    id: mainPage
+    title: i18n.tr("Stats")
+    property var percentages
+
     Component.onCompleted: {
+        percentages = CategoriesJs.calculateGraphData(Book, date);
+        if (percentages.legend.length > 0) {
+            chartShape.visible = true;
+            legend.visible = true;
+            noResultShape.visible = false;
+        } else {
+            chartShape.visible = false;
+            legend.visible = false;
+            noResultShape.visible = true;
+        }
+
         var updateGraphOnStoreDelete = function() {
             // TODO: be smarter
             CategoriesJs.redrawGraph(Book, chart, legendModel, dateTitle.date);
@@ -50,8 +64,6 @@ PageStack {
 
         Book.accountRemoved.connect(updateGraphOnStoreDelete);
         Book.accountUpdated.connect(updateGraphOnStoreDelete);
-
-        push(mainPage);
     }
 
     EditTransaction {
@@ -60,130 +72,141 @@ PageStack {
         visible: false
     }
 
-    Page {
-       id: mainPage
-       title: i18n.tr("Bills")
 
-       head.actions: [
-           Action {
-               iconName: "search"
-               text: i18n.tr("Search")
-           },
-           Action {
-               iconName: "settings"
-               text: i18n.tr("Settings")
+   ColumnLayout {
+       id: dateTitle
+       property date date: new Date()
+       property var monthModel: Book.monthModel(date)
+
+       spacing: units.gu(2)
+
+       anchors.fill: parent
+       anchors.margins: units.gu(1)
+
+       onDateChanged: {
+           percentages = CategoriesJs.calculateGraphData(Book, date);
+           if (percentages.legend.length > 0) {
+               chartShape.visible = true;
+               legend.visible = true;
+               noResultShape.visible = false;
+           } else {
+               chartShape.visible = false;
+               legend.visible = false;
+               noResultShape.visible = true;
            }
-       ]
+           monthLabel.text = Qt.formatDateTime(date, "MMMM yyyy");
+           monthModel.date = date;
 
-       ColumnLayout {
-           id: dateTitle
-           property date date: new Date()
-           property var monthModel: Book.monthModel(date)
+           CategoriesJs.redrawGraph(Book, chart, legendModel, date);
+       }
 
-           spacing: units.gu(2)
+       Label {
+           id: monthLabel
 
-           anchors.fill: parent
+           anchors.left: parent.left
+           anchors.right: parent.right
+
+           text: Qt.formatDateTime(date, "MMMM yyyy");
+           fontSize: "x-large"
+           horizontalAlignment: Text.AlignHCenter
+
+           MouseArea {
+               anchors.fill: parent
+
+               onClicked: {
+                   var popup = PickerPanel.openDatePicker(dateTitle, "date", "Years|Months");
+                   popup.picker.minimum = new Date(1900, 1, 1);
+               }
+           }
+       }
+
+       UbuntuShape {
+           id: noResultShape
+           anchors.left: parent.left
+           anchors.right: parent.right
            anchors.margins: units.gu(1)
+           color: "white"
 
-           Component.onCompleted: {
-               date = new Date()
-           }
-
-           onDateChanged: {
-               monthLabel.text = Qt.formatDateTime(date, "MMMM yyyy");
-               monthModel.date = parent.date;
-
-               CategoriesJs.redrawGraph(Book, chart, legendModel, date);
-           }
+           Layout.fillHeight: true
 
            Label {
-               id: monthLabel
+                id: noResultLabel
+                anchors.centerIn: parent
+                anchors.margins: units.gu(1)
 
-               anchors.left: parent.left
-               anchors.right: parent.right
+                text: i18n.tr("No entries were found!")
 
-               text: Qt.formatDateTime(date, "MMMM yyyy");
-               fontSize: "x-large"
-               horizontalAlignment: Text.AlignHCenter
-
-               MouseArea {
-                   anchors.fill: parent
-
-                   onClicked: {
-                       var popup = PickerPanel.openDatePicker(dateTitle, "date", "Years|Months");
-                       popup.picker.minimum = new Date(1900, 1, 1);
-                   }
-               }
+                fontSize: "x-large"
+                visible: dateTitle.monthModel.daysCount <= 0
            }
+       }
 
-           UbuntuShape {
-               id: days
-               anchors.left: parent.left
-               anchors.right: parent.right
-               anchors.margins: units.gu(1)
-               color: "white"
+       UbuntuShape {
+           id: chartShape
+           anchors.left: parent.left
+           anchors.right: parent.right
+           anchors.margins: units.gu(1)
+           color: "white"
 
-               Layout.fillHeight: true
+           Layout.fillHeight: true
 
-               Chart {
-                   id: chart;
-                   anchors.fill: parent
+           Chart {
+               id: chart;
+               anchors.fill: parent
 
-                   chartAnimated: true;
-                   chartType: Charts.ChartType.PIE;
-                   chartAnimationEasing: Easing.Linear;
-                   chartAnimationDuration: 1000;
-                   chartOptions: {"segmentStrokeColor": "#ECECEC"};
+               chartAnimated: true;
+               chartType: Charts.ChartType.PIE;
+               chartAnimationEasing: Easing.Linear;
+               chartAnimationDuration: 1000;
+               chartOptions: {"segmentStrokeColor": "#ECECEC"};
 
-                   Component.onCompleted: {
-                        var accounts = Book.accounts();
-                        var date = new Date();
-                        var percentages = CategoriesJs.calculateGraphData(Book, date);
-                        chart.chartData = percentages.data;
-                        var categories = percentages.legend
+               Component.onCompleted: {
+                    var date = new Date();
+                    var percentages = CategoriesJs.calculateGraphData(Book, date);
+                    chart.chartData = percentages.data;
+                    var categories = percentages.legend
 
-                        // we need to update the legend too
-                        legendModel.clear();
-                        for(var index=0; index < categories.length; index++) {
-                            var category = categories[index];
-                            legendModel.append({"name":category.name, "color":category.color});
-                        }
+                    // we need to update the legend too
+                    legendModel.clear();
+                    for(var index=0; index < categories.length; index++) {
+                        var category = categories[index];
+                        legendModel.append({"name":category.name, "color":category.color});
                     }
+                }
+           }
+       }
+
+       ListModel {
+           id: legendModel
+       }
+
+       UbuntuShape {
+           id: legend
+
+           anchors.left: parent.left
+           anchors.right: parent.right
+           anchors.leftMargin: units.gu(1);
+           anchors.rightMargin: units.gu(1);
+           color: "white"
+
+           Layout.minimumHeight: parent.height/4
+
+           UbuntuListView {
+               id: legendList
+               anchors.fill: parent
+               anchors.topMargin: units.gu(1)
+               anchors.bottomMargin: units.gu(1)
+               clip: true
+               spacing: units.gu(1)
+               model: legendModel
+               delegate: CategoryComponent{
+                   name: model.name
+                   color: model.color
+                   numberOfCategories: model.count
                }
-           }
-
-           ListModel {
-               id: legendModel
-           }
-
-           UbuntuShape {
-               id: legend
-
-               anchors.left: parent.left
-               anchors.right: parent.right
-               anchors.leftMargin: units.gu(1);
-               anchors.rightMargin: units.gu(1);
-               color: "white"
-
-               Layout.minimumHeight: parent.height/4
-
-               UbuntuListView {
-                   id: daysList
-                   anchors.fill: parent
-                   anchors.topMargin: units.gu(1)
-                   anchors.bottomMargin: units.gu(1)
-                   clip: true
-                   spacing: units.gu(1)
-                   model: legendModel
-                   delegate: CategoryComponent{
-                       name: model.name
-                       color: model.color
-                       numberOfCategories: model.count
-                   }
-               } // List View
-
-           }
+           } // List View
 
        }
-    }
-} // page stack
+
+   }
+}

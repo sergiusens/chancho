@@ -103,137 +103,153 @@ UbuntuShape {
         }
     }
 
-    ColumnLayout {
-        id: mainColumn
+
+    Flickable {
+        id: flickable
         anchors {
             left: parent.left
             right: parent.right
             top: parent.top
             bottom: parent.bottom
-            margins: units.gu(1)
         }
+        clip: true
 
-        Item {
-            id: nameAndColor
-
+        Component.onCompleted: {
+            console.log("Height is " + mainColumn.height);
+            flickable.contentHeight = mainColumn.height;
+        }
+        ColumnLayout {
+            id: mainColumn
             anchors {
                 left: parent.left
                 right: parent.right
+                top: parent.top
+                bottom: parent.bottom
                 margins: units.gu(1)
             }
 
-            height: childrenRect.height
-
-            UbuntuShape {
-                id: colorChooser
-
-                property var lightColor: Qt.lighter(color, 1.6)
-                property var darkColor: Qt.darker(color, 1.2)
+            Item {
+                id: nameAndColor
 
                 anchors {
-                    top: parent.top
                     left: parent.left
+                    right: parent.right
+                    margins: units.gu(1)
                 }
 
-                color: "orange"
+                height: childrenRect.height
 
-                height: nameField.height
-                width: nameField.height
+                UbuntuShape {
+                    id: colorChooser
 
-                MouseArea {
-                    anchors.fill: parent
+                    property var lightColor: Qt.lighter(color, 1.6)
+                    property var darkColor: Qt.darker(color, 1.2)
 
-                    onClicked: {
-                        var properties = {
-                            "shapeWidth": colorChooser.width,
-                            "shapeHeight": colorChooser.height,
-                            "color": colorChooser.color
-                        };
-                        PopupUtils.open(popoverComponent, colorChooser, properties);
+                    anchors {
+                        top: parent.top
+                        left: parent.left
+                    }
+
+                    color: "orange"
+
+                    height: nameField.height
+                    width: nameField.height
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        onClicked: {
+                            var properties = {
+                                "shapeWidth": colorChooser.width,
+                                "shapeHeight": colorChooser.height,
+                                "color": colorChooser.color
+                            };
+                            PopupUtils.open(popoverComponent, colorChooser, properties);
+                        }
+                    }
+
+                    onColorChanged: {
+                        chart.repaint();
                     }
                 }
 
-                onColorChanged: {
-                    chart.repaint();
+                TextField {
+                    id: nameField
+
+                    anchors {
+                        top: parent.top
+                        left: colorChooser.right
+                        right: parent.right
+                        leftMargin: units.gu(1)
+                    }
+
+                    placeholderText: i18n.tr("Name")
+
+                    onTextChanged: {
+                        if (showGraph)
+                            chart.chartData.datasets[0]["label"] = text;
+                    }
                 }
             }
 
             TextField {
-                id: nameField
+                id: initialAmount
 
                 anchors {
-                    top: parent.top
-                    left: colorChooser.right
+                    margins: units.gu(1)
+                    left: parent.left
                     right: parent.right
-                    leftMargin: units.gu(1)
                 }
 
-                placeholderText: i18n.tr("Name")
+                inputMethodHints: Qt.ImhFormattedNumbersOnly
 
-                onTextChanged: {
-                    if (showGraph)
-                        chart.chartData.datasets[0]["label"] = text;
+                validator: DoubleValidator {}
+
+                placeholderText: i18n.tr("Initial amount")
+            }
+
+            TextField {
+                id: memoTextArea
+
+                anchors {
+                    margins: units.gu(1)
+                    left: parent.left
+                    right: parent.right
                 }
-            }
-        }
 
-        TextField {
-            id: initialAmount
-
-            anchors {
-                margins: units.gu(1)
-                left: parent.left
-                right: parent.right
+                placeholderText: i18n.tr("Memo")
             }
 
-            inputMethodHints: Qt.ImhFormattedNumbersOnly
+            UbuntuShape {
+                id: chartShape
 
-            validator: DoubleValidator {}
+                Layout.fillHeight: true
+                Layout.fillWidth: true
 
-            placeholderText: i18n.tr("Initial amount")
-        }
-
-        TextField {
-            id: memoTextArea
-
-            anchors {
-                margins: units.gu(1)
-                left: parent.left
-                right: parent.right
-            }
-
-            placeholderText: i18n.tr("Memo")
-        }
-
-        UbuntuShape {
-            id: chartShape
-
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-
-            anchors {
-                margins: units.gu(1)
-                left: parent.left
-                right: parent.right
-            }
-
-            height: childrenRect.height
-            color: "white"
-
-            Chart {
-                id: chart
-                anchors.fill: parent
-
-                chartAnimated: true;
-                chartAnimationEasing: Easing.InOutElastic;
-                chartAnimationDuration: 2000;
-                chartType: Charts.ChartType.LINE;
-
-                Component.onCompleted: {
-                    // grab the accounts and set the diff data
-                    chart.chartData = topShape.graphData;
+                anchors {
+                    margins: units.gu(1)
+                    left: parent.left
+                    right: parent.right
                 }
-            }
-        }  // chart u shape
+
+                height: childrenRect.height
+                color: "white"
+
+                Chart {
+                    id: chart
+                    anchors.fill: parent
+
+                    chartAnimated: true;
+                    chartAnimationEasing: Easing.InOutElastic;
+                    chartAnimationDuration: 2000;
+                    chartType: Charts.ChartType.LINE;
+
+                    Component.onCompleted: {
+                        // grab the accounts and set the diff data
+                        chart.chartData = topShape.graphData;
+                    }
+                }
+            }  // chart u shape
+        }
     }
 }
