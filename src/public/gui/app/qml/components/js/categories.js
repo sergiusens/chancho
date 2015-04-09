@@ -44,6 +44,7 @@ function calculateGraphData(book, date) {
 }
 
 function redrawGraph(book, chart, legendModel, date) {
+    console.log("Redraw the category stats graph.")
     var percentages = calculateGraphData(book, date);
     chart.chartData = percentages.data;
 

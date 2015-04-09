@@ -103,156 +103,140 @@ UbuntuShape {
         }
     }
 
-
-    Flickable {
-        id: flickable
+    ColumnLayout {
+        id: mainColumn
         anchors {
             left: parent.left
             right: parent.right
             top: parent.top
             bottom: parent.bottom
+            margins: units.gu(1)
         }
-        clip: true
 
-        Component.onCompleted: {
-            console.log("Height is " + mainColumn.height);
-            flickable.contentHeight = mainColumn.height;
-        }
-        ColumnLayout {
-            id: mainColumn
+        Item {
+            id: nameAndColor
+
             anchors {
                 left: parent.left
                 right: parent.right
-                top: parent.top
-                bottom: parent.bottom
                 margins: units.gu(1)
             }
 
-            Item {
-                id: nameAndColor
-
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    margins: units.gu(1)
-                }
-
-                height: childrenRect.height
-
-                UbuntuShape {
-                    id: colorChooser
-
-                    property var lightColor: Qt.lighter(color, 1.6)
-                    property var darkColor: Qt.darker(color, 1.2)
-
-                    anchors {
-                        top: parent.top
-                        left: parent.left
-                    }
-
-                    color: "orange"
-
-                    height: nameField.height
-                    width: nameField.height
-
-                    MouseArea {
-                        anchors.fill: parent
-
-                        onClicked: {
-                            // hide the input to make things work nicer in smaller screens
-                            Qt.inputMethod.hide();
-                            mainView.anchorToKeyboard = false;
-                            var properties = {
-                                "shapeWidth": colorChooser.width,
-                                "shapeHeight": colorChooser.height,
-                                "color": colorChooser.color
-                            };
-                            PopupUtils.open(popoverComponent, colorChooser, properties);
-                        }
-                    }
-
-                    onColorChanged: {
-                        chart.repaint();
-                    }
-                }
-
-                TextField {
-                    id: nameField
-
-                    anchors {
-                        top: parent.top
-                        left: colorChooser.right
-                        right: parent.right
-                        leftMargin: units.gu(1)
-                    }
-
-                    placeholderText: i18n.tr("Name")
-
-                    onTextChanged: {
-                        if (showGraph)
-                            chart.chartData.datasets[0]["label"] = text;
-                    }
-                }
-            }
-
-            TextField {
-                id: initialAmount
-
-                anchors {
-                    margins: units.gu(1)
-                    left: parent.left
-                    right: parent.right
-                }
-
-                inputMethodHints: Qt.ImhFormattedNumbersOnly
-
-                validator: DoubleValidator {}
-
-                placeholderText: i18n.tr("Initial amount")
-            }
-
-            TextField {
-                id: memoTextArea
-
-                anchors {
-                    margins: units.gu(1)
-                    left: parent.left
-                    right: parent.right
-                }
-
-                placeholderText: i18n.tr("Memo")
-            }
+            height: childrenRect.height
 
             UbuntuShape {
-                id: chartShape
+                id: colorChooser
 
-                Layout.fillHeight: true
-                Layout.fillWidth: true
+                property var lightColor: Qt.lighter(color, 1.6)
+                property var darkColor: Qt.darker(color, 1.2)
 
                 anchors {
-                    margins: units.gu(1)
+                    top: parent.top
                     left: parent.left
-                    right: parent.right
                 }
 
-                height: childrenRect.height
-                color: "white"
+                color: "orange"
 
-                Chart {
-                    id: chart
+                height: nameField.height
+                width: nameField.height
+
+                MouseArea {
                     anchors.fill: parent
 
-                    chartAnimated: true;
-                    chartAnimationEasing: Easing.InOutElastic;
-                    chartAnimationDuration: 2000;
-                    chartType: Charts.ChartType.LINE;
-
-                    Component.onCompleted: {
-                        // grab the accounts and set the diff data
-                        chart.chartData = topShape.graphData;
+                    onClicked: {
+                        // hide the input to make things work nicer in smaller screens
+                        Qt.inputMethod.hide();
+                        mainView.anchorToKeyboard = false;
+                        var properties = {
+                            "shapeWidth": colorChooser.width,
+                            "shapeHeight": colorChooser.height,
+                            "color": colorChooser.color
+                        };
+                        PopupUtils.open(popoverComponent, colorChooser, properties);
                     }
                 }
-            }  // chart u shape
+
+                onColorChanged: {
+                    chart.repaint();
+                }
+            }
+
+            TextField {
+                id: nameField
+
+                anchors {
+                    top: parent.top
+                    left: colorChooser.right
+                    right: parent.right
+                    leftMargin: units.gu(1)
+                }
+
+                placeholderText: i18n.tr("Name")
+
+                onTextChanged: {
+                    if (showGraph)
+                        chart.chartData.datasets[0]["label"] = text;
+                }
+            }
         }
+
+        TextField {
+            id: initialAmount
+
+            anchors {
+                margins: units.gu(1)
+                left: parent.left
+                right: parent.right
+            }
+
+            inputMethodHints: Qt.ImhFormattedNumbersOnly
+
+            validator: DoubleValidator {}
+
+            placeholderText: i18n.tr("Initial amount")
+        }
+
+        TextField {
+            id: memoTextArea
+
+            anchors {
+                margins: units.gu(1)
+                left: parent.left
+                right: parent.right
+            }
+
+            placeholderText: i18n.tr("Memo")
+        }
+
+        UbuntuShape {
+            id: chartShape
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
+            anchors {
+                margins: units.gu(1)
+                left: parent.left
+                right: parent.right
+            }
+
+            height: childrenRect.height
+            color: "white"
+
+            Chart {
+                id: chart
+                anchors.fill: parent
+
+                chartAnimated: true;
+                chartAnimationEasing: Easing.InOutElastic;
+                chartAnimationDuration: 2000;
+                chartType: Charts.ChartType.LINE;
+
+                Component.onCompleted: {
+                    // grab the accounts and set the diff data
+                    chart.chartData = topShape.graphData;
+                }
+            }
+        }  // chart u shape
     }
 }

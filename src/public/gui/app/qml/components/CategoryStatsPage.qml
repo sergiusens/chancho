@@ -39,6 +39,7 @@ Page {
     property var percentages
 
     Component.onCompleted: {
+        var date = new Date();
         percentages = CategoriesJs.calculateGraphData(Book, date);
         if (percentages.legend.length > 0) {
             chartShape.visible = true;
@@ -50,20 +51,20 @@ Page {
             noResultShape.visible = true;
         }
 
-        var updateGraphOnStoreDelete = function() {
+        var updateGraphCb = function() {
             // TODO: be smarter
             CategoriesJs.redrawGraph(Book, chart, legendModel, dateTitle.date);
         };
 
-        Book.transactionStored.connect(updateGraphOnStoreDelete);
-        Book.transactionRemoved.connect(updateGraphOnStoreDelete);
-        Book.transactionUpdated.connect(updateGraphOnStoreDelete);
+        Book.transactionStored.connect(updateGraphCb);
+        Book.transactionRemoved.connect(updateGraphCb);
+        Book.transactionUpdated.connect(updateGraphCb);
 
-        Book.categoryUpdated.connect(updateGraphOnStoreDelete);
-        Book.categoryRemoved.connect(updateGraphOnStoreDelete);
+        Book.categoryUpdated.connect(updateGraphCb);
+        Book.categoryRemoved.connect(updateGraphCb);
 
-        Book.accountRemoved.connect(updateGraphOnStoreDelete);
-        Book.accountUpdated.connect(updateGraphOnStoreDelete);
+        Book.accountRemoved.connect(updateGraphCb);
+        Book.accountUpdated.connect(updateGraphCb);
     }
 
     EditTransaction {
@@ -82,6 +83,11 @@ Page {
 
        anchors.fill: parent
        anchors.margins: units.gu(1)
+
+       Component.onCompleted: {
+           console.log("Adding the date on component load.");
+           dateTitle.date = new Date();
+       }
 
        onDateChanged: {
            percentages = CategoriesJs.calculateGraphData(Book, date);

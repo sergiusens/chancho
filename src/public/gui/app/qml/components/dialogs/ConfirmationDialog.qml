@@ -43,11 +43,13 @@ Dialog {
                 }
                 PopupUtils.close(dialogue)
              }
+            Layout.fillWidth: true
          }
 
          Button {
              text: i18n.tr("Cancel")
              onClicked: PopupUtils.close(dialogue)
+             Layout.fillWidth: true
          }
      }
 
