@@ -42,6 +42,12 @@ UbuntuShape {
     property alias memo: memoTextArea.text;
     property alias amount: amountField.text;
 
+    onHeightChanged : {
+        if (height > flickable.contentHeight) {
+            flickable.contentHeight = height;
+        }
+    }
+
     Flickable {
         id: flickable
         anchors {
@@ -52,10 +58,6 @@ UbuntuShape {
         }
         clip: true
 
-        Component.onCompleted: {
-            console.log("Height is " + mainColumn.height);
-            flickable.contentHeight = mainColumn.height;
-        }
 
         ColumnLayout {
             id: mainColumn

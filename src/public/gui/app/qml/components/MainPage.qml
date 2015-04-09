@@ -46,8 +46,13 @@ PageStack {
 
        ColumnLayout {
            id: dateTitle
-           property date date: new Date()
+           property date date
            property var monthModel: Book.monthModel(date)
+
+           Component.onCompleted: {
+               console.log("Adding the date on component load.");
+               dateTitle.date = new Date();
+           }
 
            Connections {
                 target: dateTitle.monthModel
