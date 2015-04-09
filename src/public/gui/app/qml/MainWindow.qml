@@ -45,6 +45,18 @@ MainView {
 
     applicationName: "chancho.mandel"
 
+    Component.onCompleted: {
+        var accounts = Book.accounts()
+        if (accounts.length == 0) {
+            pagestack.push(tabsComponent);
+            pagestack.push(Qt.resolvedUrl("components/WelcomeWizard.qml"));
+        } else {
+            pagestack.push(tabsComponent)
+        }
+
+    }
+
+
     //automaticOrientation: true
     useDeprecatedToolbar: false
 
@@ -63,7 +75,7 @@ MainView {
             id: tabs
             Tab {
                 id: mainTab
-                title: "Bills"
+                title: i18n.tr("Bills")
                 page: Loader {
                     parent: mainTab
                     anchors.fill: parent
@@ -73,7 +85,7 @@ MainView {
 
             Tab {
                 id: statsTab
-                title: "Stats"
+                title: i18n.tr("Stats")
                 page: Loader {
                     parent: statsTab
                     anchors.fill: parent
@@ -82,7 +94,7 @@ MainView {
             }
             Tab {
                 id: accountsTab
-                title: "Accounts"
+                title: i18n.tr("Accounts")
                 page: Loader {
                     parent: accountsTab
                     anchors.fill: parent
@@ -92,7 +104,7 @@ MainView {
 
             Tab {
                 id: categoriesTab
-                title: "Categories"
+                title: i18n.tr("Categories")
                 page: Loader {
                     parent: categoriesTab
                     anchors.fill: parent
@@ -101,16 +113,5 @@ MainView {
             }
         }// tabs
     }
-
-    Component.onCompleted: {
-        var accounts = Book.accounts()
-        if (accounts.length == 0) {
-            pagestack.push(tabsComponent);
-            pagestack.push(Qt.resolvedUrl("components/WelcomeWizard.qml"));
-        } else {
-            pagestack.push(tabsComponent)
-        }
-    }
-
 }
 

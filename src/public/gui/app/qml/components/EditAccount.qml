@@ -75,7 +75,7 @@ Page {
                     };
                     var properties = {
                         "title": i18n.tr("Delete entry"),
-                        "text": i18n.tr("Do you want to remove this entry?"),
+                        "text": i18n.tr("Do you want to remove this account?"),
                         "okCallback": deleteEntryCb
                     };
 

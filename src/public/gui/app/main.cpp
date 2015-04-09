@@ -37,17 +37,6 @@ int main(int argc, char** argv) {
     QQuickView view;
     view.setResizeMode(QQuickView::SizeRootObjectToView);
     view.engine()->addImportPath(":/imports");
-
-/*    QObject::connect(view.engine(), SIGNAL(quit()), this, SLOT(quit()), Qt::QueuedConnection);
-    qmlRegisterType<QAbstractItemModel>();
-    qmlRegisterType<SystemSettings::PluginManager>("SystemSettings", 1, 0, "PluginManager");
-    view.engine()->rootContext()->setContextProperty("Utilities", new Utilities());
-    view.engine()->addImportPath(PLUGIN_PRIVATE_MODULE_DIR);
-    view.engine()->addImportPath(PLUGIN_QML_DIR);
-    view.rootContext()->setContextProperty("defaultPlugin", defaultPlugin);
-    view.rootContext()->setContextProperty("i18nDirectory", I18N_DIRECTORY);
-    view.rootContext()->setContextProperty("pluginOptions", pluginOptions);
-*/
     view.setSource(QUrl("qrc:/qml/MainWindow.qml"));
     view.show();
 

@@ -33,7 +33,7 @@ Item {
     // get and set the memo of the account
     property alias memo: memoLabel.text
 
-    // get and set the amount present inthe account
+    // get and set the amount present in the account
     property alias amount: amountLabel.text
 
     // color used to identify the account

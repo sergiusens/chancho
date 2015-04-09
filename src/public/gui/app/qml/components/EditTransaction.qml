@@ -88,8 +88,8 @@ Page {
                     mainPageStack.pop();
                 };
                 var properties = {
-                    "title": i18n.tr("Delete category"),
-                    "text": i18n.tr("Do you want to remove this category?"),
+                    "title": i18n.tr("Delete transaction"),
+                    "text": i18n.tr("Do you want to remove this transaction?"),
                     "okCallback": deleteTransactionsCb
                 };
                 PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);

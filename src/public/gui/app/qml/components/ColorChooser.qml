@@ -124,7 +124,7 @@ Popover {
             Button {
                 id: okButton
                 Layout.fillWidth: true
-                text: i18n.tr("ok")
+                text: i18n.tr("Ok")
                 color: UbuntuColors.orange
                 onClicked: {
                     popover.color = colorSample.color;
@@ -136,7 +136,7 @@ Popover {
             Button {
                 id: cancelButton
                 Layout.fillWidth: true
-                text: i18n.tr("cancel")
+                text: i18n.tr("Cancel")
                 onClicked: {
                     mainView.anchorToKeyboard = true;
                     PopupUtils.close(popover)

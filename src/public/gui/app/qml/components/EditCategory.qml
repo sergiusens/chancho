@@ -85,7 +85,7 @@ Page {
                 };
                 var properties = {
                     "title": i18n.tr("Edit entry"),
-                    "text": i18n.tr("Do you want to update this entry?"),
+                    "text": i18n.tr("Do you want to update this category?"),
                     "okCallback": editCategoriesCb
                 };
                 PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);

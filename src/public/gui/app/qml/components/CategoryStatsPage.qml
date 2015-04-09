@@ -142,7 +142,7 @@ PageStack {
                    chartAnimated: true;
                    chartType: Charts.ChartType.PIE;
                    chartAnimationEasing: Easing.Linear;
-                   chartAnimationDuration: 3500;
+                   chartAnimationDuration: 2500;
                    chartOptions: {"segmentStrokeColor": "#ECECEC"};
 
                    Component.onCompleted: {

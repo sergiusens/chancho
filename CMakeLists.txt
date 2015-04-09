@@ -37,6 +37,10 @@ set(CHANCHO_VERSION_MAJOR 0)
 set(CHANCHO_VERSION_MINOR 1)
 set(CHANCHO_VERSION_PATCH 2)
 
+#required bin helpers
+find_program(INTLTOOL_MERGE intltool-merge)
+find_program(INTLTOOL_EXTRACT intltool-extract)
+
 find_package(Gtest REQUIRED)
 include_directories(${GMOCK_INCLUDE_DIR} ${GTEST_INCLUDE_DIR})
 
