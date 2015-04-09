@@ -128,6 +128,7 @@ Popover {
                 color: UbuntuColors.orange
                 onClicked: {
                     popover.color = colorSample.color;
+                    mainView.anchorToKeyboard = true;
                     PopupUtils.close(popover);
                 }
             }
@@ -136,7 +137,10 @@ Popover {
                 id: cancelButton
                 Layout.fillWidth: true
                 text: i18n.tr("cancel")
-                onClicked: PopupUtils.close(popover)
+                onClicked: {
+                    mainView.anchorToKeyboard = true;
+                    PopupUtils.close(popover)
+                }
             }
         }
 
