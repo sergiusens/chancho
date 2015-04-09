@@ -163,7 +163,7 @@ Page {
                chartAnimated: true;
                chartType: Charts.ChartType.PIE;
                chartAnimationEasing: Easing.Linear;
-               chartAnimationDuration: 1000;
+               chartAnimationDuration: 3500;
                chartOptions: {"segmentStrokeColor": "#ECECEC"};
 
                Component.onCompleted: {
