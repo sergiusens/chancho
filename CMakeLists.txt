@@ -35,7 +35,7 @@ execute_process(
 
 set(CHANCHO_VERSION_MAJOR 0)
 set(CHANCHO_VERSION_MINOR 1)
-set(CHANCHO_VERSION_PATCH 0)
+set(CHANCHO_VERSION_PATCH 1)
 
 find_package(Gtest REQUIRED)
 include_directories(${GMOCK_INCLUDE_DIR} ${GTEST_INCLUDE_DIR})
