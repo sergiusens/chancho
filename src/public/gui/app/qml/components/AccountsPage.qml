@@ -88,21 +88,27 @@ PageStack {
                    spacing: units.gu(1)
                    model: mainPage.accountsModel
                    property var numberOfAccounts: mainPage.accountsModel.numberOfAccounts()
-                   delegate: AccountComponent {
-                       anchors.left: parent.left
-                       anchors.right: parent.right
-                       anchors.margins: units.gu(1)
-                       color: model.display.color
-                       name: model.display.name
-                       memo: model.display.memo
-                       amount: model.display.amount
-                       numberOfAccounts: parent.numberOfAccounts
-                       MouseArea {
-                           anchors.fill: parent
-                           onClicked: {
-                               parent.selected = !parent.selected;
-                               accountsPageStack.push(editAccount, {"account": model.display});
-                               parent.selected = !parent.selected;
+                   delegate: Loader {
+                       anchors {
+                           left: parent.left
+                           right: parent.right
+                       }
+                       AccountComponent {
+                           anchors.left: parent.left
+                           anchors.right: parent.right
+                           anchors.margins: units.gu(1)
+                           color: model.display.color
+                           name: model.display.name
+                           memo: model.display.memo
+                           amount: model.display.amount
+                           numberOfAccounts: parent.numberOfAccounts
+                           MouseArea {
+                               anchors.fill: parent
+                               onClicked: {
+                                   parent.selected = !parent.selected;
+                                   accountsPageStack.push(editAccount, {"account": model.display});
+                                   parent.selected = !parent.selected;
+                               }
                            }
                        }
                    }
