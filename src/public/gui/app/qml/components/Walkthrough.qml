@@ -23,10 +23,17 @@ Page {
     // Property to set the color of the skip welcome wizard text
     property color skipTextColor: "grey"
 
-    property bool showSkipLabel: true
+    property var titles: []
 
     // Property to signal walkthrough completion
     signal finished
+
+    title:"Foo"
+
+    head.backAction: Action {
+        iconName: "navigation-menu"
+        enabled: false
+    }
 
     // ListView to show the slides
     ListView {
@@ -34,7 +41,7 @@ Page {
         anchors {
             left: parent.left
             right: parent.right
-            top: skipLabel.bottom
+            top: parent.top
             bottom: separator.top
         }
 
@@ -59,27 +66,12 @@ Page {
                 sourceComponent: modelData
             }
         }
-    }
 
-    // Label to skip the walkthrough. Only visible on the first slide
-    Label {
-        id: skipLabel
-        visible: showSkipLabel
-
-        color: skipTextColor
-        fontSize: "small"
-        width: contentWidth
-        text: listView.currentIndex === 0 ? i18n.tr("Already used %1? <b>Skip the tutorial</b>").arg(appName) : i18n.tr("Skip")
-
-        anchors {
-            top: parent.top
-            left: parent.left
-            margins: units.gu(2)
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: walkthrough.finished()
+        onCurrentIndexChanged: {
+            console.log("Change the title");
+            if (title.length > currentIndex) {
+                walkthrough.title = titles[currentIndex];
+            }
         }
     }
 
