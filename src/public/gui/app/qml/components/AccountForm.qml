@@ -228,8 +228,8 @@ UbuntuShape {
                 anchors.fill: parent
 
                 chartAnimated: true;
-                chartAnimationEasing: Easing.InOutElastic;
-                chartAnimationDuration: 2000;
+                chartAnimationEasing: Easing.OutElastic;
+                chartAnimationDuration: 3500;
                 chartType: Charts.ChartType.LINE;
 
                 Component.onCompleted: {
