@@ -33,7 +33,6 @@ Walkthrough {
     id: walkthrough
 
     appName: "Chancho"
-	showSkipLabel:false
 	completeColor: UbuntuColors.orange
 
     ListModel {
@@ -47,6 +46,7 @@ Walkthrough {
     DefaultExpenseModel {
         id: expenseModel
     }
+    titles: [i18n.tr("Accounts"), i18n.tr("Categories"), i18n.tr("Confirmation")]
 
     onFinished: {
         console.log("Welcome Wizard Complete!")

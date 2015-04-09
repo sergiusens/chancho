@@ -37,16 +37,6 @@ Component {
         anchors.margins: units.gu(2) /* two unit so that we have the same as the main page. */
         spacing: units.gu(2)
 
-        Label {
-            id: titleLabel
-            anchors.left: parent.left
-            anchors.right: parent.right
-            wrapMode: Text.WordWrap
-
-            text: i18n.tr("Categories");
-            fontSize: "x-large"
-        }
-
         Text {
             id: categoriesIntroLabel
             Layout.fillWidth: true
