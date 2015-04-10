@@ -178,8 +178,7 @@ msgstr "Fout"
 
 #: ../qml/components/EditAccount.qml:85
 msgid "You must have at least one account in the system."
-msgstr "U heeft minstens een rekening nodig.\n"
-""
+msgstr "U heeft minstens een rekening nodig."
 
 #: ../qml/components/EditCategory.qml:88
 msgid "Do you want to update this category?"
@@ -361,8 +360,7 @@ msgstr "Wenst u de geselecteerde categorieën te verwijderen?"
 
 #: ../qml/components/WizardLastPage.qml:46
 msgid "You are nearly done! Bellow you can find the accounts and categories you will have. Are you happy with them?"
-msgstr "U bent bijna klaar! Hieronder ziet u de rekeningen en categorieën die u heeft aangemaakt. Is dit het gewenste resultaat?\n"
-""
+msgstr "U bent bijna klaar! Hieronder ziet u de rekeningen en categorieën die u heeft aangemaakt. Is dit het gewenste resultaat?"
 
 #: ../qml/components/WizardLastPage.qml:53
 msgid "Accounts:"
