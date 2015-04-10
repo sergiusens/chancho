@@ -77,6 +77,7 @@ Page {
             iconName: "edit"
             text: i18n.tr("Edit")
             onTriggered: {
+                Qt.inputMethod.commit()
                 var editCategoriesCb = function() {
                     var type = form.categoryTypeModel.get(form.categoryTypeSelectedIndex);
                     type = type.enumType

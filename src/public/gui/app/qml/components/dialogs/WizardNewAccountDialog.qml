@@ -91,6 +91,7 @@ Dialog {
             text: "ok"
             color: UbuntuColors.orange
             onClicked: {
+                Qt.inputMethod.commit()
                 AccountsWizardJs.onAddAccountOkClicked(nameField, initialAmountField,
                     memoField, colorChooser, accountsModel);
                 PopupUtils.close(dialogue)

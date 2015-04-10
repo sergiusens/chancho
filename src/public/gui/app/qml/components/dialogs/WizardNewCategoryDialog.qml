@@ -116,6 +116,7 @@ Dialog {
             text: i18n.tr("Ok")
             color: UbuntuColors.orange
             onClicked: {
+                Qt.inputMethod.commit()
                 CategoriesWizardJs.onAddCategoryOkClicked(nameField, typeSelector,
                     colorChooser, incomeModel, expenseModel);
                 PopupUtils.close(dialogue)

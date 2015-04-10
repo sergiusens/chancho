@@ -50,6 +50,7 @@ Page {
             iconName: "edit"
             text: i18n.tr("Edit")
             onTriggered: {
+                Qt.inputMethod.commit()
                 var updateEntryCb = function() {
                     Book.updateAccount(account, form.name, form.memo, form.color);
                     accountsPageStack.pop();

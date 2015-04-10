@@ -39,6 +39,7 @@ Page {
             iconName: "add"
             text: i18n.tr("Add")
             onTriggered: {
+                Qt.inputMethod.commit()
                 console.log("Add account!");
                 var initialAmount = 0;
                 if (form.initialAmount != "") {
