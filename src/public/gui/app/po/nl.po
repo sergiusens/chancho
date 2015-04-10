@@ -4,7 +4,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
-"Project-Id-Version: Chancho\n"
+"Project-Id-Version: chancho.madel\n"
 "Language: nl\n"
 
 #: ../qml/MainWindow.qml:78 ../qml/components/CategoryStatsPage.qml:50
