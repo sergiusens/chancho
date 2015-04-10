@@ -1,413 +1,464 @@
-# English translations for chancho.mandel package.
-# Copyright (C) 2015 Manuel de la Pena <mandel@themacaque.com>
-# This file is distributed under the same license as the chancho.mandel package.
-# Manuel de la Pena <mandel@themacaque.com>, 2015.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: chancho.mandel\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-10 16:36+0200\n"
-"PO-Revision-Date: 2015-04-10 17:16+0200\n"
-"Last-Translator: Manuel de la Pena <mandel@themacaque.com>\n"
-"Language-Team: English\n"
-"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: chancho.madel\n"
+"Language: cs\n"
 
 #: ../qml/MainWindow.qml:78 ../qml/components/CategoryStatsPage.qml:50
 #: ../qml/components/MainPage.qml:45
+#, fuzzy
 msgid "Bills"
-msgstr "Bills"
+msgstr "Bankovky"
 
 #: ../qml/MainWindow.qml:88
+#, fuzzy
 msgid "Stats"
-msgstr "Stats"
+msgstr "Statistiky"
 
 #: ../qml/MainWindow.qml:97 ../qml/components/AccountsPage.qml:67
 #: ../qml/components/WelcomeWizard.qml:138
+#, fuzzy
 msgid "Accounts"
-msgstr "Accounts"
+msgstr "Účty"
 
 #: ../qml/MainWindow.qml:107 ../qml/components/CategoriesPage.qml:45
 #: ../qml/components/WelcomeWizard.qml:138
+#, fuzzy
 msgid "Categories"
-msgstr "Categories"
+msgstr "Kategorie"
 
 #: ../qml/components/AccountForm.qml:65 ../qml/components/CategoryForm.qml:65
+#, fuzzy
 msgid "January"
-msgstr "January"
+msgstr "Leden"
 
 #: ../qml/components/AccountForm.qml:66 ../qml/components/CategoryForm.qml:66
+#, fuzzy
 msgid "February"
-msgstr "February"
+msgstr "Únor"
 
 #: ../qml/components/AccountForm.qml:67 ../qml/components/CategoryForm.qml:67
+#, fuzzy
 msgid "March"
-msgstr "March"
+msgstr "Březen"
 
 #: ../qml/components/AccountForm.qml:68 ../qml/components/CategoryForm.qml:68
+#, fuzzy
 msgid "April"
-msgstr "April"
+msgstr "Duben"
 
 #: ../qml/components/AccountForm.qml:69 ../qml/components/CategoryForm.qml:69
+#, fuzzy
 msgid "May"
-msgstr "May"
+msgstr "Květen"
 
 #: ../qml/components/AccountForm.qml:70 ../qml/components/CategoryForm.qml:70
+#, fuzzy
 msgid "June"
-msgstr "June"
+msgstr "Červen"
 
 #: ../qml/components/AccountForm.qml:71 ../qml/components/CategoryForm.qml:71
+#, fuzzy
 msgid "July"
-msgstr "July"
+msgstr "Červenec"
 
 #: ../qml/components/AccountForm.qml:72 ../qml/components/CategoryForm.qml:72
+#, fuzzy
 msgid "August"
-msgstr "August"
+msgstr "Srpen"
 
 #: ../qml/components/AccountForm.qml:73 ../qml/components/CategoryForm.qml:73
+#, fuzzy
 msgid "September"
-msgstr "September"
+msgstr "Září"
 
 #: ../qml/components/AccountForm.qml:74 ../qml/components/CategoryForm.qml:74
+#, fuzzy
 msgid "October"
-msgstr "October"
+msgstr "Říjen"
 
 #: ../qml/components/AccountForm.qml:75 ../qml/components/CategoryForm.qml:75
+#, fuzzy
 msgid "November"
-msgstr "November"
+msgstr "Listopad"
 
 #: ../qml/components/AccountForm.qml:76 ../qml/components/CategoryForm.qml:76
+#, fuzzy
 msgid "December"
-msgstr "December"
+msgstr "Prosinec"
 
 #: ../qml/components/AccountForm.qml:174
 #: ../qml/components/CategoryForm.qml:163
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:48
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:84
+#, fuzzy
 msgid "Name"
-msgstr "Name"
+msgstr "Jméno"
 
 #: ../qml/components/AccountForm.qml:196
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:56
+#, fuzzy
 msgid "Initial amount"
-msgstr "Initial amount"
+msgstr "Počáteční částka"
 
 #: ../qml/components/AccountForm.qml:208
 #: ../qml/components/TransactionForm.qml:199
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:61
+#, fuzzy
 msgid "Memo"
-msgstr "Memo"
+msgstr "Paměť"
 
 #: ../qml/components/AccountsPage.qml:143 ../qml/components/NewAccount.qml:35
+#, fuzzy
 msgid "Add new account"
-msgstr "Add new account"
+msgstr "Přidat nový účet"
 
 #: ../qml/components/CategoriesPage.qml:59
 #: ../qml/components/WizardCategoriesPage.qml:52
 #: ../qml/components/WizardLastPage.qml:87
+#, fuzzy
 msgid "Income categories:"
-msgstr "Income categories:"
+msgstr "Příjmové kategorie:"
 
 #: ../qml/components/CategoriesPage.qml:101
 #: ../qml/components/WizardCategoriesPage.qml:91
 #: ../qml/components/WizardLastPage.qml:117
+#, fuzzy
 msgid "Expense categories:"
-msgstr "Expense categories:"
+msgstr "Výdajové kategorie:"
 
 #: ../qml/components/CategoriesPage.qml:142
 #: ../qml/components/NewCategory.qml:35
+#, fuzzy
 msgid "Add new category"
-msgstr "Add new category"
+msgstr "Přidat novou kategorii"
 
 #: ../qml/components/CategoryForm.qml:186
 #: ../qml/components/TransactionForm.qml:87
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:53
+#, fuzzy
 msgid "Expense"
-msgstr "Expense"
+msgstr "Výdaj"
 
 #: ../qml/components/CategoryForm.qml:190
 #: ../qml/components/TransactionForm.qml:91
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:57
+#, fuzzy
 msgid "Income"
-msgstr "Income"
+msgstr "Příjem"
 
 #: ../qml/components/CategoryStatsPage.qml:132
 #: ../qml/components/MainPage.qml:137
+#, fuzzy
 msgid "No entries were found!"
-msgstr "No entries were found!"
+msgstr "Nebyly nalezeny žádné záznamy!"
 
 #: ../qml/components/ColorChooser.qml:127
 #: ../qml/components/dialogs/ConfirmationDialog.qml:38
 #: ../qml/components/dialogs/ErrorDialog.qml:33
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:116
+#, fuzzy
 msgid "Ok"
-msgstr "Ok"
+msgstr "Budiž"
 
 #: ../qml/components/ColorChooser.qml:139
 #: ../qml/components/dialogs/ConfirmationDialog.qml:50
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:101
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:126
+#, fuzzy
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Zrušit"
 
 #: ../qml/components/EditAccount.qml:51 ../qml/components/EditCategory.qml:78
 #: ../qml/components/EditTransaction.qml:60
+#, fuzzy
 msgid "Edit"
-msgstr "Edit"
+msgstr "Upravit"
 
 #: ../qml/components/EditAccount.qml:58 ../qml/components/EditCategory.qml:87
 #: ../qml/components/EditTransaction.qml:75
+#, fuzzy
 msgid "Edit entry"
-msgstr "Edit entry"
+msgstr "Upravit záznam"
 
 #: ../qml/components/EditAccount.qml:59
 #: ../qml/components/EditTransaction.qml:76
+#, fuzzy
 msgid "Do you want to update this entry?"
-msgstr "Do you want to update this entry?"
+msgstr "Chcete aktualizovat tento záznam?"
 
 #: ../qml/components/EditAccount.qml:68 ../qml/components/EditCategory.qml:96
 #: ../qml/components/EditTransaction.qml:84
+#, fuzzy
 msgid "Delete"
-msgstr "Delete"
+msgstr "Smazat"
 
 #: ../qml/components/EditAccount.qml:77
+#, fuzzy
 msgid "Delete entry"
-msgstr "Delete entry"
+msgstr "Smazat záznam"
 
 #: ../qml/components/EditAccount.qml:78
+#, fuzzy
 msgid "Do you want to remove this account?"
-msgstr "Do you want to remove this account?"
+msgstr "Chcete odstranit tento účet?"
 
 #: ../qml/components/EditAccount.qml:84
+#, fuzzy
 msgid "Error"
-msgstr "Error"
+msgstr "Chyba"
 
 #: ../qml/components/EditAccount.qml:85
+#, fuzzy
 msgid "You must have at least one account in the system."
-msgstr "You must have at least one account in the system."
+msgstr "Musíte mít alespoň jeden účet."
 
 #: ../qml/components/EditCategory.qml:88
+#, fuzzy
 msgid "Do you want to update this category?"
-msgstr "Do you want to update this category?"
+msgstr "Chcete aktualizovat tuto kategorii?"
 
 #: ../qml/components/EditCategory.qml:104
+#, fuzzy
 msgid "Removal Error"
-msgstr "Removal Error"
+msgstr "Odstranit chybu"
 
 #: ../qml/components/EditCategory.qml:105
-msgid ""
-"You cannot delete all categories in the system. You must have at least one "
-"of each type"
-msgstr ""
-"You cannot delete all categories in the system. You must have at least one "
-"of each type"
+#, fuzzy
+msgid "You cannot delete all categories in the system. You must have at least one of each type"
+msgstr "Nelze odstranit všechny kategorie. Musíte mít alespoň jeden z každého druhu"
 
 #: ../qml/components/EditCategory.qml:114
+#, fuzzy
 msgid "Delete category"
-msgstr "Delete category"
+msgstr "Odstranit kategorii"
 
 #: ../qml/components/EditCategory.qml:115
+#, fuzzy
 msgid "Do you want to remove this category?"
-msgstr "Do you want to remove this category?"
+msgstr "Chcete odstranit tuto kategorii?"
 
 #: ../qml/components/EditTransaction.qml:91
+#, fuzzy
 msgid "Delete transaction"
-msgstr "Delete transaction"
+msgstr "Smazat transakci"
 
 #: ../qml/components/EditTransaction.qml:92
+#, fuzzy
 msgid "Do you want to remove this transaction?"
-msgstr "Do you want to remove this transaction?"
+msgstr "Chcete odstranit tuto transakci?"
 
 #: ../qml/components/MainPage.qml:148 ../qml/components/NewTransaction.qml:35
+#, fuzzy
 msgid "Add new entry"
-msgstr "Add new entry"
+msgstr "Přidat nový záznam"
 
 #: ../qml/components/NewAccount.qml:40 ../qml/components/NewCategory.qml:40
 #: ../qml/components/NewTransaction.qml:40
 #: ../qml/components/WizardAccountsPage.qml:87
 #: ../qml/components/WizardCategoriesPage.qml:128
+#, fuzzy
 msgid "Add"
-msgstr "Add"
+msgstr "Přidat"
 
 #: ../qml/components/NewAccount.qml:52 ../qml/components/NewCategory.qml:48
 #: ../qml/components/NewTransaction.qml:59
+#, fuzzy
 msgid "Internal Error"
-msgstr "Internal Error"
+msgstr "Vnitřní chyba"
 
 #: ../qml/components/NewAccount.qml:53
+#, fuzzy
 msgid "The account could not be stored."
-msgstr "The account could not be stored."
+msgstr "Účet nemůže být uložen."
 
 #: ../qml/components/NewCategory.qml:49
+#, fuzzy
 msgid "The category could not be stored."
-msgstr "The category could not be stored."
+msgstr "Kategorie nemůže být uložena."
 
 #: ../qml/components/NewTransaction.qml:45
+#, fuzzy
 msgid "Error: amount is missing"
-msgstr "Error: amount is missing"
+msgstr "Chyba: chybí částka"
 
 #: ../qml/components/NewTransaction.qml:46
+#, fuzzy
 msgid "Transactions must have an amount."
-msgstr "Transactions must have an amount."
+msgstr "Transakce musí obsahovat částku."
 
 #: ../qml/components/NewTransaction.qml:60
+#, fuzzy
 msgid "The transaction could not be stored."
-msgstr "The transaction could not be stored."
+msgstr "Transakci se nepodařilo uložit."
 
 #: ../qml/components/TransactionForm.qml:152
+#, fuzzy
 msgid "Date"
-msgstr "Date"
+msgstr "Datum"
 
 #: ../qml/components/TransactionForm.qml:177
+#, fuzzy
 msgid "Amount"
-msgstr "Amount"
+msgstr "Částka"
 
 #: ../qml/components/TransactionForm.qml:186
+#, fuzzy
 msgid "Contents"
-msgstr "Contents"
+msgstr "Obsah"
 
 #: ../qml/components/WelcomeWizard.qml:49
+#, fuzzy
 msgid "Allowance"
-msgstr "Allowance"
+msgstr "Příspěvek"
 
 #: ../qml/components/WelcomeWizard.qml:54
+#, fuzzy
 msgid "Salary"
-msgstr "Salary"
+msgstr "Mzda"
 
 #: ../qml/components/WelcomeWizard.qml:59
+#, fuzzy
 msgid "Bonus"
 msgstr "Bonus"
 
 #: ../qml/components/WelcomeWizard.qml:64
 #: ../qml/components/WelcomeWizard.qml:132
+#, fuzzy
 msgid "Other"
-msgstr "Other"
+msgstr "Další"
 
 #: ../qml/components/WelcomeWizard.qml:77
+#, fuzzy
 msgid "Food"
-msgstr "Food"
+msgstr "Jídlo"
 
 #: ../qml/components/WelcomeWizard.qml:82
+#, fuzzy
 msgid "Social Life"
-msgstr "Social Life"
+msgstr "Společenský Život"
 
 #: ../qml/components/WelcomeWizard.qml:87
+#, fuzzy
 msgid "Self-development"
-msgstr "Self-development"
+msgstr "Můj rozvoj"
 
 #: ../qml/components/WelcomeWizard.qml:92
+#, fuzzy
 msgid "Transportation"
-msgstr "Transportation"
+msgstr "Doprava"
 
 #: ../qml/components/WelcomeWizard.qml:97
+#, fuzzy
 msgid "Culture"
-msgstr "Culture"
+msgstr "Kultura"
 
 #: ../qml/components/WelcomeWizard.qml:102
+#, fuzzy
 msgid "Household"
-msgstr "Household"
+msgstr "Domácnost"
 
 #: ../qml/components/WelcomeWizard.qml:107
+#, fuzzy
 msgid "Apparel"
-msgstr "Apparel"
+msgstr "Oblečení"
 
 #: ../qml/components/WelcomeWizard.qml:112
+#, fuzzy
 msgid "Beauty"
-msgstr "Beauty"
+msgstr "Kosmetika"
 
 #: ../qml/components/WelcomeWizard.qml:117
+#, fuzzy
 msgid "Health"
-msgstr "Health"
+msgstr "Zdraví"
 
 #: ../qml/components/WelcomeWizard.qml:122
+#, fuzzy
 msgid "Education"
-msgstr "Education"
+msgstr "Vzdělávání"
 
 #: ../qml/components/WelcomeWizard.qml:127
+#, fuzzy
 msgid "Gift"
-msgstr "Gift"
+msgstr "Dárky"
 
 #: ../qml/components/WelcomeWizard.qml:138
+#, fuzzy
 msgid "Confirmation"
-msgstr "Confirmation"
+msgstr "Potvrzení"
 
 #: ../qml/components/WizardAccountsPage.qml:45
-msgid ""
-"Chancho allows you to track the expenses and incomes in several accounts. "
-"Here you can add the accounts you want to work with. Don't worry you can add "
-"more accounts later."
-msgstr ""
-"Chancho allows you to track the expenses and incomes in several accounts. "
-"Here you can add the accounts you want to work with. Don't worry you can add "
-"more accounts later."
+#, fuzzy
+msgid "Chancho allows you to track the expenses and incomes in several accounts. Here you can add the accounts you want to work with. Don't worry you can add more accounts later."
+msgstr "Chancho umožňuje sledovat příjmy a výdaje z několika účtů. Zde můžete přidat účty, které chcete spravovat, nebo lze přidat další účty později."
 
 #: ../qml/components/WizardAccountsPage.qml:90
+#, fuzzy
 msgid "New account"
-msgstr "New account"
+msgstr "Nový účet"
 
 #: ../qml/components/WizardAccountsPage.qml:91
+#, fuzzy
 msgid "Please add the details of the new account."
-msgstr "Please add the details of the new account."
+msgstr "Prosím, přidejte podrobnosti nového účtu."
 
 #: ../qml/components/WizardAccountsPage.qml:101
 #: ../qml/components/WizardCategoriesPage.qml:139
+#, fuzzy
 msgid "Remove"
-msgstr "Remove"
+msgstr "Odstranit"
 
 #: ../qml/components/WizardAccountsPage.qml:109
+#, fuzzy
 msgid "Delete accounts"
-msgstr "Delete accounts"
+msgstr "Smazat účet"
 
 #: ../qml/components/WizardAccountsPage.qml:110
+#, fuzzy
 msgid "Do you want to delete the selected accounts?"
-msgstr "Do you want to delete the selected accounts?"
+msgstr "Chcete smazat vybrané účty?"
 
 #: ../qml/components/WizardCategoriesPage.qml:45
-msgid ""
-"Categories allow you to indentify the different transactions. There are two "
-"different types income an expense categories. The following are some of the "
-"predefined ones but you can add as many as you want."
-msgstr ""
-"Categories allow you to indentify the different transactions. There are two "
-"different types income an expense categories. The following are some of the "
-"predefined ones but you can add as many as you want."
+#, fuzzy
+msgid "Categories allow you to indentify the different transactions. There are two different types income an expense categories. The following are some of the predefined ones but you can add as many as you want."
+msgstr "Kategorie umožňují, určit různé transakce. Existují dva odlišné typy, příjmové a výdajové kategorie. Níže jsou uvedeny některé z předdefinovaných, můžete však přidat tolik, kolik chcete."
 
 #: ../qml/components/WizardCategoriesPage.qml:147
+#, fuzzy
 msgid "Delete categories"
-msgstr "Delete categories"
+msgstr "Smazat kategorie"
 
 #: ../qml/components/WizardCategoriesPage.qml:148
+#, fuzzy
 msgid "Do you want to delete the selected categories?"
-msgstr "Do you want to delete the selected categories?"
+msgstr "Chcete smazat vybrané kategorie?"
 
 #: ../qml/components/WizardLastPage.qml:46
-msgid ""
-"You are nearly done! Bellow you can find the accounts and categories you "
-"will have. Are you happy with them?"
-msgstr ""
-"You are nearly done! Bellow you can find the accounts and categories you "
-"will have. Are you happy with them?"
+#, fuzzy
+msgid "You are nearly done! Bellow you can find the accounts and categories you will have. Are you happy with them?"
+msgstr "Je téměř hotovo! Níže najdete účty a kategorie, které budete chtít. Jste s nimi spokojeni?"
 
 #: ../qml/components/WizardLastPage.qml:53
+#, fuzzy
 msgid "Accounts:"
-msgstr "Accounts:"
+msgstr "Účty:"
 
 #: ../qml/components/WizardLastPage.qml:147
+#, fuzzy
 msgid "I'm ready"
-msgstr "I'm ready"
+msgstr "V pořádku"
 
 #: ../qml/components/WizardLastPage.qml:157
+#, fuzzy
 msgid "Init Error"
-msgstr "Init Error"
+msgstr "Chyba"
 
 #: ../qml/components/WizardLastPage.qml:158
-msgid ""
-"Make sure that you have added at least one account and a category of each "
-"type."
-msgstr ""
-"Make sure that you have added at least one account and a category of each "
-"type."
+#, fuzzy
+msgid "Make sure that you have added at least one account and a category of each type."
+msgstr "Ujistěte se, že jste přidali alespoň jeden účet a kategorii každého typu."
+
