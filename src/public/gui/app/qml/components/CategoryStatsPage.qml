@@ -47,7 +47,7 @@ PageStack {
 
     Page {
        id: mainPage
-       title: i18n.tr("Bills")
+       title: i18n.tr("Stats")
 
        ColumnLayout {
            id: dateTitle
@@ -128,8 +128,11 @@ PageStack {
                     id: noResultLabel
                     anchors.centerIn: parent
                     anchors.margins: units.gu(1)
+                    width: parent.width
 
                     text: i18n.tr("No entries were found!")
+                    wrapMode: Text.Wrap
+                    horizontalAlignment: Text.AlignHCenter
 
                     fontSize: "x-large"
                     visible: dateTitle.monthModel.daysCount <= 0
