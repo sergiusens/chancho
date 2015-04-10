@@ -1,52 +1,42 @@
-# English translations for chancho.mandel package.
-# Copyright (C) 2015 Manuel de la Pena <mandel@themacaque.com>
-# This file is distributed under the same license as the chancho.mandel package.
-# Manuel de la Pena <mandel@themacaque.com>, 2015.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: chancho.mandel\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-10 16:36+0200\n"
-"PO-Revision-Date: 2015-04-10 17:17+0200\n"
-"Last-Translator: Manuel de la Pena <mandel@themacaque.com>\n"
-"Language-Team: English\n"
-"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: Chancho\n"
+"Language: nl\n"
 
 #: ../qml/MainWindow.qml:78 ../qml/components/CategoryStatsPage.qml:50
 #: ../qml/components/MainPage.qml:45
 msgid "Bills"
-msgstr "Bills"
+msgstr "Facturen"
 
 #: ../qml/MainWindow.qml:88
 msgid "Stats"
-msgstr "Stats"
+msgstr "Statistieken"
 
 #: ../qml/MainWindow.qml:97 ../qml/components/AccountsPage.qml:67
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Accounts"
-msgstr "Accounts"
+msgstr "Rekeningen"
 
 #: ../qml/MainWindow.qml:107 ../qml/components/CategoriesPage.qml:45
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Categories"
-msgstr "Categories"
+msgstr "Categorieën"
 
 #: ../qml/components/AccountForm.qml:65 ../qml/components/CategoryForm.qml:65
 msgid "January"
-msgstr "January"
+msgstr "Januari"
 
 #: ../qml/components/AccountForm.qml:66 ../qml/components/CategoryForm.qml:66
 msgid "February"
-msgstr "February"
+msgstr "Februari"
 
 #: ../qml/components/AccountForm.qml:67 ../qml/components/CategoryForm.qml:67
 msgid "March"
-msgstr "March"
+msgstr "Maart"
 
 #: ../qml/components/AccountForm.qml:68 ../qml/components/CategoryForm.qml:68
 msgid "April"
@@ -54,19 +44,19 @@ msgstr "April"
 
 #: ../qml/components/AccountForm.qml:69 ../qml/components/CategoryForm.qml:69
 msgid "May"
-msgstr "May"
+msgstr "Mei"
 
 #: ../qml/components/AccountForm.qml:70 ../qml/components/CategoryForm.qml:70
 msgid "June"
-msgstr "June"
+msgstr "Juni"
 
 #: ../qml/components/AccountForm.qml:71 ../qml/components/CategoryForm.qml:71
 msgid "July"
-msgstr "July"
+msgstr "Juli"
 
 #: ../qml/components/AccountForm.qml:72 ../qml/components/CategoryForm.qml:72
 msgid "August"
-msgstr "August"
+msgstr "Augustus"
 
 #: ../qml/components/AccountForm.qml:73 ../qml/components/CategoryForm.qml:73
 msgid "September"
@@ -74,7 +64,7 @@ msgstr "September"
 
 #: ../qml/components/AccountForm.qml:74 ../qml/components/CategoryForm.qml:74
 msgid "October"
-msgstr "October"
+msgstr "Oktober"
 
 #: ../qml/components/AccountForm.qml:75 ../qml/components/CategoryForm.qml:75
 msgid "November"
@@ -89,12 +79,12 @@ msgstr "December"
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:48
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:84
 msgid "Name"
-msgstr "Name"
+msgstr "Naam"
 
 #: ../qml/components/AccountForm.qml:196
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:56
 msgid "Initial amount"
-msgstr "Initial amount"
+msgstr "Startbedrag"
 
 #: ../qml/components/AccountForm.qml:208
 #: ../qml/components/TransactionForm.qml:199
@@ -104,41 +94,41 @@ msgstr "Memo"
 
 #: ../qml/components/AccountsPage.qml:143 ../qml/components/NewAccount.qml:35
 msgid "Add new account"
-msgstr "Add new account"
+msgstr "Nieuwe rekening toevoegen"
 
 #: ../qml/components/CategoriesPage.qml:59
 #: ../qml/components/WizardCategoriesPage.qml:52
 #: ../qml/components/WizardLastPage.qml:87
 msgid "Income categories:"
-msgstr "Income categories:"
+msgstr "Inkomstencategorie"
 
 #: ../qml/components/CategoriesPage.qml:101
 #: ../qml/components/WizardCategoriesPage.qml:91
 #: ../qml/components/WizardLastPage.qml:117
 msgid "Expense categories:"
-msgstr "Expense categories:"
+msgstr "Uitgavecategorie"
 
 #: ../qml/components/CategoriesPage.qml:142
 #: ../qml/components/NewCategory.qml:35
 msgid "Add new category"
-msgstr "Add new category"
+msgstr "Nieuwe categorie toevoegen"
 
 #: ../qml/components/CategoryForm.qml:186
 #: ../qml/components/TransactionForm.qml:87
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:53
 msgid "Expense"
-msgstr "Expense"
+msgstr "Uitgave"
 
 #: ../qml/components/CategoryForm.qml:190
 #: ../qml/components/TransactionForm.qml:91
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:57
 msgid "Income"
-msgstr "Income"
+msgstr "Inkomen"
 
 #: ../qml/components/CategoryStatsPage.qml:132
 #: ../qml/components/MainPage.qml:137
 msgid "No entries were found!"
-msgstr "No entries were found!"
+msgstr "Geen items gevonden"
 
 #: ../qml/components/ColorChooser.qml:127
 #: ../qml/components/dialogs/ConfirmationDialog.qml:38
@@ -152,131 +142,128 @@ msgstr "Ok"
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:101
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:126
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Annuleren"
 
 #: ../qml/components/EditAccount.qml:51 ../qml/components/EditCategory.qml:78
 #: ../qml/components/EditTransaction.qml:60
 msgid "Edit"
-msgstr "Edit"
+msgstr "Aanpassen"
 
 #: ../qml/components/EditAccount.qml:58 ../qml/components/EditCategory.qml:87
 #: ../qml/components/EditTransaction.qml:75
 msgid "Edit entry"
-msgstr "Edit entry"
+msgstr "Item aanpassen"
 
 #: ../qml/components/EditAccount.qml:59
 #: ../qml/components/EditTransaction.qml:76
 msgid "Do you want to update this entry?"
-msgstr "Do you want to update this entry?"
+msgstr "Wenst u dit item aan te passen?"
 
 #: ../qml/components/EditAccount.qml:68 ../qml/components/EditCategory.qml:96
 #: ../qml/components/EditTransaction.qml:84
 msgid "Delete"
-msgstr "Delete"
+msgstr "Verwijderen"
 
 #: ../qml/components/EditAccount.qml:77
 msgid "Delete entry"
-msgstr "Delete entry"
+msgstr "Item verwijderen"
 
 #: ../qml/components/EditAccount.qml:78
 msgid "Do you want to remove this account?"
-msgstr "Do you want to remove this account?"
+msgstr "Wenst u deze rekening te verwijderen?"
 
 #: ../qml/components/EditAccount.qml:84
 msgid "Error"
-msgstr "Error"
+msgstr "Fout"
 
 #: ../qml/components/EditAccount.qml:85
 msgid "You must have at least one account in the system."
-msgstr "You must have at least one account in the system."
+msgstr "U heeft minstens een rekening nodig.\n"
+""
 
 #: ../qml/components/EditCategory.qml:88
 msgid "Do you want to update this category?"
-msgstr "Do you want to update this category?"
+msgstr "Wil u deze categorie updaten?"
 
 #: ../qml/components/EditCategory.qml:104
 msgid "Removal Error"
-msgstr "Removal Error"
+msgstr "Fout bij verwijderen"
 
 #: ../qml/components/EditCategory.qml:105
-msgid ""
-"You cannot delete all categories in the system. You must have at least one "
-"of each type"
-msgstr ""
-"You cannot delete all categories in the system. You must have at least one "
-"of each type"
+msgid "You cannot delete all categories in the system. You must have at least one of each type"
+msgstr "U kan niet alle categorieën verwijderen. U heeft er minstens een nodig van elk type."
 
 #: ../qml/components/EditCategory.qml:114
 msgid "Delete category"
-msgstr "Delete category"
+msgstr "Categorie verwijderen"
 
 #: ../qml/components/EditCategory.qml:115
 msgid "Do you want to remove this category?"
-msgstr "Do you want to remove this category?"
+msgstr "Wenst u deze categorie te verwijderen?"
 
 #: ../qml/components/EditTransaction.qml:91
 msgid "Delete transaction"
-msgstr "Delete transaction"
+msgstr "Transactie verwijderen"
 
 #: ../qml/components/EditTransaction.qml:92
 msgid "Do you want to remove this transaction?"
-msgstr "Do you want to remove this transaction?"
+msgstr "Wenst u deze transactie te verwijderen?"
 
 #: ../qml/components/MainPage.qml:148 ../qml/components/NewTransaction.qml:35
 msgid "Add new entry"
-msgstr "Add new entry"
+msgstr "Item toevoegen"
 
 #: ../qml/components/NewAccount.qml:40 ../qml/components/NewCategory.qml:40
 #: ../qml/components/NewTransaction.qml:40
 #: ../qml/components/WizardAccountsPage.qml:87
 #: ../qml/components/WizardCategoriesPage.qml:128
 msgid "Add"
-msgstr "Add"
+msgstr "Toevoegen"
 
 #: ../qml/components/NewAccount.qml:52 ../qml/components/NewCategory.qml:48
 #: ../qml/components/NewTransaction.qml:59
 msgid "Internal Error"
-msgstr "Internal Error"
+msgstr "Interne fout"
 
 #: ../qml/components/NewAccount.qml:53
 msgid "The account could not be stored."
-msgstr "The account could not be stored."
+msgstr "De rekening kon niet worden opgeslagen"
 
 #: ../qml/components/NewCategory.qml:49
 msgid "The category could not be stored."
-msgstr "The category could not be stored."
+msgstr "De categorie kon niet worden opgeslagen"
 
 #: ../qml/components/NewTransaction.qml:45
 msgid "Error: amount is missing"
-msgstr "Error: amount is missing"
+msgstr "Fout: het bedrag ontbreekt"
 
 #: ../qml/components/NewTransaction.qml:46
 msgid "Transactions must have an amount."
-msgstr "Transactions must have an amount."
+msgstr "U moet een bedrag opgeven bij een transactie"
 
 #: ../qml/components/NewTransaction.qml:60
 msgid "The transaction could not be stored."
-msgstr "The transaction could not be stored."
+msgstr "De transactie kon niet worden opgeslagen"
 
 #: ../qml/components/TransactionForm.qml:152
 msgid "Date"
-msgstr "Date"
+msgstr "Datum"
 
 #: ../qml/components/TransactionForm.qml:177
 msgid "Amount"
-msgstr "Amount"
+msgstr "Bedrag"
 
 #: ../qml/components/TransactionForm.qml:186
 msgid "Contents"
-msgstr "Contents"
+msgstr "Inhoud"
 
 #: ../qml/components/WelcomeWizard.qml:49
 msgid "Allowance"
-msgstr "Allowance"
+msgstr "Zakgeld"
 
 #: ../qml/components/WelcomeWizard.qml:54
 msgid "Salary"
-msgstr "Salary"
+msgstr "Salaris"
 
 #: ../qml/components/WelcomeWizard.qml:59
 msgid "Bonus"
@@ -285,129 +272,111 @@ msgstr "Bonus"
 #: ../qml/components/WelcomeWizard.qml:64
 #: ../qml/components/WelcomeWizard.qml:132
 msgid "Other"
-msgstr "Other"
+msgstr "Andere"
 
 #: ../qml/components/WelcomeWizard.qml:77
 msgid "Food"
-msgstr "Food"
+msgstr "Voeding"
 
 #: ../qml/components/WelcomeWizard.qml:82
 msgid "Social Life"
-msgstr "Social Life"
+msgstr "Sociaal leven"
 
 #: ../qml/components/WelcomeWizard.qml:87
 msgid "Self-development"
-msgstr "Self-development"
+msgstr "Zelfontwikkeling"
 
 #: ../qml/components/WelcomeWizard.qml:92
 msgid "Transportation"
-msgstr "Transportation"
+msgstr "Vervoer"
 
 #: ../qml/components/WelcomeWizard.qml:97
 msgid "Culture"
-msgstr "Culture"
+msgstr "Cultuur"
 
 #: ../qml/components/WelcomeWizard.qml:102
 msgid "Household"
-msgstr "Household"
+msgstr "Huishouden"
 
 #: ../qml/components/WelcomeWizard.qml:107
 msgid "Apparel"
-msgstr "Apparel"
+msgstr "Kledij"
 
 #: ../qml/components/WelcomeWizard.qml:112
 msgid "Beauty"
-msgstr "Beauty"
+msgstr "Verzorging"
 
 #: ../qml/components/WelcomeWizard.qml:117
 msgid "Health"
-msgstr "Health"
+msgstr "Gezondheid"
 
 #: ../qml/components/WelcomeWizard.qml:122
 msgid "Education"
-msgstr "Education"
+msgstr "Opleiding"
 
 #: ../qml/components/WelcomeWizard.qml:127
 msgid "Gift"
-msgstr "Gift"
+msgstr "Geschenk"
 
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Confirmation"
-msgstr "Confirmation"
+msgstr "Bevestiging"
 
 #: ../qml/components/WizardAccountsPage.qml:45
-msgid ""
-"Chancho allows you to track the expenses and incomes in several accounts. "
-"Here you can add the accounts you want to work with. Don't worry you can add "
-"more accounts later."
-msgstr ""
-"Chancho allows you to track the expenses and incomes in several accounts. "
-"Here you can add the accounts you want to work with. Don't worry you can add "
-"more accounts later."
+msgid "Chancho allows you to track the expenses and incomes in several accounts. Here you can add the accounts you want to work with. Don't worry you can add more accounts later."
+msgstr "Chancho laat toe om uw inkomsten en uitgaven bij te houden op verschillende rekeningen. Hier kan u de rekeningen toevoegen waarmee u wenst te werken. U kan later nog rekeningen toevoegen."
 
 #: ../qml/components/WizardAccountsPage.qml:90
 msgid "New account"
-msgstr "New account"
+msgstr "Nieuwe rekening"
 
 #: ../qml/components/WizardAccountsPage.qml:91
 msgid "Please add the details of the new account."
-msgstr "Please add the details of the new account."
+msgstr "Gelieve de details van de nieuwe rekening toe te voegen."
 
 #: ../qml/components/WizardAccountsPage.qml:101
 #: ../qml/components/WizardCategoriesPage.qml:139
 msgid "Remove"
-msgstr "Remove"
+msgstr "Verwijder"
 
 #: ../qml/components/WizardAccountsPage.qml:109
 msgid "Delete accounts"
-msgstr "Delete accounts"
+msgstr "Verwijder rekeningen"
 
 #: ../qml/components/WizardAccountsPage.qml:110
 msgid "Do you want to delete the selected accounts?"
-msgstr "Do you want to delete the selected accounts?"
+msgstr "Wens u de geselecteerde rekeningen te verwijderen?"
 
 #: ../qml/components/WizardCategoriesPage.qml:45
-msgid ""
-"Categories allow you to indentify the different transactions. There are two "
-"different types income an expense categories. The following are some of the "
-"predefined ones but you can add as many as you want."
-msgstr ""
-"Categories allow you to indentify the different transactions. There are two "
-"different types income an expense categories. The following are some of the "
-"predefined ones but you can add as many as you want."
+msgid "Categories allow you to indentify the different transactions. There are two different types income an expense categories. The following are some of the predefined ones but you can add as many as you want."
+msgstr "Categorieën laten toe om verschillende transacties te identificeren. Er zijn twee verschillende types categorieën voor inkomsten en uitgaven. Volgende categorieën zijn voorbeelden maar u kan er zoveel toevoegen als u wenst."
 
 #: ../qml/components/WizardCategoriesPage.qml:147
 msgid "Delete categories"
-msgstr "Delete categories"
+msgstr "Categorieën verwijderen"
 
 #: ../qml/components/WizardCategoriesPage.qml:148
 msgid "Do you want to delete the selected categories?"
-msgstr "Do you want to delete the selected categories?"
+msgstr "Wenst u de geselecteerde categorieën te verwijderen?"
 
 #: ../qml/components/WizardLastPage.qml:46
-msgid ""
-"You are nearly done! Bellow you can find the accounts and categories you "
-"will have. Are you happy with them?"
-msgstr ""
-"You are nearly done! Bellow you can find the accounts and categories you "
-"will have. Are you happy with them?"
+msgid "You are nearly done! Bellow you can find the accounts and categories you will have. Are you happy with them?"
+msgstr "U bent bijna klaar! Hieronder ziet u de rekeningen en categorieën die u heeft aangemaakt. Is dit het gewenste resultaat?\n"
+""
 
 #: ../qml/components/WizardLastPage.qml:53
 msgid "Accounts:"
-msgstr "Accounts:"
+msgstr "Rekeningen"
 
 #: ../qml/components/WizardLastPage.qml:147
 msgid "I'm ready"
-msgstr "I'm ready"
+msgstr "Ik ben klaar"
 
 #: ../qml/components/WizardLastPage.qml:157
 msgid "Init Error"
-msgstr "Init Error"
+msgstr "Initialisatie fout"
 
 #: ../qml/components/WizardLastPage.qml:158
-msgid ""
-"Make sure that you have added at least one account and a category of each "
-"type."
-msgstr ""
-"Make sure that you have added at least one account and a category of each "
-"type."
+msgid "Make sure that you have added at least one account and a category of each type."
+msgstr "Zorg ervoor dat u minstens een rekening en een categorie van elk type heeft."
+
