@@ -43,8 +43,7 @@ Component {
             Layout.fillWidth: true
 
             wrapMode: Text.WordWrap
-            text: i18n.tr("You are nearly done! Bellow you can find the accounts and categories you will have. "
-                + "Are you happy with them?")
+            text: i18n.tr("You are nearly done! Bellow you can find the accounts and categories you will have. Are you happy with them?")
         }
 
         Label {

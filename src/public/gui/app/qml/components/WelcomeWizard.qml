@@ -39,13 +39,102 @@ Walkthrough {
         id: accountsModel
     }
 
-    DefaultIncomeModel {
-        id: incomeModel
+    Item{
+        ListModel {
+            id: incomeModel
+            dynamicRoles: true
+        }
+        Component.onCompleted: {
+            incomeModel.append({
+                "name": i18n.tr("Allowance"),
+                "color": "purple"
+            });
+
+            incomeModel.append({
+                "name": i18n.tr("Salary"),
+                "color": "green"
+            });
+
+            incomeModel.append({
+                "name": i18n.tr("Bonus"),
+                "color": "yellow"
+            });
+
+            incomeModel.append({
+                "name": i18n.tr("Other"),
+                "color": "red"
+            });
+        }
     }
 
-    DefaultExpenseModel {
-        id: expenseModel
+    Item{
+        ListModel {
+            id: expenseModel
+            dynamicRoles: true
+        }
+        Component.onCompleted: {
+            expenseModel.append({
+                "name": i18n.tr("Food"),
+                "color": "purple"
+            });
+
+            expenseModel.append({
+                "name": i18n.tr("Social Life"),
+                "color": "fuchsia"
+            });
+
+            expenseModel.append({
+                "name": i18n.tr("Self-development"),
+                "color": "navy"
+            });
+
+            expenseModel.append({
+                "name": i18n.tr("Transportation"),
+                "color": "blue"
+            });
+
+            expenseModel.append({
+                "name": i18n.tr("Culture"),
+                "color": "teal"
+            });
+
+            expenseModel.append({
+                "name": i18n.tr("Household"),
+                "color": "aqua"
+            });
+
+            expenseModel.append({
+                "name": i18n.tr("Apparel"),
+                "color": "green"
+            });
+
+            expenseModel.append({
+                "name": i18n.tr("Beauty"),
+                "color": "lime"
+            });
+
+            expenseModel.append({
+                "name": i18n.tr("Health"),
+                "color": "yellow"
+            });
+
+            expenseModel.append({
+                "name": i18n.tr("Education"),
+                "color": "maroon"
+            });
+
+            expenseModel.append({
+                "name": i18n.tr("Gift"),
+                "color": "red"
+            });
+
+            expenseModel.append({
+                "name": i18n.tr("Other"),
+                "color": "gold"
+            });
+        }
     }
+
     titles: [i18n.tr("Accounts"), i18n.tr("Categories"), i18n.tr("Confirmation")]
 
     onFinished: {

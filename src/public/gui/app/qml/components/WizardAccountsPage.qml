@@ -42,8 +42,7 @@ Component {
             Layout.fillWidth: true
 
             wrapMode: Text.WordWrap
-            text: i18n.tr("Chancho allows you to track the expenses and incomes in several accounts. Here you "
-                + "can add the accounts you want to work with. Don't worry you can add more accounts later.")
+            text: i18n.tr("Chancho allows you to track the expenses and incomes in several accounts. Here you can add the accounts you want to work with. Don't worry you can add more accounts later.")
         }
 
         UbuntuShape {

@@ -32,7 +32,7 @@ import com.chancho 1.0
 Page {
     id: page
 
-    title: "Add new account"
+    title: i18n.tr("Add new account")
 
     head.actions: [
         Action {

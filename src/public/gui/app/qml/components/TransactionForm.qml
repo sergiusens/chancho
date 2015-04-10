@@ -77,8 +77,21 @@ UbuntuShape {
                 }
             }
 
-            CategoryTypeModel {
-                id: typeModel
+            Item{
+                ListModel {
+                    id: typeModel
+                    dynamicRoles: true
+                }
+                Component.onCompleted: {
+                    typeModel.append({
+                        "name": i18n.tr("Expense"),
+                        "enumType": Book.EXPENSE
+                    });
+                    typeModel.append({
+                        "name": i18n.tr("Income"),
+                        "enumType": Book.INCOME
+                    });
+                }
             }
 
             OptionSelector {

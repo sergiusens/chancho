@@ -42,9 +42,7 @@ Component {
             Layout.fillWidth: true
 
             wrapMode: Text.WordWrap
-            text: i18n.tr("Categories allow you to indentify the different transactions. There are two different "
-                + "types income an expense categories. The following are some of the predefined ones but you can "
-                + "add as many as you want.")
+            text: i18n.tr("Categories allow you to indentify the different transactions. There are two different types income an expense categories. The following are some of the predefined ones but you can add as many as you want.")
         }
 
         Label {

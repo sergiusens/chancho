@@ -26,11 +26,11 @@ import com.chancho 1.0
 
 ListModel {
     ListElement {
-        name: "Expense";
+        name: "Expense"
         enumType: Book.EXPENSE;
     }
     ListElement {
-        name: "Income";
+        name: "Income"
         enumType: Book.INCOME;
     }
 }

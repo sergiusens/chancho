@@ -42,8 +42,22 @@ Dialog {
         }
     }
 
-    CategoryTypeModel {
-        id: typeModel
+
+    Item{
+        ListModel {
+            id: typeModel
+            dynamicRoles: true
+        }
+        Component.onCompleted: {
+            typeModel.append({
+                "name": i18n.tr("Expense"),
+                "enumType": Book.EXPENSE
+            });
+            typeModel.append({
+                "name": i18n.tr("Income"),
+                "enumType": Book.INCOME
+            });
+        }
     }
 
     OptionSelector {
@@ -99,7 +113,7 @@ Dialog {
             id: okButton
             enabled: false
             Layout.fillWidth: true
-            text: "ok"
+            text: i18n.tr("Ok")
             color: UbuntuColors.orange
             onClicked: {
                 CategoriesWizardJs.onAddCategoryOkClicked(nameField, typeSelector,

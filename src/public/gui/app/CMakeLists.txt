@@ -2,25 +2,27 @@ project(chancho.mandel)
 
 set(TARGET chancho)
 
+# set the diff values so that we can build them automatically
 set(APP_NAME ${TARGET})
 set(DESKTOP_FILE "${TARGET}.desktop")
 set(ICON ${TARGET}.png)
 set(APP_HARDCODE ${TARGET})
 
+# configure the project one way or another if we are going to be building for a click package or a
+# normal debian pacakge application.
 if(CLICK_MODE)
     if(NOT DEFINED GIT_SOURCE)
         set(GIT_SOURCE "git@github.com:mandel-macaque/chancho.git")
         message("-- Setting GIT_SOURCE to ${GIT_SOURCE}")
     endif(NOT DEFINED GIT_SOURCE)
 
-    #set the installation paths to be a click dir
+    #set the installation paths to be a click dir which can later be used to build the click package
     set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/click)
     set(CMAKE_INSTALL_BINDIR ${CMAKE_CURRENT_BINARY_DIR}/click)
+    set(CMAKE_INSTALL_LOCALEDIR ${CMAKE_CURRENT_BINARY_DIR}/click/share/locale)
     set(DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/click)
     set(EXEC ${APP_HARDCODE})
     set(DESKTOP_DIR ${DATA_DIR})
-
-
 else(CLICK_MODE)
     set(DATA_DIR ${CMAKE_INSTALL_DATADIR}/${APP_HARDCODE})
     set(EXEC ${APP_HARDCODE})
@@ -29,12 +31,28 @@ else(CLICK_MODE)
     set(DESKTOP_DIR ${CMAKE_INSTALL_DATADIR}/applications)
 endif(CLICK_MODE)
 
+message("-- Setting I18N_DIRECTORY to ${CMAKE_INSTALL_PREFIX}/share/locale")
+
 # copy the blob to the install dir
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${APP_HARDCODE} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # copy the .desktop file to the desktop dir
 configure_file(${DESKTOP_FILE}.in ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE} DESTINATION ${DESKTOP_DIR})
+
+set(TRANSLATABLE_SRC
+    components/dialogs/*.qml
+    components/dialogs/js/*.js
+    components/js/*.js
+    components/models/*.qml
+    components/*.qml
+    *.qml)
+
+file(GLOB_RECURSE I18N_SRC_FILES
+     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/po
+     ${TRANSLATABLE_SRC})
+
+list(SORT I18N_SRC_FILES)
 
 # copy all the other resources to the data dir
 file(GLOB SRC_FILES
@@ -138,3 +156,5 @@ target_link_libraries(${TARGET}
 install(TARGETS ${CHANCHO_APP_BIN}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+add_subdirectory(po)
