@@ -39,6 +39,7 @@ Page {
             iconName: "add"
             text: i18n.tr("Add")
             onTriggered: {
+                Qt.inputMethod.commit()
                 var type = form.categoryTypeModel.get(form.categoryTypeSelectedIndex);
                 type = type.enumType
                 var success = Book.storeCategory(form.name, form.color, type);

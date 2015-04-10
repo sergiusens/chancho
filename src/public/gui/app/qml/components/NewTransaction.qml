@@ -39,6 +39,7 @@ Page {
             iconName: "add"
             text: i18n.tr("Add")
             onTriggered: {
+                Qt.inputMethod.commit()
                 var amount = form.amount;
                 if (amount === "") {
                     // we must have the amount

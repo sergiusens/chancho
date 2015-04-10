@@ -59,6 +59,7 @@ Page {
             iconName: "edit"
             text: i18n.tr("Edit")
             onTriggered: {
+                Qt.inputMethod.commit()
                 var editTransactionsCb = function() {
                     var accountModel = form.accountModel.get(form.accountIndex);
                     var categoryModel = form.categoryModel.get(form.categoryIndex);

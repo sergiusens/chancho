@@ -127,6 +127,7 @@ Popover {
                 text: i18n.tr("Ok")
                 color: UbuntuColors.orange
                 onClicked: {
+                    Qt.inputMethod.commit()
                     popover.color = colorSample.color;
                     mainView.anchorToKeyboard = true;
                     PopupUtils.close(popover);
@@ -138,6 +139,7 @@ Popover {
                 Layout.fillWidth: true
                 text: i18n.tr("Cancel")
                 onClicked: {
+                    Qt.inputMethod.commit()
                     mainView.anchorToKeyboard = true;
                     PopupUtils.close(popover)
                 }
