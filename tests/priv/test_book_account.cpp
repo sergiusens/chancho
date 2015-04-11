@@ -298,4 +298,13 @@ TestBookAccount::testAccountsLimit() {
     QCOMPARE(lastResult.at(0)->name, lastAcc->name);
 }
 
+void
+TestBookAccount::testTransactionsNotStored() {
+    auto acc = std::make_shared<PublicAccount>("BBVA", 89.2, "Savings account");
+
+    PublicBook book;
+    auto result = book.transactions(acc);
+    QCOMPARE(result.count(), 0);
+}
+
 QTEST_MAIN(TestBookAccount)
