@@ -1,0 +1,412 @@
+# English translations for chancho.mandel package.
+# Copyright (C) 2015 Manuel de la Pena <mandel@themacaque.com>
+# This file is distributed under the same license as the chancho.mandel package.
+# Manuel de la Pena <mandel@themacaque.com>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: chancho.mandel\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-04-11 01:39+0200\n"
+"PO-Revision-Date: 2015-04-11 12:03+0200\n"
+"Last-Translator: Manuel de la Pena <mandel@themacaque.com>\n"
+"Language-Team: English\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../qml/MainWindow.qml:78 ../qml/components/MainPage.qml:45
+msgid "Bills"
+msgstr "Bills"
+
+#: ../qml/MainWindow.qml:88 ../qml/components/CategoryStatsPage.qml:50
+msgid "Stats"
+msgstr "Stats"
+
+#: ../qml/MainWindow.qml:97 ../qml/components/AccountsPage.qml:67
+#: ../qml/components/WelcomeWizard.qml:138
+msgid "Accounts"
+msgstr "Accounts"
+
+#: ../qml/MainWindow.qml:107 ../qml/components/CategoriesPage.qml:45
+#: ../qml/components/WelcomeWizard.qml:138
+msgid "Categories"
+msgstr "Categories"
+
+#: ../qml/components/AccountForm.qml:65 ../qml/components/CategoryForm.qml:65
+msgid "January"
+msgstr "January"
+
+#: ../qml/components/AccountForm.qml:66 ../qml/components/CategoryForm.qml:66
+msgid "February"
+msgstr "February"
+
+#: ../qml/components/AccountForm.qml:67 ../qml/components/CategoryForm.qml:67
+msgid "March"
+msgstr "March"
+
+#: ../qml/components/AccountForm.qml:68 ../qml/components/CategoryForm.qml:68
+msgid "April"
+msgstr "April"
+
+#: ../qml/components/AccountForm.qml:69 ../qml/components/CategoryForm.qml:69
+msgid "May"
+msgstr "May"
+
+#: ../qml/components/AccountForm.qml:70 ../qml/components/CategoryForm.qml:70
+msgid "June"
+msgstr "June"
+
+#: ../qml/components/AccountForm.qml:71 ../qml/components/CategoryForm.qml:71
+msgid "July"
+msgstr "July"
+
+#: ../qml/components/AccountForm.qml:72 ../qml/components/CategoryForm.qml:72
+msgid "August"
+msgstr "August"
+
+#: ../qml/components/AccountForm.qml:73 ../qml/components/CategoryForm.qml:73
+msgid "September"
+msgstr "September"
+
+#: ../qml/components/AccountForm.qml:74 ../qml/components/CategoryForm.qml:74
+msgid "October"
+msgstr "October"
+
+#: ../qml/components/AccountForm.qml:75 ../qml/components/CategoryForm.qml:75
+msgid "November"
+msgstr "November"
+
+#: ../qml/components/AccountForm.qml:76 ../qml/components/CategoryForm.qml:76
+msgid "December"
+msgstr "December"
+
+#: ../qml/components/AccountForm.qml:174
+#: ../qml/components/CategoryForm.qml:163
+#: ../qml/components/dialogs/WizardNewAccountDialog.qml:48
+#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:84
+msgid "Name"
+msgstr "Name"
+
+#: ../qml/components/AccountForm.qml:196
+#: ../qml/components/dialogs/WizardNewAccountDialog.qml:56
+msgid "Initial amount"
+msgstr "Initial amount"
+
+#: ../qml/components/AccountForm.qml:208
+#: ../qml/components/TransactionForm.qml:199
+#: ../qml/components/dialogs/WizardNewAccountDialog.qml:61
+msgid "Memo"
+msgstr "Memo"
+
+#: ../qml/components/AccountsPage.qml:143 ../qml/components/NewAccount.qml:35
+msgid "Add new account"
+msgstr "Add new account"
+
+#: ../qml/components/CategoriesPage.qml:59
+#: ../qml/components/WizardCategoriesPage.qml:52
+#: ../qml/components/WizardLastPage.qml:87
+msgid "Income categories:"
+msgstr "Income categories:"
+
+#: ../qml/components/CategoriesPage.qml:101
+#: ../qml/components/WizardCategoriesPage.qml:91
+#: ../qml/components/WizardLastPage.qml:117
+msgid "Expense categories:"
+msgstr "Expense categories:"
+
+#: ../qml/components/CategoriesPage.qml:142
+#: ../qml/components/NewCategory.qml:35
+msgid "Add new category"
+msgstr "Add new category"
+
+#: ../qml/components/CategoryForm.qml:186
+#: ../qml/components/TransactionForm.qml:87
+#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:53
+msgid "Expense"
+msgstr "Expense"
+
+#: ../qml/components/CategoryForm.qml:190
+#: ../qml/components/TransactionForm.qml:91
+#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:57
+msgid "Income"
+msgstr "Income"
+
+#: ../qml/components/CategoryStatsPage.qml:133
+#: ../qml/components/MainPage.qml:138
+msgid "No entries were found!"
+msgstr "No entries were found!"
+
+#: ../qml/components/ColorChooser.qml:127
+#: ../qml/components/dialogs/ConfirmationDialog.qml:38
+#: ../qml/components/dialogs/ErrorDialog.qml:33
+#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:116
+msgid "Ok"
+msgstr "Ok"
+
+#: ../qml/components/ColorChooser.qml:140
+#: ../qml/components/dialogs/ConfirmationDialog.qml:50
+#: ../qml/components/dialogs/WizardNewAccountDialog.qml:102
+#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:127
+msgid "Cancel"
+msgstr "Cancel"
+
+#: ../qml/components/EditAccount.qml:51 ../qml/components/EditCategory.qml:78
+#: ../qml/components/EditTransaction.qml:60
+msgid "Edit"
+msgstr "Edit"
+
+#: ../qml/components/EditAccount.qml:59 ../qml/components/EditCategory.qml:88
+#: ../qml/components/EditTransaction.qml:76
+msgid "Edit entry"
+msgstr "Edit entry"
+
+#: ../qml/components/EditAccount.qml:60
+#: ../qml/components/EditTransaction.qml:77
+msgid "Do you want to update this entry?"
+msgstr "Do you want to update this entry?"
+
+#: ../qml/components/EditAccount.qml:69 ../qml/components/EditCategory.qml:97
+#: ../qml/components/EditTransaction.qml:85
+msgid "Delete"
+msgstr "Delete"
+
+#: ../qml/components/EditAccount.qml:78
+msgid "Delete entry"
+msgstr "Delete entry"
+
+#: ../qml/components/EditAccount.qml:79
+msgid "Do you want to remove this account?"
+msgstr "Do you want to remove this account?"
+
+#: ../qml/components/EditAccount.qml:85
+msgid "Error"
+msgstr "Error"
+
+#: ../qml/components/EditAccount.qml:86
+msgid "You must have at least one account in the system."
+msgstr "You must have at least one account in the system."
+
+#: ../qml/components/EditCategory.qml:89
+msgid "Do you want to update this category?"
+msgstr "Do you want to update this category?"
+
+#: ../qml/components/EditCategory.qml:105
+msgid "Removal Error"
+msgstr "Removal Error"
+
+#: ../qml/components/EditCategory.qml:106
+msgid ""
+"You cannot delete all categories in the system. You must have at least one "
+"of each type"
+msgstr ""
+"You cannot delete all categories in the system. You must have at least one "
+"of each type"
+
+#: ../qml/components/EditCategory.qml:115
+msgid "Delete category"
+msgstr "Delete category"
+
+#: ../qml/components/EditCategory.qml:116
+msgid "Do you want to remove this category?"
+msgstr "Do you want to remove this category?"
+
+#: ../qml/components/EditTransaction.qml:92
+msgid "Delete transaction"
+msgstr "Delete transaction"
+
+#: ../qml/components/EditTransaction.qml:93
+msgid "Do you want to remove this transaction?"
+msgstr "Do you want to remove this transaction?"
+
+#: ../qml/components/MainPage.qml:151 ../qml/components/NewTransaction.qml:35
+msgid "Add new entry"
+msgstr "Add new entry"
+
+#: ../qml/components/NewAccount.qml:40 ../qml/components/NewCategory.qml:40
+#: ../qml/components/NewTransaction.qml:40
+#: ../qml/components/WizardAccountsPage.qml:87
+#: ../qml/components/WizardCategoriesPage.qml:128
+msgid "Add"
+msgstr "Add"
+
+#: ../qml/components/NewAccount.qml:53 ../qml/components/NewCategory.qml:49
+#: ../qml/components/NewTransaction.qml:60
+msgid "Internal Error"
+msgstr "Internal Error"
+
+#: ../qml/components/NewAccount.qml:54
+msgid "The account could not be stored."
+msgstr "The account could not be stored."
+
+#: ../qml/components/NewCategory.qml:50
+msgid "The category could not be stored."
+msgstr "The category could not be stored."
+
+#: ../qml/components/NewTransaction.qml:46
+msgid "Error: amount is missing"
+msgstr "Error: amount is missing"
+
+#: ../qml/components/NewTransaction.qml:47
+msgid "Transactions must have an amount."
+msgstr "Transactions must have an amount."
+
+#: ../qml/components/NewTransaction.qml:61
+msgid "The transaction could not be stored."
+msgstr "The transaction could not be stored."
+
+#: ../qml/components/TransactionForm.qml:152
+msgid "Date"
+msgstr "Date"
+
+#: ../qml/components/TransactionForm.qml:177
+msgid "Amount"
+msgstr "Amount"
+
+#: ../qml/components/TransactionForm.qml:186
+msgid "Contents"
+msgstr "Contents"
+
+#: ../qml/components/WelcomeWizard.qml:49
+msgid "Allowance"
+msgstr "Allowance"
+
+#: ../qml/components/WelcomeWizard.qml:54
+msgid "Salary"
+msgstr "Salary"
+
+#: ../qml/components/WelcomeWizard.qml:59
+msgid "Bonus"
+msgstr "Bonus"
+
+#: ../qml/components/WelcomeWizard.qml:64
+#: ../qml/components/WelcomeWizard.qml:132
+msgid "Other"
+msgstr "Other"
+
+#: ../qml/components/WelcomeWizard.qml:77
+msgid "Food"
+msgstr "Food"
+
+#: ../qml/components/WelcomeWizard.qml:82
+msgid "Social Life"
+msgstr "Social Life"
+
+#: ../qml/components/WelcomeWizard.qml:87
+msgid "Self-development"
+msgstr "Self-development"
+
+#: ../qml/components/WelcomeWizard.qml:92
+msgid "Transportation"
+msgstr "Transportation"
+
+#: ../qml/components/WelcomeWizard.qml:97
+msgid "Culture"
+msgstr "Culture"
+
+#: ../qml/components/WelcomeWizard.qml:102
+msgid "Household"
+msgstr "Household"
+
+#: ../qml/components/WelcomeWizard.qml:107
+msgid "Apparel"
+msgstr "Apparel"
+
+#: ../qml/components/WelcomeWizard.qml:112
+msgid "Beauty"
+msgstr "Beauty"
+
+#: ../qml/components/WelcomeWizard.qml:117
+msgid "Health"
+msgstr "Health"
+
+#: ../qml/components/WelcomeWizard.qml:122
+msgid "Education"
+msgstr "Education"
+
+#: ../qml/components/WelcomeWizard.qml:127
+msgid "Gift"
+msgstr "Gift"
+
+#: ../qml/components/WelcomeWizard.qml:138
+msgid "Confirmation"
+msgstr "Confirmation"
+
+#: ../qml/components/WizardAccountsPage.qml:45
+msgid ""
+"Chancho allows you to track the expenses and incomes in several accounts. "
+"Here you can add the accounts you want to work with. Don't worry you can add "
+"more accounts later."
+msgstr ""
+"Chancho allows you to track the expenses and incomes in several accounts. "
+"Here you can add the accounts you want to work with. Don't worry you can add "
+"more accounts later."
+
+#: ../qml/components/WizardAccountsPage.qml:90
+msgid "New account"
+msgstr "New account"
+
+#: ../qml/components/WizardAccountsPage.qml:91
+msgid "Please add the details of the new account."
+msgstr "Please add the details of the new account."
+
+#: ../qml/components/WizardAccountsPage.qml:101
+#: ../qml/components/WizardCategoriesPage.qml:139
+msgid "Remove"
+msgstr "Remove"
+
+#: ../qml/components/WizardAccountsPage.qml:109
+msgid "Delete accounts"
+msgstr "Delete accounts"
+
+#: ../qml/components/WizardAccountsPage.qml:110
+msgid "Do you want to delete the selected accounts?"
+msgstr "Do you want to delete the selected accounts?"
+
+#: ../qml/components/WizardCategoriesPage.qml:45
+msgid ""
+"Categories allow you to indentify the different transactions. There are two "
+"different types income an expense categories. The following are some of the "
+"predefined ones but you can add as many as you want."
+msgstr ""
+"Categories allow you to indentify the different transactions. There are two "
+"different types income an expense categories. The following are some of the "
+"predefined ones but you can add as many as you want."
+
+#: ../qml/components/WizardCategoriesPage.qml:147
+msgid "Delete categories"
+msgstr "Delete categories"
+
+#: ../qml/components/WizardCategoriesPage.qml:148
+msgid "Do you want to delete the selected categories?"
+msgstr "Do you want to delete the selected categories?"
+
+#: ../qml/components/WizardLastPage.qml:46
+msgid ""
+"You are nearly done! Bellow you can find the accounts and categories you "
+"will have. Are you happy with them?"
+msgstr ""
+"You are nearly done! Bellow you can find the accounts and categories you "
+"will have. Are you happy with them?"
+
+#: ../qml/components/WizardLastPage.qml:53
+msgid "Accounts:"
+msgstr "Accounts:"
+
+#: ../qml/components/WizardLastPage.qml:147
+msgid "I'm ready"
+msgstr "I'm ready"
+
+#: ../qml/components/WizardLastPage.qml:157
+msgid "Init Error"
+msgstr "Init Error"
+
+#: ../qml/components/WizardLastPage.qml:158
+msgid ""
+"Make sure that you have added at least one account and a category of each "
+"type."
+msgstr ""
+"Make sure that you have added at least one account and a category of each "
+"type."
