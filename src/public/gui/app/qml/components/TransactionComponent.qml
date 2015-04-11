@@ -64,22 +64,26 @@ Item {
 
                 ColumnLayout {
                     id: categoryInfo
-                    width: units.gu(10)
                     anchors.left: parent.left
                     anchors.top: parent.top
 
                     Label {
                         id: categoryLabel
+                        Layout.maximumWidth: units.gu(10)
+                        Layout.minimumWidth: units.gu(10)
                         text: model.display.category
                         elide: Text.ElideRight
                         font.bold: true
+                        fontSize: "small"
                         horizontalAlignment: Text.AlignLeft
                     }
 
                     Label {
                         id: accountLabel
+                        Layout.maximumWidth: units.gu(10)
+                        Layout.minimumWidth: units.gu(10)
                         text: model.display.account
-                        fontSize: "small"
+                        fontSize: "x-small"
                         elide: Text.ElideRight
                         horizontalAlignment: Text.AlignLeft
                     }
@@ -92,6 +96,7 @@ Item {
                     width: parent.width - categoryInfo.width - amountLabel.width
 
                     text: model.display.contents
+                    fontSize: "small"
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignLeft
                 }
@@ -104,6 +109,7 @@ Item {
                     anchors.top: parent.top
 
                     text: model.display.amount
+                    fontSize: "small"
                     color: (model.display.amount > 0)? "green" : "red"
                     horizontalAlignment: Text.AlignRight
                 }
