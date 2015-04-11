@@ -661,4 +661,13 @@ TestBookCategory::testCategoriesTypeLimit() {
     QCOMPARE(expense.count(), 1);
 }
 
+void
+TestBookCategory::testTransactionsNotStored() {
+    auto cat = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#ee");
+
+    PublicBook book;
+    auto result = book.transactions(cat);
+    QCOMPARE(result.count(), 0);
+}
+
 QTEST_MAIN(TestBookCategory)

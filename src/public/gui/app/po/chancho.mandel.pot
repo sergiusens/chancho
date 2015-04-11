@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-11 01:39+0200\n"
+"POT-Creation-Date: 2015-04-11 22:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,14 +90,14 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: ../qml/components/AccountForm.qml:196
-#: ../qml/components/dialogs/WizardNewAccountDialog.qml:56
+#: ../qml/components/AccountForm.qml:199
+#: ../qml/components/dialogs/WizardNewAccountDialog.qml:60
 msgid "Initial amount"
 msgstr ""
 
-#: ../qml/components/AccountForm.qml:208
-#: ../qml/components/TransactionForm.qml:199
-#: ../qml/components/dialogs/WizardNewAccountDialog.qml:61
+#: ../qml/components/AccountForm.qml:211
+#: ../qml/components/TransactionForm.qml:202
+#: ../qml/components/dialogs/WizardNewAccountDialog.qml:65
 msgid "Memo"
 msgstr ""
 
@@ -148,7 +148,7 @@ msgstr ""
 
 #: ../qml/components/ColorChooser.qml:140
 #: ../qml/components/dialogs/ConfirmationDialog.qml:50
-#: ../qml/components/dialogs/WizardNewAccountDialog.qml:102
+#: ../qml/components/dialogs/WizardNewAccountDialog.qml:106
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:127
 msgid "Cancel"
 msgstr ""
@@ -259,11 +259,11 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: ../qml/components/TransactionForm.qml:177
+#: ../qml/components/TransactionForm.qml:180
 msgid "Amount"
 msgstr ""
 
-#: ../qml/components/TransactionForm.qml:186
+#: ../qml/components/TransactionForm.qml:189
 msgid "Contents"
 msgstr ""
 

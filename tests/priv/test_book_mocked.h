@@ -90,6 +90,30 @@ class TestBookMocked : public BaseTestCase {
     void testTransactionsAccountOpenError();
     void testTransactionsAccountExecError();
 
+    void testAmountForTypeInDayDbOpenError();
+    void testAmountForTypeInDayQueryError();
+
+    void testNumberOfDaysWithTransactionsDbOpenError();
+    void testNumberOfDaysWithTransactionsQueryError();
+
+    void testDaysWithTransactionsDbOpenError();
+    void testDaysWithTransactionsQueryError();
+
+    void testNumberOfMonthsWithTransactionsDbOpenError();
+    void testNumberOfMonthsWithTransactionsQueryError();
+
+    void testMonthsWithTransactionsDbOpenError();
+    void testMonthsWithTransactionsQueryError();
+
+    void testNumberOfTransactionsDbOpenError();
+    void testNumberOfTransactionsQueryError();
+
+    void testNumberOfCategoriesDbOpenError();
+    void testNumberOfCategoriesQureyError();
+
+    void testNumberOfAccountsDbOpenError();
+    void testNumberOfAccountsQueryError();
+
  private:
     tests::MockDatabaseFactory* _dbFactory;
 };

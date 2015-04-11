@@ -52,4 +52,7 @@ class TestAccount : public BaseTestCase {
 
     void testAccountEquals();
     void testAccountPtrEquals();
+    void testAccountPtrNotEquals();
+    void testAccountPtrEqualsNull();
+
 };

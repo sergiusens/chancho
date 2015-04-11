@@ -32,4 +32,5 @@ class PublicBook : public chancho::Book {
 
     using chancho::Book::databasePath;
     using chancho::Book::initDatabse;
+    using chancho::Book::amountForTypeInDay;
 };

@@ -68,4 +68,6 @@ class TestBookCategory : public BaseTestCase {
 
     void testCategoriesTypeLimit();
 
+    void testTransactionsNotStored();
+
 };

@@ -1117,6 +1117,7 @@ Book::monthsWithTransactions(int year, boost::optional<int> limit, boost::option
     if (!success) {
         _lastError = _db->lastError().text();
         LOG(INFO) << "Error retrieving the montsh with transactions" << _lastError.toStdString();
+        return result;
     }
     while (query->next()) {
         result.append(query->value(0).toInt());
@@ -1191,6 +1192,7 @@ Book::daysWithTransactions(int month, int year, boost::optional<int> limit, boos
     if (!success) {
         _lastError = _db->lastError().text();
         LOG(INFO) << "Error retrieving the montsh with transactions" << _lastError.toStdString();
+        return result;
     }
     while (query->next()) {
         result.append(query->value(0).toInt());

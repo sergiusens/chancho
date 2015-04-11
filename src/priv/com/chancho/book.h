@@ -286,12 +286,12 @@ class Book {
  protected:
     static std::set<QString> TABLES;
     static QString databasePath();
+    double amountForTypeInDay(int day, int month, int year, Category::Type type);
 
  private:
    QList<TransactionPtr> parseTransactions(std::shared_ptr<system::Query> query);
    QList<TransactionPtr> transactions(int year, int month, boost::optional<int> day, boost::optional<int> limit,
            boost::optional<int> offset);
-    double amountForTypeInDay(int day, int month, int year, Category::Type type);
 
  protected:
     std::shared_ptr<system::Database> _db;

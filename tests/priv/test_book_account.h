@@ -56,4 +56,6 @@ class TestBookAccount : public BaseTestCase {
     void testNumberOfAccounts();
 
     void testAccountsLimit();
+
+    void testTransactionsNotStored();
 };
