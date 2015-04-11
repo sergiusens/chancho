@@ -172,7 +172,10 @@ UbuntuShape {
                 anchors.right: parent.right
                 inputMethodHints: Qt.ImhFormattedNumbersOnly
 
-                validator: DoubleValidator {}
+                validator: DoubleValidator {
+                    id: doubleValidator
+                    locale: "en"
+                }
 
                 placeholderText: i18n.tr("Amount")
             }

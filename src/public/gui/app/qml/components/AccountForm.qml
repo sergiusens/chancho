@@ -191,7 +191,10 @@ UbuntuShape {
 
             inputMethodHints: Qt.ImhFormattedNumbersOnly
 
-            validator: DoubleValidator {}
+            validator: DoubleValidator {
+                id: doubleValidator
+                locale: "en"
+            }
 
             placeholderText: i18n.tr("Initial amount")
         }

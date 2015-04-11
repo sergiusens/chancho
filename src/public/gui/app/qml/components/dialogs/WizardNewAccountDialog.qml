@@ -48,11 +48,15 @@ Dialog {
        placeholderText: i18n.tr("Name")
 
     }
+
     TextField {
         id: initialAmountField
 
         inputMethodHints: Qt.ImhFormattedNumbersOnly
-        validator: DoubleValidator {}
+        validator: DoubleValidator {
+            id: doubleValidator
+            locale: "en"
+        }
         placeholderText: i18n.tr("Initial amount")
     }
 
