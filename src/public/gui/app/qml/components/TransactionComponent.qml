@@ -64,12 +64,13 @@ Item {
 
                 ColumnLayout {
                     id: categoryInfo
-                    width: units.gu(10)
                     anchors.left: parent.left
                     anchors.top: parent.top
 
                     Label {
                         id: categoryLabel
+                        Layout.maximumWidth: units.gu(10)
+                        Layout.minimumWidth: units.gu(10)
                         text: model.display.category
                         elide: Text.ElideRight
                         font.bold: true
@@ -79,6 +80,8 @@ Item {
 
                     Label {
                         id: accountLabel
+                        Layout.maximumWidth: units.gu(10)
+                        Layout.minimumWidth: units.gu(10)
                         text: model.display.account
                         fontSize: "x-small"
                         elide: Text.ElideRight
