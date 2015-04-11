@@ -282,22 +282,12 @@ Book::Book() {
 Book::~Book() {
 }
 
-void
-Book::store(AccountPtr acc) {
-    std::lock_guard<std::mutex> lock(_accountsMutex);
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
-
-    if (!dbLock.opened()) {
-        _lastError = _db->lastError().text();
-        LOG(ERROR) << _lastError.toStdString();
-        return;
-    }
-
+bool
+Book::storeSingleAcc(AccountPtr acc) {
     // if a category is already present in the db the uuid will be present else is null
     if (acc->_dbId.isNull()) {
         acc->_dbId = QUuid::createUuid();
     }
-
 
     // INSERT_UPDATE_ACCOUNT = INSERT OR REPLACE INTO Accounts(uuid, name, memo, color, initialAmount, amount)
     //     VALUES (:uuid, :name, :memo, :color, :initialAmount, :amount)
@@ -317,17 +307,24 @@ Book::store(AccountPtr acc) {
         LOG(ERROR) << _lastError.toStdString();
         acc->_dbId = QUuid();
     }
+    return success;
 }
 
 void
-Book::store(CategoryPtr cat) {
-    // if the cate has a parent and was not stored, we store it
-    if (cat->parent && !cat->parent->wasStoredInDb()) {
-        LOG(INFO) << "Storing parent that was not present already";
-        store(cat->parent);
+Book::store(AccountPtr acc) {
+    std::lock_guard<std::mutex> lock(_accountsMutex);
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return;
     }
+    storeSingleAcc(acc);
+}
 
-    std::lock_guard<std::mutex> lock(_categoriesMutex);
+void
+Book::store(QList<AccountPtr> accs) {
+    std::lock_guard<std::mutex> lock(_accountsMutex);
     system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
     if (!dbLock.opened()) {
@@ -336,6 +333,25 @@ Book::store(CategoryPtr cat) {
         return;
     }
 
+    bool transaction = _db->transaction();
+    if (!transaction) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << "Error creating the transaction " << _lastError.toStdString();
+        return;
+    }
+
+    foreach(const AccountPtr& acc, accs) {
+        bool success = storeSingleAcc(acc);
+        if (!success) {
+            _db->rollback();
+            return;
+        }
+    }
+    _db->commit();
+}
+
+bool
+Book::storeSingleCat(CategoryPtr cat) {
     auto isPresent = cat->wasStoredInDb();
     if (!isPresent) {
         cat->_dbId = QUuid::createUuid();
@@ -366,30 +382,85 @@ Book::store(CategoryPtr cat) {
         LOG(ERROR) << _lastError.toStdString();
         cat->_dbId = QUuid();
     }
+    return success;
 }
 
 void
-Book::store(TransactionPtr tran) {
-    // usually accounts and categories must be stored before storing a transactions
-    if (tran->account && !tran->account->wasStoredInDb()) {
-        _lastError = "An account must be stored before adding a transaction to it.";
-        LOG(ERROR) << _lastError.toStdString();
-        return;
+Book::store(CategoryPtr cat) {
+    // if the cate has a parent and was not stored, we store it
+    if (cat->parent && !cat->parent->wasStoredInDb()) {
+        LOG(INFO) << "Storing parent that was not present already";
+        store(cat->parent);
     }
 
-    if (tran->category && !tran->category->wasStoredInDb()) {
-        _lastError = "A category must be stored before adding a transaction to it.";
-        LOG(ERROR) << _lastError.toStdString();
-        return;
-    }
-
-    std::lock_guard<std::mutex> lock(_transactionMutex);
+    std::lock_guard<std::mutex> lock(_categoriesMutex);
     system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
         return;
+    }
+    storeSingleCat(cat);
+}
+
+void
+Book::store(QList<CategoryPtr> cats) {
+    // grab all parents, add the to the list of cats to store
+    QList<CategoryPtr> parents;
+    foreach(const CategoryPtr& cat, cats) {
+        if (cat->parent && !cat->parent->wasStoredInDb()) {
+            parents.append(cat->parent);
+        }
+    }
+
+    std::lock_guard<std::mutex> lock(_categoriesMutex);
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+
+    bool transaction = _db->transaction();
+    if (!transaction) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << "Error creating the transaction " << _lastError.toStdString();
+        return;
+    }
+
+    foreach(const CategoryPtr& cat, parents) {
+        bool success = storeSingleCat(cat);
+        if (!success) {
+            _db->rollback();
+            return;;
+        }
+    }
+
+    foreach(const CategoryPtr& cat, cats) {
+        bool success = storeSingleCat(cat);
+        if (!success) {
+            _db->rollback();
+            return;;
+        }
+    }
+    _db->commit();
+}
+
+bool
+Book::storeSingleTransactions(TransactionPtr tran) {
+    // usually accounts and categories must be stored before storing a transactions
+    if (tran->account && !tran->account->wasStoredInDb()) {
+        _lastError = "An account must be stored before adding a transaction to it.";
+        LOG(ERROR) << _lastError.toStdString();
+        return false;
+    }
+
+    if (tran->category && !tran->category->wasStoredInDb()) {
+        _lastError = "A category must be stored before adding a transaction to it.";
+        LOG(ERROR) << _lastError.toStdString();
+        return false;
     }
 
     auto isPresent = tran->wasStoredInDb();
@@ -432,6 +503,48 @@ Book::store(TransactionPtr tran) {
         LOG(INFO) << _lastError.toStdString();
         tran->_dbId = QUuid();
     }
+    return success;
+}
+
+void
+Book::store(TransactionPtr tran) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+    storeSingleTransactions(tran);
+}
+
+void
+Book::store(QList<TransactionPtr> trans) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+
+    bool transaction = _db->transaction();
+    if (!transaction) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << "Error creating the transaction " << _lastError.toStdString();
+        return;
+    }
+
+    foreach(const TransactionPtr tran, trans) {
+        auto success = storeSingleTransactions(tran);
+        if (!success) {
+            _db->rollback();
+            return;;
+        }
+    }
+    _db->commit();
 }
 
 void
@@ -1117,6 +1230,7 @@ Book::monthsWithTransactions(int year, boost::optional<int> limit, boost::option
     if (!success) {
         _lastError = _db->lastError().text();
         LOG(INFO) << "Error retrieving the montsh with transactions" << _lastError.toStdString();
+        return result;
     }
     while (query->next()) {
         result.append(query->value(0).toInt());
@@ -1191,6 +1305,7 @@ Book::daysWithTransactions(int month, int year, boost::optional<int> limit, boos
     if (!success) {
         _lastError = _db->lastError().text();
         LOG(INFO) << "Error retrieving the montsh with transactions" << _lastError.toStdString();
+        return result;
     }
     while (query->next()) {
         result.append(query->value(0).toInt());

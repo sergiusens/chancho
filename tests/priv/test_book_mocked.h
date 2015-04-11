@@ -93,6 +93,39 @@ class TestBookMocked : public BaseTestCase {
     void testAmountForTypeInDayDbOpenError();
     void testAmountForTypeInDayQueryError();
 
+    void testNumberOfDaysWithTransactionsDbOpenError();
+    void testNumberOfDaysWithTransactionsQueryError();
+
+    void testDaysWithTransactionsDbOpenError();
+    void testDaysWithTransactionsQueryError();
+
+    void testNumberOfMonthsWithTransactionsDbOpenError();
+    void testNumberOfMonthsWithTransactionsQueryError();
+
+    void testMonthsWithTransactionsDbOpenError();
+    void testMonthsWithTransactionsQueryError();
+
+    void testNumberOfTransactionsDbOpenError();
+    void testNumberOfTransactionsQueryError();
+
+    void testNumberOfCategoriesDbOpenError();
+    void testNumberOfCategoriesQureyError();
+
+    void testNumberOfAccountsDbOpenError();
+    void testNumberOfAccountsQueryError();
+
+    void testStoreAccsListDbOpenError();
+    void testStoreAccsListQueryError();
+    void testStoreAccsTransactionError();
+
+    void testStoreCatsListDbOpenError();
+    void testStoreCatsListQueryError();
+    void testStoreCatsTransactionError();
+
+    void testStoreTransListDbOpenError();
+    void testStoreTransListQueryError();
+    void testStoreTransTransactionError();
+
  private:
     tests::MockDatabaseFactory* _dbFactory;
 };

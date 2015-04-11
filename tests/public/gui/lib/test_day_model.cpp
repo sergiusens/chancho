@@ -557,4 +557,22 @@ TestDayModel::testGetExpense() {
     QVERIFY(Mock::VerifyAndClearExpectations(book.get()));
 }
 
+void
+TestDayModel::testGetDate() {
+    QDate date(2014, 2, 1);
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicDayModel>(date, book);
+    QCOMPARE(date, model->getDate());
+}
+
+void
+TestDayModel::testGetDateName() {
+    QDate date(2014, 2, 1);
+
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicDayModel>(date, book);
+    QCOMPARE(model->getDayName(), QDate::shortDayName(date.dayOfWeek()));
+}
+
 QTEST_MAIN(TestDayModel)

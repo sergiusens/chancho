@@ -135,5 +135,24 @@ TestAccount::testAccountPtrEquals() {
     QVERIFY(firtAcc == secondAcc);
 }
 
+void
+TestAccount::testAccountPtrNotEquals() {
+    auto firstUuid = QUuid::createUuid();
+    auto secondUuid = QUuid::createUuid();
+    com::chancho::AccountPtr firtAcc = std::make_shared<PublicAccount>(firstUuid);
+    com::chancho::AccountPtr secondAcc = std::make_shared<PublicAccount>(secondUuid);
+
+    QVERIFY(firtAcc != secondAcc);
+}
+
+void
+TestAccount::testAccountPtrEqualsNull() {
+    auto uuid = QUuid::createUuid();
+    com::chancho::AccountPtr firtAcc = std::make_shared<PublicAccount>(uuid);
+    com::chancho::AccountPtr secondAcc;
+
+    QVERIFY(!(firtAcc == secondAcc));
+}
+
 QTEST_MAIN(TestAccount)
 

@@ -69,6 +69,16 @@ class Book {
     virtual void store(AccountPtr acc);
 
     /*!
+
+        \fn virtual void store(AccountPtr acc);
+
+        Stores or updates the given \a accs in the database.
+
+        \note When an account is newly added to the database a new unique identifier is provided for the account.
+     */
+    virtual void store(QList<AccountPtr> accs);
+
+    /*!
         \fn virtual void store(CategoryPtr cat);
 
         Stores or updates the given \a cat in the database.
@@ -78,6 +88,15 @@ class Book {
     virtual void store(CategoryPtr cat);
 
     /*!
+        \fn virtual void store(CategoryPtr cat);
+
+        Stores or updates the given \a cats in the database.
+
+        \note When a category is newly added to the database a new unique identifier is provided for the account.
+     */
+    virtual void store(QList<CategoryPtr> cats);
+
+    /*!
         \fn virtual void store(TransactionPtr tran);
 
         Stores or updates the given \a tran in the database.
@@ -85,6 +104,15 @@ class Book {
         \note When a transaction is newly added to the database a new unique identifier is provided for the account.
     */
     virtual void store(TransactionPtr tran);
+
+    /*!
+        \fn virtual void store(TransactionPtr tran);
+
+        Stores or updates the given \a trans in the database.
+
+        \note When a transaction is newly added to the database a new unique identifier is provided for the account.
+    */
+    virtual void store(QList<TransactionPtr> trans);
 
     /*!
         \fn virtual void remove(AccountPtr acc);
@@ -286,12 +314,15 @@ class Book {
  protected:
     static std::set<QString> TABLES;
     static QString databasePath();
+    double amountForTypeInDay(int day, int month, int year, Category::Type type);
 
  private:
-   QList<TransactionPtr> parseTransactions(std::shared_ptr<system::Query> query);
-   QList<TransactionPtr> transactions(int year, int month, boost::optional<int> day, boost::optional<int> limit,
+    QList<TransactionPtr> parseTransactions(std::shared_ptr<system::Query> query);
+    QList<TransactionPtr> transactions(int year, int month, boost::optional<int> day, boost::optional<int> limit,
            boost::optional<int> offset);
-    double amountForTypeInDay(int day, int month, int year, Category::Type type);
+    bool storeSingleAcc(AccountPtr ptr);
+    bool storeSingleCat(CategoryPtr ptr);
+    bool storeSingleTransactions(TransactionPtr ptr);
 
  protected:
     std::shared_ptr<system::Database> _db;

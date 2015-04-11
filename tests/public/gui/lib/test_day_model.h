@@ -69,5 +69,8 @@ class TestDayModel : public BaseTestCase {
 
     void testGetIncome();
     void testGetExpense();
+
+    void testGetDate();
+    void testGetDateName();
 };
 
