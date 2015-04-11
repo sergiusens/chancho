@@ -90,6 +90,9 @@ class TestBookMocked : public BaseTestCase {
     void testTransactionsAccountOpenError();
     void testTransactionsAccountExecError();
 
+    void testAmountForTypeInDayDbOpenError();
+    void testAmountForTypeInDayQueryError();
+
  private:
     tests::MockDatabaseFactory* _dbFactory;
 };

@@ -1455,4 +1455,40 @@ TestBookMocked::testTransactionsAccountExecError() {
     QVERIFY(Mock::VerifyAndClearExpectations(query.get()));
 }
 
+void
+TestBookMocked::testAmountForTypeInDayDbOpenError() {
+    QSqlError error("Testing driver error", "Text error");
+    auto db = std::make_shared<tests::MockDatabase>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+            .Times(1)
+            .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+            .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    EXPECT_CALL(*db.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(error));
+
+    PublicBook book;
+    book.amountForTypeInDay(1, 10, 2015, com::chancho::Category::Type::EXPENSE);
+
+    QVERIFY(book.isError());
+    QCOMPARE(error.text(), book.lastError());
+
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+}
+
+void
+TestBookMocked::testAmountForTypeInDayQueryError() {
+
+}
+
 QTEST_MAIN(TestBookMocked)
