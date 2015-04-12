@@ -26,31 +26,42 @@ function canBeInit(accountsModel, incomeModel, expenseModel) {
 }
 
 function initDatabase(book, accountsModel, incomeModel, expenseModel) {
+    var accounts = [];
     for(var index=0; index < accountsModel.count; index++) {
         var account = accountsModel.get(index);
-        console.log("Adding new account to wizard "
-            + "{'name': " + account.text + ", 'color': " + account.color
-            + ", 'memo': " + account.text + ", 'amount': " + account.amount);
+        var obj = {
+            "name": account.name,
+            "memo": account.memo,
+            "color": account.color,
+            "amount": account.amount
+        };
+        accounts.push(obj);
 
-        var success = book.storeAccount(account.name, account.memo, account.color, account.amount);
         if (!success) {
             console.log("Error storing new account!");
         }
     }
+    var success = book.storeAccounts(accounts);
 
+    var cats = [];
     for(var index=0; index < incomeModel.count; index++) {
         var cat = incomeModel.get(index);
-        var success = book.storeCategory(cat.name, cat.color, book.INCOME);
-        if (!success) {
-            console.log("Error adding new income category");
-        }
+        var obj = {
+            "name": cat.name,
+            "color": cat.color,
+            "type": book.INCOME
+        };
+        cats.push(obj);
     }
 
     for(var index=0; index < expenseModel.count; index++) {
         var cat = expenseModel.get(index);
-        var success = book.storeCategory(cat.name, cat.color, book.EXPENSE);
-        if (!success) {
-            console.log("Error adding new income category");
-        }
+        var obj = {
+            "name": cat.name,
+            "color": cat.color,
+            "type": book.EXPENSE
+        };
+        cats.push(obj);
     }
+    success = book.storeCategories(cats);
 }
