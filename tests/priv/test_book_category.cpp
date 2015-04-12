@@ -394,28 +394,25 @@ TestBookCategory::testGetCategoriesEmpty() {
 void
 TestBookCategory::testGetCategoriesNoParents() {
     // add several cats and add them to the books
-    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
-    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE);
-    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    QList<com::chancho::CategoryPtr> cats;
+    cats.append(std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE));
+    cats.append(std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE));
+    cats.append(std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME));
 
     PublicBook book;
-    book.store(first);
-    book.store(second);
-    book.store(last);
+    book.store(cats);
 
-    QVERIFY(first->wasStoredInDb());
-    QVERIFY(second->wasStoredInDb());
-    QVERIFY(last->wasStoredInDb());
+    QStringList expectedNames;
+    foreach(const com::chancho::CategoryPtr cat, cats) {
+        QVERIFY(cat->wasStoredInDb());
+        expectedNames.append(cat->name);
+    }
 
-    auto cats = book.categories();
+    auto result = book.categories();
     QCOMPARE(cats.count(), 3);
 
     // assert they are all present
-    QStringList expectedNames;
-    expectedNames.append(first->name);
-    expectedNames.append(second->name);
-    expectedNames.append(last->name);
-    foreach(const chancho::CategoryPtr& cat, cats) {
+    foreach(const chancho::CategoryPtr& cat, result) {
         QVERIFY(expectedNames.contains(cat->name));
     }
 }
@@ -428,30 +425,29 @@ TestBookCategory::testGetCategoriesOneLevelParents() {
     auto firstParent = std::make_shared<PublicCategory>(firstParentName, chancho::Category::Type::EXPENSE, "#980");
     auto secondParent = std::make_shared<PublicCategory>(secondParentName, chancho::Category::Type::INCOME, "#589");
 
-    auto first = std::make_shared<PublicCategory>("Restaurant", chancho::Category::Type::EXPENSE, firstParent, "#234");
-    auto second = std::make_shared<PublicCategory>("Bar", chancho::Category::Type::EXPENSE, firstParent, "#ddf");
-    auto last = std::make_shared<PublicCategory>("Bonus", chancho::Category::Type::INCOME, secondParent, "#674");
+    QList<com::chancho::CategoryPtr> cats;
+    cats.append(std::make_shared<PublicCategory>("Restaurant", chancho::Category::Type::EXPENSE, firstParent, "#234"));
+    cats.append(std::make_shared<PublicCategory>("Bar", chancho::Category::Type::EXPENSE, firstParent, "#ddf"));
+    cats.append(std::make_shared<PublicCategory>("Bonus", chancho::Category::Type::INCOME, secondParent, "#674"));
 
     // store the diff cats and ensure that we do get the parents correctly
     PublicBook book;
-    book.store(first);
-    book.store(second);
-    book.store(last);
+    book.store(cats);
 
-    QVERIFY(first->wasStoredInDb());
-    QVERIFY(second->wasStoredInDb());
-    QVERIFY(last->wasStoredInDb());
+    foreach(const com::chancho::CategoryPtr& cat, cats) {
+        QVERIFY(cat->wasStoredInDb());
+    }
 
-    auto cats = book.categories();
-    QCOMPARE(cats.count(), 5);
+    auto result = book.categories();
+    QCOMPARE(result.count(), 5);
 
     // assert they are all present
     QStringList firstParentCats;
-    firstParentCats.append(first->name);
-    firstParentCats.append(second->name);
+    firstParentCats.append(cats.at(0)->name);
+    firstParentCats.append(cats.at(1)->name);
 
     QStringList secondParentCats;
-    secondParentCats.append(last->name);
+    secondParentCats.append(cats.at(2)->name);
 
     QStringList expectedNames;
     expectedNames.append(firstParentCats);
@@ -459,7 +455,7 @@ TestBookCategory::testGetCategoriesOneLevelParents() {
     expectedNames.append(firstParent->name);
     expectedNames.append(secondParent->name);
 
-    foreach(const chancho::CategoryPtr& cat, cats) {
+    foreach(const chancho::CategoryPtr& cat, result) {
         QVERIFY(expectedNames.contains(cat->name));
         if (cat->name != firstParentName && cat->name != secondParentName) {
             if (cat->parent) {
@@ -560,18 +556,17 @@ TestBookCategory::testGetCategoriesSeveralLevels() {
 void
 TestBookCategory::testNumberOfCategories() {
     // add several cats and add them to the books
-    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#345");
-    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#987");
-    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#111");
+    QList<com::chancho::CategoryPtr> cats;
+    cats.append(std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#345"));
+    cats.append(std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#987"));
+    cats.append(std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#111"));
 
     PublicBook book;
-    book.store(first);
-    book.store(second);
-    book.store(last);
+    book.store(cats);
 
-    QVERIFY(first->wasStoredInDb());
-    QVERIFY(second->wasStoredInDb());
-    QVERIFY(last->wasStoredInDb());
+    foreach(const com::chancho::CategoryPtr& cat, cats){
+        QVERIFY(cat->wasStoredInDb());
+    }
 
     auto result = book.numberOfCategories();
     QCOMPARE(result, 3);
@@ -580,18 +575,17 @@ TestBookCategory::testNumberOfCategories() {
 void
 TestBookCategory::testNumberOfCategoriesType() {
     // add several cats and add them to the books
-    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#211");
-    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#111");
-    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#119");
+    QList<com::chancho::CategoryPtr> cats;
+    cats.append(std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#211"));
+    cats.append(std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#111"));
+    cats.append(std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#119"));
 
     PublicBook book;
-    book.store(first);
-    book.store(second);
-    book.store(last);
+    book.store(cats);
 
-    QVERIFY(first->wasStoredInDb());
-    QVERIFY(second->wasStoredInDb());
-    QVERIFY(last->wasStoredInDb());
+    foreach(const com::chancho::CategoryPtr& cat, cats){
+        QVERIFY(cat->wasStoredInDb());
+    }
 
     auto expense = book.numberOfCategories(chancho::Category::Type::EXPENSE);
     QCOMPARE(expense, 2);
@@ -603,37 +597,35 @@ TestBookCategory::testNumberOfCategoriesType() {
 void
 TestBookCategory::testCategoriesLimit() {
     // add several cats and add them to the books
-    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#1rr");
-    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#178");
-    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#hhg");
+    QList<com::chancho::CategoryPtr> cats;
+    cats.append(std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#1rr"));
+    cats.append(std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#178"));
+    cats.append(std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#hhg"));
 
     PublicBook book;
-    book.store(first);
-    book.store(second);
-    book.store(last);
+    book.store(cats);
 
-    QVERIFY(first->wasStoredInDb());
-    QVERIFY(second->wasStoredInDb());
-    QVERIFY(last->wasStoredInDb());
+    foreach(const com::chancho::CategoryPtr& cat, cats){
+        QVERIFY(cat->wasStoredInDb());
+    }
 
-    auto cats = book.categories(boost::optional<chancho::Category::Type>(), 2, 0);
-    QCOMPARE(cats.count(), 2);
+    auto result = book.categories(boost::optional<chancho::Category::Type>(), 2, 0);
+    QCOMPARE(result.count(), 2);
 }
 
 void
 TestBookCategory::testCategoriesType() {
-    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#edf");
-    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#fll");
-    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#878");
+    QList<com::chancho::CategoryPtr> cats;
+    cats.append(std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#edf"));
+    cats.append(std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#fll"));
+    cats.append(std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#878"));
 
     PublicBook book;
-    book.store(first);
-    book.store(second);
-    book.store(last);
+    book.store(cats);
 
-    QVERIFY(first->wasStoredInDb());
-    QVERIFY(second->wasStoredInDb());
-    QVERIFY(last->wasStoredInDb());
+    foreach(const com::chancho::CategoryPtr& cat, cats){
+        QVERIFY(cat->wasStoredInDb());
+    }
 
     auto expense = book.categories(com::chancho::Category::Type::EXPENSE);
     QCOMPARE(expense.count(), 2);
@@ -644,18 +636,17 @@ TestBookCategory::testCategoriesType() {
 
 void
 TestBookCategory::testCategoriesTypeLimit() {
-    auto first = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#ee");
-    auto second = std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#ddd");
-    auto last = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#dih");
+    QList<com::chancho::CategoryPtr> cats;
+    cats.append(std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE, "#ee"));
+    cats.append(std::make_shared<PublicCategory>("Vacations", chancho::Category::Type::EXPENSE, "#ddd"));
+    cats.append(std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME, "#dih"));
 
     PublicBook book;
-    book.store(first);
-    book.store(second);
-    book.store(last);
+    book.store(cats);
 
-    QVERIFY(first->wasStoredInDb());
-    QVERIFY(second->wasStoredInDb());
-    QVERIFY(last->wasStoredInDb());
+    foreach(const com::chancho::CategoryPtr& cat, cats){
+        QVERIFY(cat->wasStoredInDb());
+    }
 
     auto expense = book.categories(com::chancho::Category::Type::EXPENSE, 1, 0);
     QCOMPARE(expense.count(), 1);

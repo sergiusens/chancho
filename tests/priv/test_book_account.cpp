@@ -228,46 +228,41 @@ TestBookAccount::testGetAccontsEmpty() {
 
 void
 TestBookAccount::testGetAcconts() {
-    auto firstAcc = std::make_shared<PublicAccount>("Bankia", 89.2, "Savings account");
-    auto secondAcc = std::make_shared<PublicAccount>("BBVA", 89082.1, "Student loan");
-    auto lastAcc = std::make_shared<PublicAccount>("HSBC", 23890, "Not declared.");
+    QList<com::chancho::AccountPtr> accs;
+    accs.append(std::make_shared<PublicAccount>("Bankia", 89.2, "Savings account"));
+    accs.append(std::make_shared<PublicAccount>("BBVA", 89082.1, "Student loan"));
+    accs.append(std::make_shared<PublicAccount>("HSBC", 23890, "Not declared."));
 
     PublicBook book;
-    book.store(firstAcc);
-    book.store(secondAcc);
-    book.store(lastAcc);
-
-    QVERIFY(firstAcc->wasStoredInDb());
-    QVERIFY(secondAcc->wasStoredInDb());
-    QVERIFY(lastAcc->wasStoredInDb());
+    book.store(accs);
 
     QStringList ids;
-    ids.append(firstAcc->name);
-    ids.append(secondAcc->name);
-    ids.append(lastAcc->name);
+    foreach(const com::chancho::AccountPtr acc, accs) {
+        QVERIFY(acc->wasStoredInDb());
+        ids.append(acc->name);
+    }
 
-    auto accs = book.accounts();
+    auto result = book.accounts();
 
-    QCOMPARE(ids.count(), accs.count());
-    foreach(const chancho::AccountPtr& acc, accs) {
+    QCOMPARE(ids.count(), result.count());
+    foreach(const chancho::AccountPtr& acc, result) {
         QVERIFY(ids.contains(acc->name));
     }
 }
 
 void
 TestBookAccount::testNumberOfAccounts() {
-    auto firstAcc = std::make_shared<PublicAccount>("Bankia", 89.2, "Savings account");
-    auto secondAcc = std::make_shared<PublicAccount>("BBVA", 89082.1, "Student loan");
-    auto lastAcc = std::make_shared<PublicAccount>("HSBC", 23890, "Not declared.");
+    QList<com::chancho::AccountPtr> accs;
+    accs.append(std::make_shared<PublicAccount>("Bankia", 89.2, "Savings account"));
+    accs.append(std::make_shared<PublicAccount>("BBVA", 89082.1, "Student loan"));
+    accs.append(std::make_shared<PublicAccount>("HSBC", 23890, "Not declared."));
 
     PublicBook book;
-    book.store(firstAcc);
-    book.store(secondAcc);
-    book.store(lastAcc);
+    book.store(accs);
 
-    QVERIFY(firstAcc->wasStoredInDb());
-    QVERIFY(secondAcc->wasStoredInDb());
-    QVERIFY(lastAcc->wasStoredInDb());
+    foreach(const com::chancho::AccountPtr acc, accs) {
+        QVERIFY(acc->wasStoredInDb());
+    }
 
     auto number = book.numberOfAccounts();
     QCOMPARE(number, 3);
@@ -275,27 +270,26 @@ TestBookAccount::testNumberOfAccounts() {
 
 void
 TestBookAccount::testAccountsLimit() {
-    auto firstAcc = std::make_shared<PublicAccount>("BBVA", 89.2, "Savings account");
-    auto secondAcc = std::make_shared<PublicAccount>("Bankia", 89082.1, "Student loan");
-    auto lastAcc = std::make_shared<PublicAccount>("HSBC", 23890, "Not declared.");
+    QList<com::chancho::AccountPtr> accs;
+    accs.append(std::make_shared<PublicAccount>("BBVA", 89.2, "Savings account"));
+    accs.append(std::make_shared<PublicAccount>("Bankia", 89082.1, "Student loan"));
+    accs.append(std::make_shared<PublicAccount>("HSBC", 23890, "Not declared."));
 
     PublicBook book;
-    book.store(firstAcc);
-    book.store(secondAcc);
-    book.store(lastAcc);
+    book.store(accs);
 
-    QVERIFY(firstAcc->wasStoredInDb());
-    QVERIFY(secondAcc->wasStoredInDb());
-    QVERIFY(lastAcc->wasStoredInDb());
+    foreach(const com::chancho::AccountPtr acc, accs) {
+        QVERIFY(acc->wasStoredInDb());
+    }
 
     auto firstResult = book.accounts(1, 0);
-    QCOMPARE(firstResult.at(0)->name, firstAcc->name);
+    QCOMPARE(firstResult.at(0)->name, accs.at(0)->name);
 
     auto secondResult = book.accounts(1, 1);
-    QCOMPARE(secondResult.at(0)->name, secondAcc->name);
+    QCOMPARE(secondResult.at(0)->name, accs.at(1)->name);
 
     auto lastResult = book.accounts(1, 2);
-    QCOMPARE(lastResult.at(0)->name, lastAcc->name);
+    QCOMPARE(lastResult.at(0)->name, accs.at(2)->name);
 }
 
 void

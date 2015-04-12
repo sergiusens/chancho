@@ -384,13 +384,13 @@ TestBookTransaction::testTransactionsMonth_data() {
     QTest::addColumn<std::shared_ptr<PublicCategory>>("category");
     QTest::addColumn<int>("month");
     QTest::addColumn<int>("year");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("all");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("expected");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("all");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto category = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
 
-    QList<std::shared_ptr<PublicTransaction>> firstExpected;
+    QList<com::chancho::TransactionPtr> firstExpected;
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 100.2, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstExpected.append(std::make_shared<PublicTransaction>(
@@ -400,7 +400,7 @@ TestBookTransaction::testTransactionsMonth_data() {
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 90.9, category, QDate(2015, 2, 2), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> secondExpected;
+    QList<com::chancho::TransactionPtr> secondExpected;
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 40.2, category, QDate(2014, 1, 30), QUuid::createUuid().toString()));
     secondExpected.append(std::make_shared<PublicTransaction>(
@@ -410,7 +410,7 @@ TestBookTransaction::testTransactionsMonth_data() {
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 32.0, category, QDate(2014, 1, 13), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> thirdExpected;
+    QList<com::chancho::TransactionPtr> thirdExpected;
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 89.4, category, QDate(2014, 8, 20), QUuid::createUuid().toString()));
     thirdExpected.append(std::make_shared<PublicTransaction>(
@@ -418,7 +418,7 @@ TestBookTransaction::testTransactionsMonth_data() {
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 290., category, QDate(2014, 8, 11), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> all;
+    QList<com::chancho::TransactionPtr> all;
     all.append(firstExpected);
     all.append(secondExpected);
     all.append(thirdExpected);
@@ -430,7 +430,7 @@ TestBookTransaction::testTransactionsMonth_data() {
 
 void
 TestBookTransaction::testTransactionsMonth() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
 
     QFETCH(chancho::AccountPtr, account);
     QFETCH(std::shared_ptr<PublicCategory>, category);
@@ -450,14 +450,14 @@ TestBookTransaction::testTransactionsMonth() {
     book.store(category);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, all) {
+    foreach(const com::chancho::TransactionPtr& tran, all) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(all);
+    QVERIFY(!book.isError());
 
     // we have stored all books, we perform the query and then assert the results using the expected list
     auto transactions = book.transactions(month, year);
@@ -478,13 +478,13 @@ TestBookTransaction::testTransactionsMonthCount_data() {
     QTest::addColumn<chancho::CategoryPtr>("category");
     QTest::addColumn<int>("month");
     QTest::addColumn<int>("year");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("all");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("expected");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("all");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto category = std::make_shared<chancho::Category>("Food", chancho::Category::Type::EXPENSE);
 
-    QList<std::shared_ptr<PublicTransaction>> firstExpected;
+    QList<com::chancho::TransactionPtr> firstExpected;
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 100.2, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstExpected.append(std::make_shared<PublicTransaction>(
@@ -494,7 +494,7 @@ TestBookTransaction::testTransactionsMonthCount_data() {
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 90.9, category, QDate(2015, 2, 2), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> secondExpected;
+    QList<com::chancho::TransactionPtr> secondExpected;
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 40.2, category, QDate(2014, 1, 30), QUuid::createUuid().toString()));
     secondExpected.append(std::make_shared<PublicTransaction>(
@@ -504,7 +504,7 @@ TestBookTransaction::testTransactionsMonthCount_data() {
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 32.0, category, QDate(2014, 1, 13), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> thirdExpected;
+    QList<com::chancho::TransactionPtr> thirdExpected;
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 89.4, category, QDate(2014, 8, 20), QUuid::createUuid().toString()));
     thirdExpected.append(std::make_shared<PublicTransaction>(
@@ -512,7 +512,7 @@ TestBookTransaction::testTransactionsMonthCount_data() {
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 290., category, QDate(2014, 8, 11), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> all;
+    QList<com::chancho::TransactionPtr> all;
     all.append(firstExpected);
     all.append(secondExpected);
     all.append(thirdExpected);
@@ -524,7 +524,7 @@ TestBookTransaction::testTransactionsMonthCount_data() {
 
 void
 TestBookTransaction::testTransactionsMonthCount() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
 
     QFETCH(chancho::AccountPtr, account);
     QFETCH(chancho::CategoryPtr, category);
@@ -541,14 +541,14 @@ TestBookTransaction::testTransactionsMonthCount() {
     book.store(category);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, all) {
+    foreach(const com::chancho::TransactionPtr& tran, all) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(all);
+    QVERIFY(!book.isError());
 
     auto count = book.numberOfTransactions(month, year);
     QCOMPARE(count, expected.count());
@@ -560,13 +560,13 @@ TestBookTransaction::testTransactionsMonthLimited_data() {
     QTest::addColumn<std::shared_ptr<PublicCategory>>("category");
     QTest::addColumn<int>("month");
     QTest::addColumn<int>("year");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("all");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("expected");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("all");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto category = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
 
-    QList<std::shared_ptr<PublicTransaction>> firstExpected;
+    QList<com::chancho::TransactionPtr> firstExpected;
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 100.2, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstExpected.append(std::make_shared<PublicTransaction>(
@@ -576,7 +576,7 @@ TestBookTransaction::testTransactionsMonthLimited_data() {
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 90.9, category, QDate(2015, 2, 2), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> secondExpected;
+    QList<com::chancho::TransactionPtr> secondExpected;
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 40.2, category, QDate(2014, 1, 30), QUuid::createUuid().toString()));
     secondExpected.append(std::make_shared<PublicTransaction>(
@@ -586,7 +586,7 @@ TestBookTransaction::testTransactionsMonthLimited_data() {
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 32.0, category, QDate(2014, 1, 13), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> thirdExpected;
+    QList<com::chancho::TransactionPtr> thirdExpected;
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 89.4, category, QDate(2014, 8, 20), QUuid::createUuid().toString()));
     thirdExpected.append(std::make_shared<PublicTransaction>(
@@ -594,7 +594,7 @@ TestBookTransaction::testTransactionsMonthLimited_data() {
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 290., category, QDate(2014, 8, 11), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> all;
+    QList<com::chancho::TransactionPtr> all;
     all.append(firstExpected);
     all.append(secondExpected);
     all.append(thirdExpected);
@@ -606,7 +606,7 @@ TestBookTransaction::testTransactionsMonthLimited_data() {
 
 void
 TestBookTransaction::testTransactionsMonthLimited() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
 
     QFETCH(chancho::AccountPtr, account);
     QFETCH(std::shared_ptr<PublicCategory>, category);
@@ -626,14 +626,14 @@ TestBookTransaction::testTransactionsMonthLimited() {
     book.store(category);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, all) {
+    foreach(const com::chancho::TransactionPtr& tran, all) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(all);
+    QVERIFY(!book.isError());
 
     auto result = book.transactions(month, year, 1, 0);
     QVERIFY(!book.isError());
@@ -647,13 +647,13 @@ TestBookTransaction::testTransactionsDay_data() {
     QTest::addColumn<int>("day");
     QTest::addColumn<int>("month");
     QTest::addColumn<int>("year");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("all");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("expected");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("all");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto category = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
 
-    QList<std::shared_ptr<PublicTransaction>> firstExpected;
+    QList<com::chancho::TransactionPtr> firstExpected;
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 100.2, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstExpected.append(std::make_shared<PublicTransaction>(
@@ -663,7 +663,7 @@ TestBookTransaction::testTransactionsDay_data() {
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 90.9, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> secondExpected;
+    QList<com::chancho::TransactionPtr> secondExpected;
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 40.2, category, QDate(2015, 1, 30), QUuid::createUuid().toString()));
     secondExpected.append(std::make_shared<PublicTransaction>(
@@ -673,7 +673,7 @@ TestBookTransaction::testTransactionsDay_data() {
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 32.0, category, QDate(2015, 1, 30), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> thirdExpected;
+    QList<com::chancho::TransactionPtr> thirdExpected;
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 89.4, category, QDate(2015, 8, 20), QUuid::createUuid().toString()));
     thirdExpected.append(std::make_shared<PublicTransaction>(
@@ -681,7 +681,7 @@ TestBookTransaction::testTransactionsDay_data() {
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 290., category, QDate(2015, 8, 20), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> all;
+    QList<com::chancho::TransactionPtr> all;
     all.append(firstExpected);
     all.append(secondExpected);
     all.append(thirdExpected);
@@ -693,7 +693,7 @@ TestBookTransaction::testTransactionsDay_data() {
 
 void
 TestBookTransaction::testTransactionsDay() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
 
     QFETCH(chancho::AccountPtr, account);
     QFETCH(std::shared_ptr<PublicCategory>, category);
@@ -714,14 +714,14 @@ TestBookTransaction::testTransactionsDay() {
     book.store(category);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, all) {
+    foreach(const com::chancho::TransactionPtr tran, all) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(all);
+    QVERIFY(!book.isError());
 
     // we have stored all books, we perform the query and then assert the results using the expected list
     auto transactions = book.transactions(day, month, year);
@@ -743,13 +743,13 @@ TestBookTransaction::testTransactionsDayCount_data() {
     QTest::addColumn<int>("day");
     QTest::addColumn<int>("month");
     QTest::addColumn<int>("year");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("all");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("expected");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("all");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto category = std::make_shared<chancho::Category>("Food", chancho::Category::Type::EXPENSE);
 
-    QList<std::shared_ptr<PublicTransaction>> firstExpected;
+    QList<com::chancho::TransactionPtr> firstExpected;
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 100.2, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstExpected.append(std::make_shared<PublicTransaction>(
@@ -759,7 +759,7 @@ TestBookTransaction::testTransactionsDayCount_data() {
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 90.9, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> secondExpected;
+    QList<com::chancho::TransactionPtr> secondExpected;
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 40.2, category, QDate(2015, 1, 30), QUuid::createUuid().toString()));
     secondExpected.append(std::make_shared<PublicTransaction>(
@@ -769,7 +769,7 @@ TestBookTransaction::testTransactionsDayCount_data() {
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 32.0, category, QDate(2015, 1, 30), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> thirdExpected;
+    QList<com::chancho::TransactionPtr> thirdExpected;
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 89.4, category, QDate(2015, 8, 20), QUuid::createUuid().toString()));
     thirdExpected.append(std::make_shared<PublicTransaction>(
@@ -777,7 +777,7 @@ TestBookTransaction::testTransactionsDayCount_data() {
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 290., category, QDate(2015, 8, 20), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> all;
+    QList<com::chancho::TransactionPtr> all;
     all.append(firstExpected);
     all.append(secondExpected);
     all.append(thirdExpected);
@@ -789,7 +789,7 @@ TestBookTransaction::testTransactionsDayCount_data() {
 
 void
 TestBookTransaction::testTransactionsDayCount() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
 
     QFETCH(chancho::AccountPtr, account);
     QFETCH(chancho::CategoryPtr, category);
@@ -807,14 +807,14 @@ TestBookTransaction::testTransactionsDayCount() {
     book.store(category);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, all) {
+    foreach(const com::chancho::TransactionPtr tran, all) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(all);
+    QVERIFY(!book.isError());
 
     auto count = book.numberOfTransactions(day, month, year);
     QCOMPARE(count, expected.count());
@@ -827,13 +827,13 @@ TestBookTransaction::testTransactionsDayLimited_data() {
     QTest::addColumn<int>("day");
     QTest::addColumn<int>("month");
     QTest::addColumn<int>("year");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("all");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("expected");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("all");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto category = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
 
-    QList<std::shared_ptr<PublicTransaction>> firstExpected;
+    QList<com::chancho::TransactionPtr> firstExpected;
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 100.2, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstExpected.append(std::make_shared<PublicTransaction>(
@@ -843,7 +843,7 @@ TestBookTransaction::testTransactionsDayLimited_data() {
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 90.9, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> secondExpected;
+    QList<com::chancho::TransactionPtr> secondExpected;
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 40.2, category, QDate(2015, 1, 30), QUuid::createUuid().toString()));
     secondExpected.append(std::make_shared<PublicTransaction>(
@@ -853,7 +853,7 @@ TestBookTransaction::testTransactionsDayLimited_data() {
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 32.0, category, QDate(2015, 1, 30), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> thirdExpected;
+    QList<com::chancho::TransactionPtr> thirdExpected;
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 89.4, category, QDate(2015, 8, 20), QUuid::createUuid().toString()));
     thirdExpected.append(std::make_shared<PublicTransaction>(
@@ -861,7 +861,7 @@ TestBookTransaction::testTransactionsDayLimited_data() {
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 290., category, QDate(2015, 8, 20), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> all;
+    QList<com::chancho::TransactionPtr> all;
     all.append(firstExpected);
     all.append(secondExpected);
     all.append(thirdExpected);
@@ -873,7 +873,7 @@ TestBookTransaction::testTransactionsDayLimited_data() {
 
 void
 TestBookTransaction::testTransactionsDayLimited() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
 
     QFETCH(chancho::AccountPtr, account);
     QFETCH(std::shared_ptr<PublicCategory>, category);
@@ -894,14 +894,14 @@ TestBookTransaction::testTransactionsDayLimited() {
     book.store(category);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, all) {
+    foreach(const com::chancho::TransactionPtr& tran, all) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(all);
+    QVERIFY(!book.isError());
 
     auto result = book.transactions(day, month, year, 1, 0);
     QVERIFY(!book.isError());
@@ -914,12 +914,12 @@ TestBookTransaction::testGetMonthsWithTransactions_data() {
     QTest::addColumn<chancho::CategoryPtr>("category");
     QTest::addColumn<int>("year");
     QTest::addColumn<QList<int>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("transactions");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("transactions");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto category = std::make_shared<chancho::Category>("Food", chancho::Category::Type::EXPENSE);
 
-    QList<std::shared_ptr<PublicTransaction>> firstTrans;
+    QList<com::chancho::TransactionPtr> firstTrans;
     firstTrans.append(std::make_shared<PublicTransaction>(
             account, 100.2, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstTrans.append(std::make_shared<PublicTransaction>(
@@ -934,7 +934,7 @@ TestBookTransaction::testGetMonthsWithTransactions_data() {
     firstMonths.append(4);
     firstMonths.append(6);
 
-    QList<std::shared_ptr<PublicTransaction>> secondTrans;
+    QList<com::chancho::TransactionPtr> secondTrans;
     secondTrans.append(std::make_shared<PublicTransaction>(
             account, 40.2, category, QDate(2014, 1, 30), QUuid::createUuid().toString()));
     secondTrans.append(std::make_shared<PublicTransaction>(
@@ -946,7 +946,7 @@ TestBookTransaction::testGetMonthsWithTransactions_data() {
     QList<int> secondMonths;
     secondMonths.append(1);
 
-    QList<std::shared_ptr<PublicTransaction>> thirdTrans;
+    QList<com::chancho::TransactionPtr> thirdTrans;
     thirdTrans.append(std::make_shared<PublicTransaction>(
             account, 89.4, category, QDate(2014, 8, 20), QUuid::createUuid().toString()));
     thirdTrans.append(std::make_shared<PublicTransaction>(
@@ -964,7 +964,7 @@ TestBookTransaction::testGetMonthsWithTransactions_data() {
 
 void
 TestBookTransaction::testGetMonthsWithTransactions() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
     typedef QList<int> IntList;
 
     QFETCH(chancho::AccountPtr, account);
@@ -981,9 +981,10 @@ TestBookTransaction::testGetMonthsWithTransactions() {
     book.store(category);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, transactions) {
+    foreach(const com::chancho::TransactionPtr& tran, transactions) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
         book.store(tran);
         QVERIFY(!book.isError());
@@ -1011,12 +1012,12 @@ TestBookTransaction::testGetMonthsWithTransactionsCount_data() {
     QTest::addColumn<chancho::CategoryPtr>("category");
     QTest::addColumn<int>("year");
     QTest::addColumn<QList<int>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("transactions");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("transactions");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto category = std::make_shared<chancho::Category>("Food", chancho::Category::Type::EXPENSE);
 
-    QList<std::shared_ptr<PublicTransaction>> firstTrans;
+    QList<com::chancho::TransactionPtr> firstTrans;
     firstTrans.append(std::make_shared<PublicTransaction>(
             account, 100.2, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstTrans.append(std::make_shared<PublicTransaction>(
@@ -1031,7 +1032,7 @@ TestBookTransaction::testGetMonthsWithTransactionsCount_data() {
     firstMonths.append(4);
     firstMonths.append(6);
 
-    QList<std::shared_ptr<PublicTransaction>> secondTrans;
+    QList<com::chancho::TransactionPtr> secondTrans;
     secondTrans.append(std::make_shared<PublicTransaction>(
             account, 40.2, category, QDate(2014, 1, 30), QUuid::createUuid().toString()));
     secondTrans.append(std::make_shared<PublicTransaction>(
@@ -1043,7 +1044,7 @@ TestBookTransaction::testGetMonthsWithTransactionsCount_data() {
     QList<int> secondMonths;
     secondMonths.append(1);
 
-    QList<std::shared_ptr<PublicTransaction>> thirdTrans;
+    QList<com::chancho::TransactionPtr> thirdTrans;
     thirdTrans.append(std::make_shared<PublicTransaction>(
             account, 89.4, category, QDate(2014, 8, 20), QUuid::createUuid().toString()));
     thirdTrans.append(std::make_shared<PublicTransaction>(
@@ -1061,7 +1062,7 @@ TestBookTransaction::testGetMonthsWithTransactionsCount_data() {
 
 void
 TestBookTransaction::testGetMonthsWithTransactionsCount() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
     typedef QList<int> IntList;
 
     QFETCH(chancho::AccountPtr, account);
@@ -1078,14 +1079,14 @@ TestBookTransaction::testGetMonthsWithTransactionsCount() {
     book.store(category);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, transactions) {
+    foreach(const com::chancho::TransactionPtr& tran, transactions) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(transactions);
+    QVERIFY(!book.isError());
 
     auto result = book.numberOfMonthsWithTransactions(year);
     QVERIFY(!book.isError());
@@ -1099,12 +1100,12 @@ TestBookTransaction::testGetDaysWithTransactions_data() {
     QTest::addColumn<int>("month");
     QTest::addColumn<int>("year");
     QTest::addColumn<QList<int>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("transactions");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("transactions");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto category = std::make_shared<chancho::Category>("Food", chancho::Category::Type::EXPENSE);
 
-    QList<std::shared_ptr<PublicTransaction>> firstTrans;
+    QList<com::chancho::TransactionPtr> firstTrans;
     firstTrans.append(std::make_shared<PublicTransaction>(
             account, 100.2, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstTrans.append(std::make_shared<PublicTransaction>(
@@ -1119,7 +1120,7 @@ TestBookTransaction::testGetDaysWithTransactions_data() {
     firstMonths.append(2);
     firstMonths.append(3);
 
-    QList<std::shared_ptr<PublicTransaction>> secondTrans;
+    QList<com::chancho::TransactionPtr> secondTrans;
     secondTrans.append(std::make_shared<PublicTransaction>(
             account, 40.2, category, QDate(2014, 1, 30), QUuid::createUuid().toString()));
     secondTrans.append(std::make_shared<PublicTransaction>(
@@ -1134,7 +1135,7 @@ TestBookTransaction::testGetDaysWithTransactions_data() {
     secondMonths.append(28);
     secondMonths.append(13);
 
-    QList<std::shared_ptr<PublicTransaction>> thirdTrans;
+    QList<com::chancho::TransactionPtr> thirdTrans;
     thirdTrans.append(std::make_shared<PublicTransaction>(
             account, 89.4, category, QDate(2014, 9, 20), QUuid::createUuid().toString()));
     thirdTrans.append(std::make_shared<PublicTransaction>(
@@ -1153,7 +1154,7 @@ TestBookTransaction::testGetDaysWithTransactions_data() {
 
 void
 TestBookTransaction::testGetDaysWithTransactions() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
     typedef QList<int> IntList;
 
     QFETCH(chancho::AccountPtr, account);
@@ -1171,14 +1172,14 @@ TestBookTransaction::testGetDaysWithTransactions() {
     book.store(category);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, transactions) {
+    foreach(const com::chancho::TransactionPtr& tran, transactions) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(transactions);
+    QVERIFY(!book.isError());
 
     auto result = book.daysWithTransactions(month, year);
     QVERIFY(!book.isError());
@@ -1202,12 +1203,12 @@ TestBookTransaction::testGetDaysWithTransactionsCount_data() {
     QTest::addColumn<int>("month");
     QTest::addColumn<int>("year");
     QTest::addColumn<QList<int>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("transactions");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("transactions");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto category = std::make_shared<chancho::Category>("Food", chancho::Category::Type::EXPENSE);
 
-    QList<std::shared_ptr<PublicTransaction>> firstTrans;
+    QList<com::chancho::TransactionPtr> firstTrans;
     firstTrans.append(std::make_shared<PublicTransaction>(
             account, 100.2, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstTrans.append(std::make_shared<PublicTransaction>(
@@ -1222,7 +1223,7 @@ TestBookTransaction::testGetDaysWithTransactionsCount_data() {
     firstMonths.append(2);
     firstMonths.append(3);
 
-    QList<std::shared_ptr<PublicTransaction>> secondTrans;
+    QList<com::chancho::TransactionPtr> secondTrans;
     secondTrans.append(std::make_shared<PublicTransaction>(
             account, 40.2, category, QDate(2014, 1, 30), QUuid::createUuid().toString()));
     secondTrans.append(std::make_shared<PublicTransaction>(
@@ -1237,7 +1238,7 @@ TestBookTransaction::testGetDaysWithTransactionsCount_data() {
     secondMonths.append(28);
     secondMonths.append(13);
 
-    QList<std::shared_ptr<PublicTransaction>> thirdTrans;
+    QList<com::chancho::TransactionPtr> thirdTrans;
     thirdTrans.append(std::make_shared<PublicTransaction>(
             account, 89.4, category, QDate(2014, 9, 20), QUuid::createUuid().toString()));
     thirdTrans.append(std::make_shared<PublicTransaction>(
@@ -1256,7 +1257,7 @@ TestBookTransaction::testGetDaysWithTransactionsCount_data() {
 
 void
 TestBookTransaction::testGetDaysWithTransactionsCount() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
     typedef QList<int> IntList;
 
     QFETCH(chancho::AccountPtr, account);
@@ -1274,14 +1275,14 @@ TestBookTransaction::testGetDaysWithTransactionsCount() {
     book.store(category);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, transactions) {
+    foreach(const com::chancho::TransactionPtr& tran, transactions) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(transactions);
+    QVERIFY(!book.isError());
 
     auto result = book.numberOfDaysWithTransactions(month, year);
     QVERIFY(!book.isError());
@@ -1292,20 +1293,20 @@ void
 TestBookTransaction::testTransactionsCategory_data() {
     QTest::addColumn<chancho::AccountPtr>("account");
     QTest::addColumn<std::shared_ptr<PublicCategory>>("category");
-    QTest::addColumn<QList<std::shared_ptr<PublicCategory>>>("categories");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("all");
+    QTest::addColumn<QList<com::chancho::CategoryPtr>>("categories");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("expected");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("all");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto firstCategory = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
     auto secondCategory = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
     auto thirdCategory = std::make_shared<PublicCategory>("Cinema", chancho::Category::Type::EXPENSE);
-    QList<std::shared_ptr<PublicCategory>> categories;
+    QList<com::chancho::CategoryPtr> categories;
     categories.append(firstCategory);
     categories.append(secondCategory);
     categories.append(thirdCategory);
 
-    QList<std::shared_ptr<PublicTransaction>> firstExpected;
+    QList<com::chancho::TransactionPtr> firstExpected;
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 100.2, firstCategory, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstExpected.append(std::make_shared<PublicTransaction>(
@@ -1315,7 +1316,7 @@ TestBookTransaction::testTransactionsCategory_data() {
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 90.9, firstCategory, QDate(2015, 2, 2), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> secondExpected;
+    QList<com::chancho::TransactionPtr> secondExpected;
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 40.2, secondCategory, QDate(2014, 1, 30), QUuid::createUuid().toString()));
     secondExpected.append(std::make_shared<PublicTransaction>(
@@ -1325,7 +1326,7 @@ TestBookTransaction::testTransactionsCategory_data() {
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 32.0, secondCategory, QDate(2014, 1, 13), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> thirdExpected;
+    QList<com::chancho::TransactionPtr> thirdExpected;
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 89.4, thirdCategory, QDate(2014, 8, 20), QUuid::createUuid().toString()));
     thirdExpected.append(std::make_shared<PublicTransaction>(
@@ -1333,7 +1334,7 @@ TestBookTransaction::testTransactionsCategory_data() {
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 290., thirdCategory, QDate(2014, 8, 11), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> all;
+    QList<com::chancho::TransactionPtr> all;
     all.append(firstExpected);
     all.append(secondExpected);
     all.append(thirdExpected);
@@ -1345,8 +1346,8 @@ TestBookTransaction::testTransactionsCategory_data() {
 
 void
 TestBookTransaction::testTransactionsCategory() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
-    typedef QList<std::shared_ptr<PublicCategory>> CategoriesList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
+    typedef QList<com::chancho::CategoryPtr> CategoriesList;
 
     QFETCH(chancho::AccountPtr, account);
     QFETCH(std::shared_ptr<PublicCategory>, category);
@@ -1359,23 +1360,23 @@ TestBookTransaction::testTransactionsCategory() {
     book.store(account);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicCategory>& cat, categories) {
+    foreach(const com::chancho::CategoryPtr& cat, categories) {
         if(cat->wasStoredInDb()) {
-            cat->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicCategory>(cat);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(cat);
-        QVERIFY(!book.isError());
-        QVERIFY(cat->wasStoredInDb());
     }
+    book.store(categories);
+    QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, all) {
+    foreach(const com::chancho::TransactionPtr& tran, all) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(all);
+    QVERIFY(!book.isError());
 
     // we have stored all books, we perform the query and then assert the results using the expected list
     auto transactions = book.transactions(category);
@@ -1396,20 +1397,20 @@ TestBookTransaction::testTransactionsCategoryAndMonth_data() {
     QTest::addColumn<std::shared_ptr<PublicCategory>>("category");
     QTest::addColumn<int>("month");
     QTest::addColumn<int>("year");
-    QTest::addColumn<QList<std::shared_ptr<PublicCategory>>>("categories");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("all");
+    QTest::addColumn<QList<com::chancho::CategoryPtr>>("categories");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("expected");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("all");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto firstCategory = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
     auto secondCategory = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
     auto thirdCategory = std::make_shared<PublicCategory>("Cinema", chancho::Category::Type::EXPENSE);
-    QList<std::shared_ptr<PublicCategory>> categories;
+    QList<com::chancho::CategoryPtr> categories;
     categories.append(firstCategory);
     categories.append(secondCategory);
     categories.append(thirdCategory);
 
-    QList<std::shared_ptr<PublicTransaction>> firstExpected;
+    QList<com::chancho::TransactionPtr> firstExpected;
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 100.2, firstCategory, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstExpected.append(std::make_shared<PublicTransaction>(
@@ -1419,7 +1420,7 @@ TestBookTransaction::testTransactionsCategoryAndMonth_data() {
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 90.9, firstCategory, QDate(2015, 2, 2), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> secondExpected;
+    QList<com::chancho::TransactionPtr> secondExpected;
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 40.2, secondCategory, QDate(2014, 1, 30), QUuid::createUuid().toString()));
     secondExpected.append(std::make_shared<PublicTransaction>(
@@ -1429,7 +1430,7 @@ TestBookTransaction::testTransactionsCategoryAndMonth_data() {
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 32.0, secondCategory, QDate(2014, 1, 13), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> thirdExpected;
+    QList<com::chancho::TransactionPtr> thirdExpected;
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 89.4, thirdCategory, QDate(2014, 8, 20), QUuid::createUuid().toString()));
     thirdExpected.append(std::make_shared<PublicTransaction>(
@@ -1437,7 +1438,7 @@ TestBookTransaction::testTransactionsCategoryAndMonth_data() {
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 290., thirdCategory, QDate(2014, 8, 11), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> all;
+    QList<com::chancho::TransactionPtr> all;
     all.append(firstExpected);
     all.append(secondExpected);
     all.append(thirdExpected);
@@ -1471,8 +1472,8 @@ TestBookTransaction::testTransactionsCategoryAndMonth_data() {
 
 void
 TestBookTransaction::testTransactionsCategoryAndMonth() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
-    typedef QList<std::shared_ptr<PublicCategory>> CategoriesList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
+    typedef QList<com::chancho::CategoryPtr> CategoriesList;
 
     QFETCH(chancho::AccountPtr, account);
     QFETCH(std::shared_ptr<PublicCategory>, category);
@@ -1487,23 +1488,23 @@ TestBookTransaction::testTransactionsCategoryAndMonth() {
     book.store(account);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicCategory>& cat, categories) {
+    foreach(const com::chancho::CategoryPtr& cat, categories) {
         if (cat->wasStoredInDb()) {
-            cat->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicCategory>(cat);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(cat);
-        QVERIFY(!book.isError());
-        QVERIFY(cat->wasStoredInDb());
     }
+    book.store(categories);
+    QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, all) {
+    foreach(const com::chancho::TransactionPtr& tran, all) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(all);
+    QVERIFY(!book.isError());
 
     // we have stored all books, we perform the query and then assert the results using the expected list
     auto transactions = book.transactions(category, month, year);
@@ -1523,8 +1524,8 @@ TestBookTransaction::testTransactionsAccount_data() {
     QTest::addColumn<chancho::AccountPtr>("account");
     QTest::addColumn<QList<chancho::AccountPtr>>("accounts");
     QTest::addColumn<std::shared_ptr<PublicCategory>>("category");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("all");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("expected");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("all");
 
     auto firstAccount = std::make_shared<chancho::Account>("Bankia", 0);
     auto secondAccount = std::make_shared<chancho::Account>("BBVA", 0);
@@ -1536,7 +1537,7 @@ TestBookTransaction::testTransactionsAccount_data() {
     accounts.append(secondAccount);
     accounts.append(thirdAccount);
 
-    QList<std::shared_ptr<PublicTransaction>> firstExpected;
+    QList<com::chancho::TransactionPtr> firstExpected;
     firstExpected.append(std::make_shared<PublicTransaction>(
             firstAccount, 100.2, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstExpected.append(std::make_shared<PublicTransaction>(
@@ -1546,7 +1547,7 @@ TestBookTransaction::testTransactionsAccount_data() {
     firstExpected.append(std::make_shared<PublicTransaction>(
             firstAccount, 90.9, category, QDate(2015, 2, 2), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> secondExpected;
+    QList<com::chancho::TransactionPtr> secondExpected;
     secondExpected.append(std::make_shared<PublicTransaction>(
             secondAccount, 40.2, category, QDate(2014, 1, 30), QUuid::createUuid().toString()));
     secondExpected.append(std::make_shared<PublicTransaction>(
@@ -1556,7 +1557,7 @@ TestBookTransaction::testTransactionsAccount_data() {
     secondExpected.append(std::make_shared<PublicTransaction>(
             secondAccount, 32.0, category, QDate(2014, 1, 13), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> thirdExpected;
+    QList<com::chancho::TransactionPtr> thirdExpected;
     thirdExpected.append(std::make_shared<PublicTransaction>(
             thirdAccount, 89.4, category, QDate(2014, 8, 20), QUuid::createUuid().toString()));
     thirdExpected.append(std::make_shared<PublicTransaction>(
@@ -1564,7 +1565,7 @@ TestBookTransaction::testTransactionsAccount_data() {
     thirdExpected.append(std::make_shared<PublicTransaction>(
             thirdAccount, 290., category, QDate(2014, 8, 11), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> all;
+    QList<com::chancho::TransactionPtr> all;
     all.append(firstExpected);
     all.append(secondExpected);
     all.append(thirdExpected);
@@ -1576,7 +1577,7 @@ TestBookTransaction::testTransactionsAccount_data() {
 
 void
 TestBookTransaction::testTransactionsAccount() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
     typedef QList<chancho::AccountPtr> AccountsList;
 
     QFETCH(chancho::AccountPtr, account);
@@ -1587,11 +1588,8 @@ TestBookTransaction::testTransactionsAccount() {
 
     PublicBook book;
 
-    foreach(const chancho::AccountPtr acc, accounts) {
-        book.store(acc);
-        QVERIFY(acc->wasStoredInDb());
-        QVERIFY(!book.isError());
-    }
+    book.store(accounts);
+    QVERIFY(!book.isError());
 
     if (category->wasStoredInDb()) {
         category->_dbId = QUuid();
@@ -1600,14 +1598,14 @@ TestBookTransaction::testTransactionsAccount() {
     QVERIFY(!book.isError());
     QVERIFY(category->wasStoredInDb());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, all) {
+    foreach(const com::chancho::TransactionPtr& tran, all) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(all);
+    QVERIFY(!book.isError());
 
     // we have stored all books, we perform the query and then assert the results using the expected list
     auto transactions = book.transactions(account);
@@ -1625,21 +1623,21 @@ TestBookTransaction::testTransactionsAccount() {
 void
 TestBookTransaction::testDeleteAccountTransactions_data() {
     QTest::addColumn<PublicAccountPtr>("account");
-    QTest::addColumn<QList<PublicAccountPtr>>("accounts");
+    QTest::addColumn<QList<com::chancho::AccountPtr>>("accounts");
     QTest::addColumn<chancho::CategoryPtr>("category");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("all");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("all");
 
     auto firstAccount = std::make_shared<PublicAccount>("Bankia", 0);
     auto secondAccount = std::make_shared<PublicAccount>("BBVA", 0);
     auto thirdAccount = std::make_shared<PublicAccount>("ING", 0);
     auto category = std::make_shared<chancho::Category>("Food", chancho::Category::Type::EXPENSE);
 
-    QList<PublicAccountPtr> accounts;
+    QList<com::chancho::AccountPtr> accounts;
     accounts.append(firstAccount);
     accounts.append(secondAccount);
     accounts.append(thirdAccount);
 
-    QList<std::shared_ptr<PublicTransaction>> firstExpected;
+    QList<com::chancho::TransactionPtr> firstExpected;
     firstExpected.append(std::make_shared<PublicTransaction>(
             firstAccount, 100.2, category, QDate(2015, 2, 1), QUuid::createUuid().toString()));
     firstExpected.append(std::make_shared<PublicTransaction>(
@@ -1649,7 +1647,7 @@ TestBookTransaction::testDeleteAccountTransactions_data() {
     firstExpected.append(std::make_shared<PublicTransaction>(
             firstAccount, 90.9, category, QDate(2015, 2, 2), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> secondExpected;
+    QList<com::chancho::TransactionPtr> secondExpected;
     secondExpected.append(std::make_shared<PublicTransaction>(
             secondAccount, 40.2, category, QDate(2014, 1, 30), QUuid::createUuid().toString()));
     secondExpected.append(std::make_shared<PublicTransaction>(
@@ -1659,7 +1657,7 @@ TestBookTransaction::testDeleteAccountTransactions_data() {
     secondExpected.append(std::make_shared<PublicTransaction>(
             secondAccount, 32.0, category, QDate(2014, 1, 13), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> thirdExpected;
+    QList<com::chancho::TransactionPtr> thirdExpected;
     thirdExpected.append(std::make_shared<PublicTransaction>(
             thirdAccount, 89.4, category, QDate(2014, 8, 20), QUuid::createUuid().toString()));
     thirdExpected.append(std::make_shared<PublicTransaction>(
@@ -1667,7 +1665,7 @@ TestBookTransaction::testDeleteAccountTransactions_data() {
     thirdExpected.append(std::make_shared<PublicTransaction>(
             thirdAccount, 290., category, QDate(2014, 8, 11), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> all;
+    QList<com::chancho::TransactionPtr> all;
     all.append(firstExpected);
     all.append(secondExpected);
     all.append(thirdExpected);
@@ -1679,8 +1677,8 @@ TestBookTransaction::testDeleteAccountTransactions_data() {
 
 void
 TestBookTransaction::testDeleteAccountTransactions() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
-    typedef QList<PublicAccountPtr> AccountsList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
+    typedef QList<com::chancho::AccountPtr> AccountsList;
 
     QFETCH(PublicAccountPtr, account);
     QFETCH(AccountsList, accounts);
@@ -1689,11 +1687,8 @@ TestBookTransaction::testDeleteAccountTransactions() {
 
     PublicBook book;
 
-    foreach(const chancho::AccountPtr acc, accounts) {
-        book.store(acc);
-        QVERIFY(acc->wasStoredInDb());
-        QVERIFY(!book.isError());
-    }
+    book.store(accounts);
+    QVERIFY(!book.isError());
 
     auto oldId = account->_dbId;
 
@@ -1701,14 +1696,14 @@ TestBookTransaction::testDeleteAccountTransactions() {
     QVERIFY(!book.isError());
     QVERIFY(category->wasStoredInDb());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, all) {
+    foreach(const com::chancho::TransactionPtr& tran, all) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(all);
+    QVERIFY(!book.isError());
 
     book.remove(account);
     account->_dbId = oldId;
@@ -1725,20 +1720,20 @@ TestBookTransaction::testIncomeForDay_data() {
     QTest::addColumn<int>("day");
     QTest::addColumn<int>("month");
     QTest::addColumn<int>("year");
-    QTest::addColumn<QList<std::shared_ptr<PublicCategory>>>("categories");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("all");
+    QTest::addColumn<QList<com::chancho::CategoryPtr>>("categories");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("expected");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("all");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto firstCategory = std::make_shared<PublicCategory>("Food", chancho::Category::Type::INCOME);
     auto secondCategory = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
     auto thirdCategory = std::make_shared<PublicCategory>("Cinema", chancho::Category::Type::INCOME);
-    QList<std::shared_ptr<PublicCategory>> categories;
+    QList<com::chancho::CategoryPtr> categories;
     categories.append(firstCategory);
     categories.append(secondCategory);
     categories.append(thirdCategory);
 
-    QList<std::shared_ptr<PublicTransaction>> firstExpected;
+    QList<com::chancho::TransactionPtr> firstExpected;
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 100.2, firstCategory, QDate(2015, 2, 6), QUuid::createUuid().toString()));
     firstExpected.append(std::make_shared<PublicTransaction>(
@@ -1748,7 +1743,7 @@ TestBookTransaction::testIncomeForDay_data() {
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 90.9, firstCategory, QDate(2015, 2, 6), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> secondExpected;
+    QList<com::chancho::TransactionPtr> secondExpected;
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 40.2, secondCategory, QDate(2014, 1, 14), QUuid::createUuid().toString()));
     secondExpected.append(std::make_shared<PublicTransaction>(
@@ -1758,7 +1753,7 @@ TestBookTransaction::testIncomeForDay_data() {
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 32.0, secondCategory, QDate(2014, 1, 14), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> thirdExpected;
+    QList<com::chancho::TransactionPtr> thirdExpected;
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 89.4, thirdCategory, QDate(2014, 8, 12), QUuid::createUuid().toString()));
     thirdExpected.append(std::make_shared<PublicTransaction>(
@@ -1766,7 +1761,7 @@ TestBookTransaction::testIncomeForDay_data() {
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 290., thirdCategory, QDate(2014, 8, 12), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> all;
+    QList<com::chancho::TransactionPtr> all;
     all.append(firstExpected);
     all.append(secondExpected);
     all.append(thirdExpected);
@@ -1800,8 +1795,8 @@ TestBookTransaction::testIncomeForDay_data() {
 
 void
 TestBookTransaction::testIncomeForDay() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
-    typedef QList<std::shared_ptr<PublicCategory>> CategoriesList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
+    typedef QList<com::chancho::CategoryPtr> CategoriesList;
 
     QFETCH(chancho::AccountPtr, account);
     QFETCH(std::shared_ptr<PublicCategory>, category);
@@ -1817,25 +1812,26 @@ TestBookTransaction::testIncomeForDay() {
     book.store(account);
     QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicCategory>& cat, categories) {
+    foreach(const com::chancho::CategoryPtr& cat, categories) {
         if (cat->wasStoredInDb()) {
-            cat->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicCategory>(cat);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(cat);
-        QVERIFY(!book.isError());
-        QVERIFY(cat->wasStoredInDb());
     }
-    foreach(const std::shared_ptr<PublicTransaction> tran, all) {
+    book.store(categories);
+    QVERIFY(!book.isError());
+
+    foreach(const com::chancho::TransactionPtr& tran, all) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(all);
+    QVERIFY(!book.isError());
 
     double expectedAmount = 0;
-    foreach(const std::shared_ptr<PublicTransaction> tran, expected) {
+    foreach(const com::chancho::TransactionPtr& tran, expected) {
         expectedAmount += tran->amount;
     }
 
@@ -1850,20 +1846,20 @@ TestBookTransaction::testExpenseForDay_data() {
     QTest::addColumn<int>("day");
     QTest::addColumn<int>("month");
     QTest::addColumn<int>("year");
-    QTest::addColumn<QList<std::shared_ptr<PublicCategory>>>("categories");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("expected");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("all");
+    QTest::addColumn<QList<com::chancho::CategoryPtr>>("categories");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("expected");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("all");
 
     auto account = std::make_shared<chancho::Account>("Bankia", 0);
     auto firstCategory = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
     auto secondCategory = std::make_shared<PublicCategory>("Salad", chancho::Category::Type::EXPENSE);
     auto thirdCategory = std::make_shared<PublicCategory>("Cinema", chancho::Category::Type::EXPENSE);
-    QList<std::shared_ptr<PublicCategory>> categories;
+    QList<com::chancho::CategoryPtr> categories;
     categories.append(firstCategory);
     categories.append(secondCategory);
     categories.append(thirdCategory);
 
-    QList<std::shared_ptr<PublicTransaction>> firstExpected;
+    QList<com::chancho::TransactionPtr> firstExpected;
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 100.2, firstCategory, QDate(2015, 2, 6), QUuid::createUuid().toString()));
     firstExpected.append(std::make_shared<PublicTransaction>(
@@ -1873,7 +1869,7 @@ TestBookTransaction::testExpenseForDay_data() {
     firstExpected.append(std::make_shared<PublicTransaction>(
             account, 90.9, firstCategory, QDate(2015, 2, 6), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> secondExpected;
+    QList<com::chancho::TransactionPtr> secondExpected;
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 40.2, secondCategory, QDate(2014, 1, 14), QUuid::createUuid().toString()));
     secondExpected.append(std::make_shared<PublicTransaction>(
@@ -1883,7 +1879,7 @@ TestBookTransaction::testExpenseForDay_data() {
     secondExpected.append(std::make_shared<PublicTransaction>(
             account, 32.0, secondCategory, QDate(2014, 1, 14), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> thirdExpected;
+    QList<com::chancho::TransactionPtr> thirdExpected;
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 89.4, thirdCategory, QDate(2014, 8, 12), QUuid::createUuid().toString()));
     thirdExpected.append(std::make_shared<PublicTransaction>(
@@ -1891,7 +1887,7 @@ TestBookTransaction::testExpenseForDay_data() {
     thirdExpected.append(std::make_shared<PublicTransaction>(
             account, 290., thirdCategory, QDate(2014, 8, 12), QUuid::createUuid().toString()));
 
-    QList<std::shared_ptr<PublicTransaction>> all;
+    QList<com::chancho::TransactionPtr> all;
     all.append(firstExpected);
     all.append(secondExpected);
     all.append(thirdExpected);
@@ -1925,8 +1921,8 @@ TestBookTransaction::testExpenseForDay_data() {
 
 void
 TestBookTransaction::testExpenseForDay() {
-    typedef QList<std::shared_ptr<PublicTransaction>> TransactionList;
-    typedef QList<std::shared_ptr<PublicCategory>> CategoriesList;
+    typedef QList<com::chancho::TransactionPtr> TransactionList;
+    typedef QList<com::chancho::CategoryPtr> CategoriesList;
 
     QFETCH(chancho::AccountPtr, account);
     QFETCH(int, day);
@@ -1942,29 +1938,30 @@ TestBookTransaction::testExpenseForDay() {
     QVERIFY(!book.isError());
     QCOMPARE(book.numberOfAccounts(), 1);
 
-    foreach(const std::shared_ptr<PublicCategory>& cat, categories) {
+    foreach(const com::chancho::CategoryPtr& cat, categories) {
         if(cat->wasStoredInDb()) {
-            cat->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicCategory>(cat);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(cat);
-        QVERIFY(!book.isError());
-        QVERIFY(cat->wasStoredInDb());
     }
+    book.store(categories);
+    QVERIFY(!book.isError());
+
     QCOMPARE(book.numberOfCategories(), categories.count());
 
-    foreach(const std::shared_ptr<PublicTransaction> tran, all) {
+    foreach(const com::chancho::TransactionPtr& tran, all) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(!book.isError());
-        QVERIFY(tran->wasStoredInDb());
     }
+    book.store(all);
+    QVERIFY(!book.isError());
 
     QCOMPARE(book.numberOfTransactions(), all.count());
 
     double expectedAmount = 0;
-    foreach(const std::shared_ptr<PublicTransaction> tran, expected) {
+    foreach(const com::chancho::TransactionPtr& tran, expected) {
         expectedAmount += tran->amount;
     }
 
@@ -1977,13 +1974,13 @@ void
 TestBookTransaction::testMoveExpenseAccounts() {
     PublicBook book;
 
+    QList<com::chancho::AccountPtr> accs;
     auto firstAcc = std::make_shared<PublicAccount>("BBVA", 0);
     auto secondAcc = std::make_shared<PublicAccount>("Bankia", 0);
+    accs.append(firstAcc);
+    accs.append(secondAcc);
 
-    book.store(firstAcc);
-    QVERIFY(!book.isError());
-
-    book.store(secondAcc);
+    book.store(accs);
     QVERIFY(!book.isError());
 
     auto category = std::make_shared<chancho::Category>("Test category", chancho::Category::Type::EXPENSE);
@@ -2034,13 +2031,13 @@ void
 TestBookTransaction::testMoveIncomeAccounts() {
     PublicBook book;
 
+    QList<com::chancho::AccountPtr> accs;
     auto firstAcc = std::make_shared<PublicAccount>("BBVA", 0);
     auto secondAcc = std::make_shared<PublicAccount>("Bankia", 0);
+    accs.append(firstAcc);
+    accs.append(secondAcc);
 
-    book.store(firstAcc);
-    QVERIFY(!book.isError());
-
-    book.store(secondAcc);
+    book.store(accs);
     QVERIFY(!book.isError());
 
     auto category = std::make_shared<chancho::Category>("Test category", chancho::Category::Type::INCOME);

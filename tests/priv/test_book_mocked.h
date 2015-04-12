@@ -114,6 +114,18 @@ class TestBookMocked : public BaseTestCase {
     void testNumberOfAccountsDbOpenError();
     void testNumberOfAccountsQueryError();
 
+    void testStoreAccsListDbOpenError();
+    void testStoreAccsListQueryError();
+    void testStoreAccsTransactionError();
+
+    void testStoreCatsListDbOpenError();
+    void testStoreCatsListQueryError();
+    void testStoreCatsTransactionError();
+
+    void testStoreTransListDbOpenError();
+    void testStoreTransListQueryError();
+    void testStoreTransTransactionError();
+
  private:
     tests::MockDatabaseFactory* _dbFactory;
 };

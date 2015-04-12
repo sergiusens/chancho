@@ -62,23 +62,23 @@ TestStats::cleanup() {
 
 void
 TestStats::testMonthTotalsForAccountComplete_data() {
-    QTest::addColumn<QList<std::shared_ptr<PublicAccount>>>("accounts");
-    QTest::addColumn<QList<std::shared_ptr<PublicCategory>>>("categories");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("transactions");
+    QTest::addColumn<QList<com::chancho::AccountPtr>>("accounts");
+    QTest::addColumn<QList<com::chancho::CategoryPtr>>("categories");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("transactions");
     QTest::addColumn<std::shared_ptr<PublicAccount>>("account");
     QTest::addColumn<int>("year");
     QTest::addColumn<QList<double>>("expected");
 
     auto firstAcc = std::make_shared<PublicAccount>("Bankia", 0);
     auto secondAcc = std::make_shared<PublicAccount>("BBVA", 0);
-    QList<std::shared_ptr<PublicAccount>> accounts;
+    QList<com::chancho::AccountPtr> accounts;
     accounts.append(firstAcc);
     accounts.append(secondAcc);
 
     auto firstCat = std::make_shared<PublicCategory>("Food", com::chancho::Category::Type::EXPENSE);
     auto secondCat = std::make_shared<PublicCategory>("Driks", com::chancho::Category::Type::EXPENSE);
     auto thirdCat = std::make_shared<PublicCategory>("Salary", com::chancho::Category::Type::INCOME);
-    QList<std::shared_ptr<PublicCategory>> cats;
+    QList<com::chancho::CategoryPtr> cats;
     cats.append(firstCat);
     cats.append(secondCat);
     cats.append(thirdCat);
@@ -89,7 +89,7 @@ TestStats::testMonthTotalsForAccountComplete_data() {
     std::default_random_engine re;
 
 
-    QList<std::shared_ptr<PublicTransaction>> firstTransactions;
+    QList<com::chancho::TransactionPtr> firstTransactions;
     QList<double> firstResults;
     int firstYear = 2014;
 
@@ -111,7 +111,7 @@ TestStats::testMonthTotalsForAccountComplete_data() {
     }
 
 
-    QList<std::shared_ptr<PublicTransaction>> secondTransactions;
+    QList<com::chancho::TransactionPtr> secondTransactions;
     QList<double> secondResults;
     int secondYear = 1998;
 
@@ -132,7 +132,7 @@ TestStats::testMonthTotalsForAccountComplete_data() {
         secondResults.append(monthTotal);
     }
 
-    QList<std::shared_ptr<PublicTransaction>> thirdTransactions;
+    QList<com::chancho::TransactionPtr> thirdTransactions;
     QList<double> thirdResults;
     int thirdYear = 1983;
 
@@ -153,7 +153,7 @@ TestStats::testMonthTotalsForAccountComplete_data() {
         thirdResults.append(monthTotal);
     }
 
-    QList<std::shared_ptr<PublicTransaction>> allTransactions;
+    QList<com::chancho::TransactionPtr> allTransactions;
     allTransactions.append(firstTransactions);
     allTransactions.append(secondTransactions);
     allTransactions.append(thirdTransactions);
@@ -166,9 +166,9 @@ TestStats::testMonthTotalsForAccountComplete_data() {
 
 void
 TestStats::testMonthTotalsForAccountComplete() {
-    QFETCH(QList<std::shared_ptr<PublicAccount>>, accounts);
-    QFETCH(QList<std::shared_ptr<PublicCategory>>, categories);
-    QFETCH(QList<std::shared_ptr<PublicTransaction>>, transactions);
+    QFETCH(QList<com::chancho::AccountPtr>, accounts);
+    QFETCH(QList<com::chancho::CategoryPtr>, categories);
+    QFETCH(QList<com::chancho::TransactionPtr>, transactions);
     QFETCH(std::shared_ptr<PublicAccount>, account);
     QFETCH(int, year);
     QFETCH(QList<double>, expected);
@@ -177,55 +177,58 @@ TestStats::testMonthTotalsForAccountComplete() {
     chancho::Stats stats;
 
     // store all the required data for the test
-    foreach(const std::shared_ptr<PublicAccount>& acc, accounts) {
+    foreach(const com::chancho::AccountPtr& acc, accounts) {
         if (acc->wasStoredInDb()) {
-            acc->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicAccount>(acc);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(acc);
-        QVERIFY(acc->wasStoredInDb());
-        QVERIFY(!book.isError());
     }
 
-    foreach(const std::shared_ptr<PublicCategory>& cat, categories) {
+    book.store(accounts);
+    QVERIFY(!book.isError());
+
+    foreach(const com::chancho::CategoryPtr& cat, categories) {
         if (cat->wasStoredInDb()) {
-            cat->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicCategory>(cat);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(cat);
-        QVERIFY(cat->wasStoredInDb());
-        QVERIFY(!book.isError());
     }
 
-    foreach(const std::shared_ptr<PublicTransaction>& tran, transactions) {
+    book.store(categories);
+    QVERIFY(!book.isError());
+
+    foreach(const com::chancho::TransactionPtr& tran, transactions) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(tran->wasStoredInDb());
-        QVERIFY(!book.isError());
     }
+    book.store(transactions);
+    QVERIFY(!book.isError());
+
     auto result = stats.monthsTotalForAccount(account, year);
     QCOMPARE(result, expected);
 }
 
 void
 TestStats::testMonthTotalsForAccountOnlyFirst_data() {
-    QTest::addColumn<QList<std::shared_ptr<PublicAccount>>>("accounts");
-    QTest::addColumn<QList<std::shared_ptr<PublicCategory>>>("categories");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("transactions");
+    QTest::addColumn<QList<com::chancho::AccountPtr>>("accounts");
+    QTest::addColumn<QList<com::chancho::CategoryPtr>>("categories");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("transactions");
     QTest::addColumn<std::shared_ptr<PublicAccount>>("account");
     QTest::addColumn<int>("year");
     QTest::addColumn<QList<double>>("expected");
 
     auto firstAcc = std::make_shared<PublicAccount>("Bankia", 0);
     auto secondAcc = std::make_shared<PublicAccount>("BBVA", 0);
-    QList<std::shared_ptr<PublicAccount>> accounts;
+    QList<com::chancho::AccountPtr> accounts;
     accounts.append(firstAcc);
     accounts.append(secondAcc);
 
     auto firstCat = std::make_shared<PublicCategory>("Food", com::chancho::Category::Type::EXPENSE);
     auto secondCat = std::make_shared<PublicCategory>("Driks", com::chancho::Category::Type::EXPENSE);
     auto thirdCat = std::make_shared<PublicCategory>("Salary", com::chancho::Category::Type::INCOME);
-    QList<std::shared_ptr<PublicCategory>> cats;
+    QList<com::chancho::CategoryPtr> cats;
     cats.append(firstCat);
     cats.append(secondCat);
     cats.append(thirdCat);
@@ -236,7 +239,7 @@ TestStats::testMonthTotalsForAccountOnlyFirst_data() {
     std::default_random_engine re;
 
 
-    QList<std::shared_ptr<PublicTransaction>> firstTransactions;
+    QList<com::chancho::TransactionPtr> firstTransactions;
     QList<double> firstResults;
     int firstYear = 2014;
 
@@ -260,7 +263,7 @@ TestStats::testMonthTotalsForAccountOnlyFirst_data() {
         firstResults.append(0);
 
 
-    QList<std::shared_ptr<PublicTransaction>> secondTransactions;
+    QList<com::chancho::TransactionPtr> secondTransactions;
     QList<double> secondResults;
     int secondYear = 1998;
 
@@ -284,7 +287,7 @@ TestStats::testMonthTotalsForAccountOnlyFirst_data() {
     for(int index=0; index < 8; index++)
         secondResults.append(0);
 
-    QList<std::shared_ptr<PublicTransaction>> thirdTransactions;
+    QList<com::chancho::TransactionPtr> thirdTransactions;
     QList<double> thirdResults;
     int thirdYear = 1983;
 
@@ -306,7 +309,7 @@ TestStats::testMonthTotalsForAccountOnlyFirst_data() {
     }
     thirdResults.append(0);
 
-    QList<std::shared_ptr<PublicTransaction>> allTransactions;
+    QList<com::chancho::TransactionPtr> allTransactions;
     allTransactions.append(firstTransactions);
     allTransactions.append(secondTransactions);
     allTransactions.append(thirdTransactions);
@@ -318,9 +321,9 @@ TestStats::testMonthTotalsForAccountOnlyFirst_data() {
 
 void
 TestStats::testMonthTotalsForAccountOnlyFirst() {
-    QFETCH(QList<std::shared_ptr<PublicAccount>>, accounts);
-    QFETCH(QList<std::shared_ptr<PublicCategory>>, categories);
-    QFETCH(QList<std::shared_ptr<PublicTransaction>>, transactions);
+    QFETCH(QList<com::chancho::AccountPtr>, accounts);
+    QFETCH(QList<com::chancho::CategoryPtr>, categories);
+    QFETCH(QList<com::chancho::TransactionPtr>, transactions);
     QFETCH(std::shared_ptr<PublicAccount>, account);
     QFETCH(int, year);
     QFETCH(QList<double>, expected);
@@ -329,32 +332,32 @@ TestStats::testMonthTotalsForAccountOnlyFirst() {
     chancho::Stats stats;
 
     // store all the required data for the test
-    foreach(const std::shared_ptr<PublicAccount>& acc, accounts) {
+    foreach(const com::chancho::AccountPtr& acc, accounts) {
         if (acc->wasStoredInDb()) {
-            acc->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicAccount>(acc);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(acc);
-        QVERIFY(acc->wasStoredInDb());
-        QVERIFY(!book.isError());
     }
+    book.store(accounts);
+    QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicCategory>& cat, categories) {
+    foreach(const com::chancho::CategoryPtr& cat, categories) {
         if (cat->wasStoredInDb()) {
-            cat->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicCategory>(cat);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(cat);
-        QVERIFY(cat->wasStoredInDb());
-        QVERIFY(!book.isError());
     }
+    book.store(categories);
+    QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction>& tran, transactions) {
+    foreach(const com::chancho::TransactionPtr& tran, transactions) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(tran->wasStoredInDb());
-        QVERIFY(!book.isError());
     }
+    book.store(transactions);
+    QVERIFY(!book.isError());
 
     auto result = stats.monthsTotalForAccount(account, year);
     QCOMPARE(result, expected);
@@ -362,23 +365,23 @@ TestStats::testMonthTotalsForAccountOnlyFirst() {
 
 void
 TestStats::testMonthTotalsForAccountOnlyLast_data() {
-    QTest::addColumn<QList<std::shared_ptr<PublicAccount>>>("accounts");
-    QTest::addColumn<QList<std::shared_ptr<PublicCategory>>>("categories");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("transactions");
+    QTest::addColumn<QList<com::chancho::AccountPtr>>("accounts");
+    QTest::addColumn<QList<com::chancho::CategoryPtr>>("categories");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("transactions");
     QTest::addColumn<std::shared_ptr<PublicAccount>>("account");
     QTest::addColumn<int>("year");
     QTest::addColumn<QList<double>>("expected");
 
     auto firstAcc = std::make_shared<PublicAccount>("Bankia", 0);
     auto secondAcc = std::make_shared<PublicAccount>("BBVA", 0);
-    QList<std::shared_ptr<PublicAccount>> accounts;
+    QList<com::chancho::AccountPtr> accounts;
     accounts.append(firstAcc);
     accounts.append(secondAcc);
 
     auto firstCat = std::make_shared<PublicCategory>("Food", com::chancho::Category::Type::EXPENSE);
     auto secondCat = std::make_shared<PublicCategory>("Driks", com::chancho::Category::Type::EXPENSE);
     auto thirdCat = std::make_shared<PublicCategory>("Salary", com::chancho::Category::Type::INCOME);
-    QList<std::shared_ptr<PublicCategory>> cats;
+    QList<com::chancho::CategoryPtr> cats;
     cats.append(firstCat);
     cats.append(secondCat);
     cats.append(thirdCat);
@@ -389,7 +392,7 @@ TestStats::testMonthTotalsForAccountOnlyLast_data() {
     std::default_random_engine re;
 
 
-    QList<std::shared_ptr<PublicTransaction>> firstTransactions;
+    QList<com::chancho::TransactionPtr> firstTransactions;
     QList<double> firstResults;
     int firstYear = 2014;
 
@@ -413,7 +416,7 @@ TestStats::testMonthTotalsForAccountOnlyLast_data() {
     }
 
 
-    QList<std::shared_ptr<PublicTransaction>> secondTransactions;
+    QList<com::chancho::TransactionPtr> secondTransactions;
     QList<double> secondResults;
     int secondYear = 1998;
 
@@ -437,7 +440,7 @@ TestStats::testMonthTotalsForAccountOnlyLast_data() {
     }
 
 
-    QList<std::shared_ptr<PublicTransaction>> thirdTransactions;
+    QList<com::chancho::TransactionPtr> thirdTransactions;
     QList<double> thirdResults;
     int thirdYear = 1983;
 
@@ -459,7 +462,7 @@ TestStats::testMonthTotalsForAccountOnlyLast_data() {
         thirdResults.append(monthTotal);
     }
 
-    QList<std::shared_ptr<PublicTransaction>> allTransactions;
+    QList<com::chancho::TransactionPtr> allTransactions;
     allTransactions.append(firstTransactions);
     allTransactions.append(secondTransactions);
     allTransactions.append(thirdTransactions);
@@ -471,9 +474,9 @@ TestStats::testMonthTotalsForAccountOnlyLast_data() {
 
 void
 TestStats::testMonthTotalsForAccountOnlyLast() {
-    QFETCH(QList<std::shared_ptr<PublicAccount>>, accounts);
-    QFETCH(QList<std::shared_ptr<PublicCategory>>, categories);
-    QFETCH(QList<std::shared_ptr<PublicTransaction>>, transactions);
+    QFETCH(QList<com::chancho::AccountPtr>, accounts);
+    QFETCH(QList<com::chancho::CategoryPtr>, categories);
+    QFETCH(QList<com::chancho::TransactionPtr>, transactions);
     QFETCH(std::shared_ptr<PublicAccount>, account);
     QFETCH(int, year);
     QFETCH(QList<double>, expected);
@@ -482,32 +485,32 @@ TestStats::testMonthTotalsForAccountOnlyLast() {
     chancho::Stats stats;
 
     // store all the required data for the test
-    foreach(const std::shared_ptr<PublicAccount>& acc, accounts) {
+    foreach(const com::chancho::AccountPtr& acc, accounts) {
         if (acc->wasStoredInDb()) {
-            acc->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicAccount>(acc);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(acc);
-        QVERIFY(acc->wasStoredInDb());
-        QVERIFY(!book.isError());
     }
+    book.store(accounts);
+    QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicCategory>& cat, categories) {
+    foreach(const com::chancho::CategoryPtr& cat, categories) {
         if (cat->wasStoredInDb()) {
-            cat->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicCategory>(cat);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(cat);
-        QVERIFY(cat->wasStoredInDb());
-        QVERIFY(!book.isError());
     }
+    book.store(categories);
+    QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction>& tran, transactions) {
+    foreach(const com::chancho::TransactionPtr& tran, transactions) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(tran->wasStoredInDb());
-        QVERIFY(!book.isError());
     }
+    book.store(transactions);
+    QVERIFY(!book.isError());
 
     auto result = stats.monthsTotalForAccount(account, year);
     QCOMPARE(result, expected);
@@ -515,23 +518,23 @@ TestStats::testMonthTotalsForAccountOnlyLast() {
 
 void
 TestStats::testMonthTotalsForAccountScattered_data() {
-    QTest::addColumn<QList<std::shared_ptr<PublicAccount>>>("accounts");
-    QTest::addColumn<QList<std::shared_ptr<PublicCategory>>>("categories");
-    QTest::addColumn<QList<std::shared_ptr<PublicTransaction>>>("transactions");
+    QTest::addColumn<QList<com::chancho::AccountPtr>>("accounts");
+    QTest::addColumn<QList<com::chancho::CategoryPtr>>("categories");
+    QTest::addColumn<QList<com::chancho::TransactionPtr>>("transactions");
     QTest::addColumn<std::shared_ptr<PublicAccount>>("account");
     QTest::addColumn<int>("year");
     QTest::addColumn<QList<double>>("expected");
 
     auto firstAcc = std::make_shared<PublicAccount>("Bankia", 0);
     auto secondAcc = std::make_shared<PublicAccount>("BBVA", 0);
-    QList<std::shared_ptr<PublicAccount>> accounts;
+    QList<com::chancho::AccountPtr> accounts;
     accounts.append(firstAcc);
     accounts.append(secondAcc);
 
     auto firstCat = std::make_shared<PublicCategory>("Food", com::chancho::Category::Type::EXPENSE);
     auto secondCat = std::make_shared<PublicCategory>("Driks", com::chancho::Category::Type::EXPENSE);
     auto thirdCat = std::make_shared<PublicCategory>("Salary", com::chancho::Category::Type::INCOME);
-    QList<std::shared_ptr<PublicCategory>> cats;
+    QList<com::chancho::CategoryPtr> cats;
     cats.append(firstCat);
     cats.append(secondCat);
     cats.append(thirdCat);
@@ -542,7 +545,7 @@ TestStats::testMonthTotalsForAccountScattered_data() {
     std::default_random_engine re;
 
 
-    QList<std::shared_ptr<PublicTransaction>> firstTransactions;
+    QList<com::chancho::TransactionPtr> firstTransactions;
     QList<double> firstResults;
     int firstYear = 2014;
 
@@ -567,7 +570,7 @@ TestStats::testMonthTotalsForAccountScattered_data() {
     firstResults.append(0);
 
 
-    QList<std::shared_ptr<PublicTransaction>> secondTransactions;
+    QList<com::chancho::TransactionPtr> secondTransactions;
     QList<double> secondResults;
     int secondYear = 1998;
 
@@ -593,7 +596,7 @@ TestStats::testMonthTotalsForAccountScattered_data() {
     secondResults.append(0);
 
 
-    QList<std::shared_ptr<PublicTransaction>> thirdTransactions;
+    QList<com::chancho::TransactionPtr> thirdTransactions;
     QList<double> thirdResults;
     int thirdYear = 1983;
 
@@ -615,7 +618,7 @@ TestStats::testMonthTotalsForAccountScattered_data() {
         thirdResults.append(monthTotal);
     }
 
-    QList<std::shared_ptr<PublicTransaction>> allTransactions;
+    QList<com::chancho::TransactionPtr> allTransactions;
     allTransactions.append(firstTransactions);
     allTransactions.append(secondTransactions);
     allTransactions.append(thirdTransactions);
@@ -627,9 +630,9 @@ TestStats::testMonthTotalsForAccountScattered_data() {
 
 void
 TestStats::testMonthTotalsForAccountScattered() {
-    QFETCH(QList<std::shared_ptr<PublicAccount>>, accounts);
-    QFETCH(QList<std::shared_ptr<PublicCategory>>, categories);
-    QFETCH(QList<std::shared_ptr<PublicTransaction>>, transactions);
+    QFETCH(QList<com::chancho::AccountPtr>, accounts);
+    QFETCH(QList<com::chancho::CategoryPtr>, categories);
+    QFETCH(QList<com::chancho::TransactionPtr>, transactions);
     QFETCH(std::shared_ptr<PublicAccount>, account);
     QFETCH(int, year);
     QFETCH(QList<double>, expected);
@@ -638,32 +641,32 @@ TestStats::testMonthTotalsForAccountScattered() {
     chancho::Stats stats;
 
     // store all the required data for the test
-    foreach(const std::shared_ptr<PublicAccount>& acc, accounts) {
+    foreach(const com::chancho::AccountPtr& acc, accounts) {
         if (acc->wasStoredInDb()) {
-            acc->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicAccount>(acc);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(acc);
-        QVERIFY(acc->wasStoredInDb());
-        QVERIFY(!book.isError());
     }
+    book.store(accounts);
+    QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicCategory>& cat, categories) {
+    foreach(const com::chancho::CategoryPtr& cat, categories) {
         if (cat->wasStoredInDb()) {
-            cat->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicCategory>(cat);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(cat);
-        QVERIFY(cat->wasStoredInDb());
-        QVERIFY(!book.isError());
     }
+    book.store(categories);
+    QVERIFY(!book.isError());
 
-    foreach(const std::shared_ptr<PublicTransaction>& tran, transactions) {
+    foreach(const com::chancho::TransactionPtr& tran, transactions) {
         if (tran->wasStoredInDb()) {
-            tran->_dbId = QUuid();
+            auto public_ptr = std::static_pointer_cast<PublicTransaction>(tran);
+            public_ptr->_dbId = QUuid();
         }
-        book.store(tran);
-        QVERIFY(tran->wasStoredInDb());
-        QVERIFY(!book.isError());
     }
+    book.store(transactions);
+    QVERIFY(!book.isError());
 
     auto result = stats.monthsTotalForAccount(account, year);
     QCOMPARE(result, expected);
@@ -680,20 +683,18 @@ TestStats::testCategoriesPercentage() {
     QVERIFY(!book.isError());
     QVERIFY(acc->wasStoredInDb());
 
+    QList<com::chancho::CategoryPtr> cats;
     auto firstCat = std::make_shared<PublicCategory>("Food", com::chancho::Category::Type::EXPENSE);
-    book.store(firstCat);
-    QVERIFY(!book.isError());
-    QVERIFY(firstCat->wasStoredInDb());
+    cats.append(firstCat);
 
     auto secondCat = std::make_shared<PublicCategory>("Driks", com::chancho::Category::Type::EXPENSE);
-    book.store(secondCat);
-    QVERIFY(!book.isError());
-    QVERIFY(secondCat->wasStoredInDb());
+    cats.append(secondCat);
 
     auto thirdCat = std::make_shared<PublicCategory>("Salary", com::chancho::Category::Type::INCOME);
-    book.store(thirdCat);
+    cats.append(thirdCat);
+
+    book.store(cats);
     QVERIFY(!book.isError());
-    QVERIFY(thirdCat->wasStoredInDb());
 
     // add a few transactions and ensure that the returned data is the expected
     auto onlyOne = std::make_shared<PublicTransaction>(acc, 100, firstCat, QDate(2015, 4, 21));
@@ -706,23 +707,15 @@ TestStats::testCategoriesPercentage() {
     QCOMPARE(onlyOneResult.second.at(0).count, 1);
     QCOMPARE(onlyOneResult.second.at(0).amount, -1 * onlyOne->amount);
 
-    auto severalFirst = std::make_shared<PublicTransaction>(acc, 100, firstCat, QDate(2015, 2, 11));
-    book.store(severalFirst);
+    QList<com::chancho::TransactionPtr> trans;
+    trans.append(std::make_shared<PublicTransaction>(acc, 100, firstCat, QDate(2015, 2, 11)));
+    trans.append(std::make_shared<PublicTransaction>(acc, 23, firstCat, QDate(2015, 2, 1)));
+    trans.append(std::make_shared<PublicTransaction>(acc, 89.50, firstCat, QDate(2015, 2, 2)));
+    trans.append(std::make_shared<PublicTransaction>(acc, 12.34, secondCat, QDate(2015, 2, 18)));
+    trans.append(std::make_shared<PublicTransaction>(acc, 120.89, thirdCat, QDate(2015, 2, 21)));
+    trans.append(std::make_shared<PublicTransaction>(acc, 10.40, thirdCat, QDate(2015, 2, 22)));
 
-    auto severalSecond = std::make_shared<PublicTransaction>(acc, 23, firstCat, QDate(2015, 2, 1));
-    book.store(severalSecond);
-
-    auto severalThird = std::make_shared<PublicTransaction>(acc, 89.50, firstCat, QDate(2015, 2, 2));
-    book.store(severalThird);
-
-    auto severalFourth = std::make_shared<PublicTransaction>(acc, 12.34, secondCat, QDate(2015, 2, 18));
-    book.store(severalFourth);
-
-    auto severalFith = std::make_shared<PublicTransaction>(acc, 120.89, thirdCat, QDate(2015, 2, 21));
-    book.store(severalFith);
-
-    auto severalLast = std::make_shared<PublicTransaction>(acc, 10.40, thirdCat, QDate(2015, 2, 22));
-    book.store(severalLast);
+    book.store(trans);
 
     auto severalResults = stats.categoryPercentages(2, 2015);
     QCOMPARE(severalResults.first.count, 3);
