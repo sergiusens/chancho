@@ -112,6 +112,28 @@ Book::storeAccount(QString name, QString memo, QString color, double initialAmou
 }
 
 bool
+Book::storeAccounts(QVariantList accounts) {
+    QList<com::chancho::AccountPtr> accs;
+    foreach(const QVariant& var, accounts) {
+        auto map = var.toMap();
+        auto name = map["name"].toString();
+        auto memo = map["memo"].toString();
+        auto color = map["color"].toString();
+        auto amount = map["amount"].toDouble();
+        auto current = std::make_shared<com::chancho::Account>(name, amount, memo, color);
+        current->initialAmount = amount;
+        accs.append(current);
+    }
+    _book->store(accs);
+    if (_book->isError()) {
+        return false;
+    } else {
+        emit accountStored();
+        return true;
+    }
+}
+
+bool
 Book::removeAccount(QObject* account) {
     auto acc = qobject_cast<qml::Account*>(account);
     if (acc == nullptr) {
@@ -339,6 +361,44 @@ Book::storeCategory(QString name, QString color, Book::TransactionType type) {
     } else {
         LOG(INFO) << "Category stored being emited";
         emit categoryStored(type);
+        return true;
+    }
+}
+
+bool
+Book::storeCategories(QVariantList categories) {
+    QList<com::chancho::CategoryPtr> cats;
+    bool foundExpense = false;
+    bool foundIncome = false;
+    foreach(const QVariant& var, categories) {
+        auto map = var.toMap();
+        auto name = map["name"].toString();
+        auto color = map["color"].toString();
+
+        auto qmlType = map["type"].toInt();
+        auto type = com::chancho::Category::Type::EXPENSE;
+        if (qmlType == TransactionType::INCOME) {
+            type = com::chancho::Category::Type::INCOME;
+            foundIncome = true;
+        } else {
+            foundExpense = true;
+        }
+
+        auto current = std::make_shared<com::chancho::Category>(name, type, color);
+        cats.append(current);
+    }
+    _book->store(cats);
+
+    if (_book->isError()) {
+        return false;
+    } else {
+        LOG(INFO) << "Category stored being emited";
+        if (foundIncome) {
+            emit categoryStored(TransactionType::INCOME);
+        }
+        if (foundExpense) {
+            emit categoryStored(TransactionType::EXPENSE);
+        }
         return true;
     }
 }

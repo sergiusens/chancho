@@ -50,6 +50,7 @@ class Book : public QObject {
     Q_INVOKABLE QVariantList accounts();
     Q_INVOKABLE QVariantList monthsTotalForAccount(QObject* account, int year);
     Q_INVOKABLE bool storeAccount(QString name, QString memo, QString color, double initialAmount);
+    Q_INVOKABLE bool storeAccounts(QVariantList accounts);
     Q_INVOKABLE bool removeAccount(QObject* account);
     Q_INVOKABLE bool updateAccount(QObject* account, QString name, QString memo, QString color);
     Q_INVOKABLE bool storeTransaction(QObject* account, QObject* category, QDate date, double amount,
@@ -64,6 +65,7 @@ class Book : public QObject {
     Q_INVOKABLE QVariantList categoryPercentagesForMonth(int month, int year);
     Q_INVOKABLE QVariantList monthsTotalForCategory(QObject* category, int year);
     Q_INVOKABLE bool storeCategory(QString name, QString color, Book::TransactionType type);
+    Q_INVOKABLE bool storeCategories(QVariantList categories);
     Q_INVOKABLE bool updateCategory(QObject* category, QString name, QString color, Book::TransactionType type);
     Q_INVOKABLE bool removeCategory(QObject* category);
     Q_INVOKABLE QObject* dayModel(int day, int month, int year);
