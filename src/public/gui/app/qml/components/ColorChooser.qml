@@ -122,6 +122,17 @@ Popover {
             anchors.rightMargin: units.gu(1)
 
             Button {
+                id: cancelButton
+                Layout.fillWidth: true
+                text: i18n.tr("Cancel")
+                onClicked: {
+                    Qt.inputMethod.commit()
+                    mainView.anchorToKeyboard = true;
+                    PopupUtils.close(popover)
+                }
+            }
+
+            Button {
                 id: okButton
                 Layout.fillWidth: true
                 text: i18n.tr("Ok")
@@ -134,16 +145,6 @@ Popover {
                 }
             }
 
-            Button {
-                id: cancelButton
-                Layout.fillWidth: true
-                text: i18n.tr("Cancel")
-                onClicked: {
-                    Qt.inputMethod.commit()
-                    mainView.anchorToKeyboard = true;
-                    PopupUtils.close(popover)
-                }
-            }
         }
 
     }

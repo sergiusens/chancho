@@ -35,6 +35,12 @@ Dialog {
          spacing: units.gu(1)
 
          Button {
+             text: i18n.tr("Cancel")
+             onClicked: PopupUtils.close(dialogue)
+             Layout.fillWidth: true
+         }
+
+         Button {
              text: i18n.tr("Ok")
              color: UbuntuColors.orange
              onClicked: {
@@ -43,12 +49,6 @@ Dialog {
                 }
                 PopupUtils.close(dialogue)
              }
-             Layout.fillWidth: true
-         }
-
-         Button {
-             text: i18n.tr("Cancel")
-             onClicked: PopupUtils.close(dialogue)
              Layout.fillWidth: true
          }
      }

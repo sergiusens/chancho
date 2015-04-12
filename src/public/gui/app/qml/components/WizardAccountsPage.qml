@@ -84,20 +84,6 @@ Component {
         RowLayout {
             Layout.fillWidth: true
             Button {
-                text: i18n.tr("Add")
-                color: UbuntuColors.orange
-                onClicked: {
-                    var title = i18n.tr("New account");
-                    var addAccountText = i18n.tr("Please add the details of the new account.");
-                    var properties = {
-                        "title": title,
-                        "text": addAccountText,
-                        "accountsModel": accountsModel
-                    };
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/WizardNewAccountDialog.qml"), page, properties);
-                }
-            }
-            Button {
                 text: i18n.tr("Remove")
                 onClicked: {
                     var showConfirmationDialog = AccountsWizardJs.areAccountsSelected(accountsModel);
@@ -112,6 +98,21 @@ Component {
                         };
                         PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
                     }
+                }
+            }
+
+            Button {
+                text: i18n.tr("Add")
+                color: UbuntuColors.orange
+                onClicked: {
+                    var title = i18n.tr("New account");
+                    var addAccountText = i18n.tr("Please add the details of the new account.");
+                    var properties = {
+                        "title": title,
+                        "text": addAccountText,
+                        "accountsModel": accountsModel
+                    };
+                    PopupUtils.open(Qt.resolvedUrl("dialogs/WizardNewAccountDialog.qml"), page, properties);
                 }
             }
         }
