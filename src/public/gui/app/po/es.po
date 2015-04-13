@@ -347,7 +347,7 @@ msgid "Do you want to delete the selected accounts?"
 msgstr "¿Quieres eliminar las cuentas seleccionadas?"
 
 #: ../qml/components/WizardCategoriesPage.qml:45
-msgid "Categories allow you to indentify the different transactions. There are two different types income an expense categories. The following are some of the predefined ones but you can add as many as you want."
+msgid "Categories allow you to indentify the different transactions. There are two different types: income and expense categories. The following are some of the predefined ones but you can add as many as you want."
 msgstr "La categorías permiten identificar las diferentes entradas. Hay dos tipos diferentes: gastos e ingresos. Las siguientes son algunas categorías predefinidas, pero puedes añadir todas aquellas que necesites más adelante."
 
 #: ../qml/components/WizardCategoriesPage.qml:147
