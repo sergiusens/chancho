@@ -10,7 +10,7 @@ msgstr ""
 #: ../qml/MainWindow.qml:78 ../qml/components/CategoryStatsPage.qml:50
 #: ../qml/components/MainPage.qml:45
 msgid "Bills"
-msgstr "Bankovky"
+msgstr "Účty"
 
 #: ../qml/MainWindow.qml:88
 msgid "Stats"
@@ -90,7 +90,7 @@ msgstr "Počáteční částka"
 #: ../qml/components/TransactionForm.qml:199
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:61
 msgid "Memo"
-msgstr "Paměť"
+msgstr "Poznámky"
 
 #: ../qml/components/AccountsPage.qml:143 ../qml/components/NewAccount.qml:35
 msgid "Add new account"
@@ -257,8 +257,9 @@ msgid "Contents"
 msgstr "Obsah"
 
 #: ../qml/components/WelcomeWizard.qml:49
+#, fuzzy
 msgid "Allowance"
-msgstr "Příspěvek"
+msgstr "Kapesné"
 
 #: ../qml/components/WelcomeWizard.qml:54
 msgid "Salary"
@@ -347,7 +348,7 @@ msgid "Do you want to delete the selected accounts?"
 msgstr "Chcete smazat vybrané účty?"
 
 #: ../qml/components/WizardCategoriesPage.qml:45
-msgid "Categories allow you to indentify the different transactions. There are two different types income an expense categories. The following are some of the predefined ones but you can add as many as you want."
+msgid "Categories allow you to indentify the different transactions. There are two different types: income and expense categories. The following are some of the predefined ones but you can add as many as you want."
 msgstr "Kategorie umožňují, určit různé transakce. Existují dva odlišné typy, příjmové a výdajové kategorie. Níže jsou uvedeny některé z předdefinovaných, můžete však přidat tolik, kolik chcete."
 
 #: ../qml/components/WizardCategoriesPage.qml:147
