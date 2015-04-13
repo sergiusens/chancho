@@ -1,21 +1,11 @@
-# English translations for chancho.mandel package.
-# Copyright (C) 2015 Manuel de la Pena <mandel@themacaque.com>
-# This file is distributed under the same license as the chancho.mandel package.
-# Manuel de la Pena <mandel@themacaque.com>, 2015.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: chancho.mandel\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-10 12:06+0200\n"
-"PO-Revision-Date: 2015-04-10 12:07+0200\n"
-"Last-Translator: Manuel de la Pena <mandel@themacaque.com>\n"
-"Language-Team: English\n"
-"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: chancho.mandel\n"
+"Language: es\n"
 
 #: ../qml/MainWindow.qml:78 ../qml/components/CategoryStatsPage.qml:50
 #: ../qml/components/MainPage.qml:45
@@ -180,7 +170,7 @@ msgstr "Eliminar entrada"
 
 #: ../qml/components/EditAccount.qml:78
 msgid "Do you want to remove this account?"
-msgstr "¿Eliminar esta cuenta?"
+msgstr "¿Quieres eliminar esta cuenta?"
 
 #: ../qml/components/EditAccount.qml:84
 msgid "Error"
@@ -188,23 +178,19 @@ msgstr "Error"
 
 #: ../qml/components/EditAccount.qml:85
 msgid "You must have at least one account in the system."
-msgstr "Es necesario tener por lo menos una cuenta registrada en el sistema."
+msgstr "Tienes que ttener por lo menos una cuenta registrada en el sistema."
 
 #: ../qml/components/EditCategory.qml:88
 msgid "Do you want to update this category?"
-msgstr "¿Actualizar esta categoría?"
+msgstr "¿Quieres actualizar esta categoría?"
 
 #: ../qml/components/EditCategory.qml:104
 msgid "Removal Error"
 msgstr "Error de eliminación"
 
 #: ../qml/components/EditCategory.qml:105
-msgid ""
-"You cannot delete all categories in the system. You must have at least one "
-"of each type"
-msgstr ""
-"No puedes eliminar todas las categorías del sistem. Por lo menos tiene que "
-"haber una de cada tipo."
+msgid "You cannot delete all categories in the system. You must have at least one of each type"
+msgstr "No puedes eliminar todas las categorías del sistema. Por lo menos tiene que haber una de cada tipo."
 
 #: ../qml/components/EditCategory.qml:114
 msgid "Delete category"
@@ -212,7 +198,7 @@ msgstr "Eliminar categoría"
 
 #: ../qml/components/EditCategory.qml:115
 msgid "Do you want to remove this category?"
-msgstr "¿Eliminar esta categoría?"
+msgstr "¿Quieres eliminar esta categoría?"
 
 #: ../qml/components/EditTransaction.qml:91
 msgid "Delete transaction"
@@ -220,7 +206,7 @@ msgstr "Eliminar entrada"
 
 #: ../qml/components/EditTransaction.qml:92
 msgid "Do you want to remove this transaction?"
-msgstr "¿Eliminar esta entrada?"
+msgstr "¿Quieres eliminar esta entrada?"
 
 #: ../qml/components/MainPage.qml:148 ../qml/components/NewTransaction.qml:35
 msgid "Add new entry"
@@ -252,7 +238,7 @@ msgstr "Error: cantidad vacia"
 
 #: ../qml/components/NewTransaction.qml:46
 msgid "Transactions must have an amount."
-msgstr "Las nuevas entradas deben de especificar una cantidad."
+msgstr "Las nuevas entradas tienen de especificar una cantidad."
 
 #: ../qml/components/NewTransaction.qml:60
 msgid "The transaction could not be stored."
@@ -276,7 +262,7 @@ msgstr "Paga"
 
 #: ../qml/components/WelcomeWizard.qml:54
 msgid "Salary"
-msgstr "Salaro"
+msgstr "Salario"
 
 #: ../qml/components/WelcomeWizard.qml:59
 msgid "Bonus"
@@ -336,14 +322,8 @@ msgid "Confirmation"
 msgstr "Confirmación"
 
 #: ../qml/components/WizardAccountsPage.qml:45
-msgid ""
-"Chancho allows you to track the expenses and incomes in several accounts. "
-"Here you can add the accounts you want to work with. Don't worry you can add "
-"more accounts later."
-msgstr ""
-"Chanco te permite llevar al día en diferentes cuentas. En este paso "
-"pused añadir todas aquellas cuentas con las que quieras trabajar. No"
-"te preocupes podras añadir más cuentas en otro momento."
+msgid "Chancho allows you to track the expenses and incomes in several accounts. Here you can add the accounts you want to work with. Don't worry you can add more accounts later."
+msgstr "Chancho te permite llevar al día en diferentes cuentas. En este paso puedes añadir todas aquellas cuentas con las que quieras trabajar. No te preocupes podrás añadir más cuentas en otro momento."
 
 #: ../qml/components/WizardAccountsPage.qml:90
 msgid "New account"
@@ -351,7 +331,7 @@ msgstr "Nueva cuenta"
 
 #: ../qml/components/WizardAccountsPage.qml:91
 msgid "Please add the details of the new account."
-msgstr "Porfavor añade los detalles de una nueva cuenta."
+msgstr "Por favor añade los detalles de la nueva cuenta."
 
 #: ../qml/components/WizardAccountsPage.qml:101
 #: ../qml/components/WizardCategoriesPage.qml:139
@@ -364,17 +344,11 @@ msgstr "Eliminar cuentas"
 
 #: ../qml/components/WizardAccountsPage.qml:110
 msgid "Do you want to delete the selected accounts?"
-msgstr "¿Eliminar las cuentas selecionadas?"
+msgstr "¿Quieres eliminar las cuentas seleccionadas?"
 
 #: ../qml/components/WizardCategoriesPage.qml:45
-msgid ""
-"Categories allow you to indentify the different transactions. There are two "
-"different types income an expense categories. The following are some of the "
-"predefined ones but you can add as many as you want."
-msgstr ""
-"La categorías permiten identificar las diferentes entradas. Hay dos tipos diferentes "
-"gastos e ingresos. Los siguientes son algunas categorías predefinidas, pero puedes añadir"
-"todas aquellas que necesites."
+msgid "Categories allow you to indentify the different transactions. There are two different types income an expense categories. The following are some of the predefined ones but you can add as many as you want."
+msgstr "La categorías permiten identificar las diferentes entradas. Hay dos tipos diferentes: gastos e ingresos. Las siguientes son algunas categorías predefinidas, pero puedes añadir todas aquellas que necesites más adelante."
 
 #: ../qml/components/WizardCategoriesPage.qml:147
 msgid "Delete categories"
@@ -382,15 +356,11 @@ msgstr "Borrar categorías"
 
 #: ../qml/components/WizardCategoriesPage.qml:148
 msgid "Do you want to delete the selected categories?"
-msgstr "¿Eliminar las categorías seleccionadas?"
+msgstr "¿Quieres eliminar las categorías seleccionadas?"
 
 #: ../qml/components/WizardLastPage.qml:46
-msgid ""
-"You are nearly done! Bellow you can find the accounts and categories you "
-"will have. Are you happy with them?"
-msgstr ""
-"Estas a punto de terminar. A continuación tienes todas las cuentas y "
-"categorías que añadiste."
+msgid "You are nearly done! Bellow you can find the accounts and categories you will have. Are you happy with them?"
+msgstr "Estas a punto de terminar. A continuación tienes todas las cuentas y categorías que añadiste."
 
 #: ../qml/components/WizardLastPage.qml:53
 msgid "Accounts:"
@@ -405,8 +375,6 @@ msgid "Init Error"
 msgstr "Error en la inicialización"
 
 #: ../qml/components/WizardLastPage.qml:158
-msgid ""
-"Make sure that you have added at least one account and a category of each "
-"type."
-msgstr ""
-"Asegurate de que as añadido por lo menos una cuenta y una categoría de cada tipo."
+msgid "Make sure that you have added at least one account and a category of each type."
+msgstr "Asegurate de que has añadido por lo menos una cuenta y una categoría de cada tipo."
+
