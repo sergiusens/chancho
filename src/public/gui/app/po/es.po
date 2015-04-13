@@ -178,7 +178,7 @@ msgstr "Error"
 
 #: ../qml/components/EditAccount.qml:85
 msgid "You must have at least one account in the system."
-msgstr "Tienes que ttener por lo menos una cuenta registrada en el sistema."
+msgstr "Tienes que tener por lo menos una cuenta registrada en el sistema."
 
 #: ../qml/components/EditCategory.qml:88
 msgid "Do you want to update this category?"
@@ -238,7 +238,7 @@ msgstr "Error: cantidad vacia"
 
 #: ../qml/components/NewTransaction.qml:46
 msgid "Transactions must have an amount."
-msgstr "Las nuevas entradas tienen de especificar una cantidad."
+msgstr "Las nuevas entradas tienen que especificar una cantidad."
 
 #: ../qml/components/NewTransaction.qml:60
 msgid "The transaction could not be stored."
@@ -323,7 +323,7 @@ msgstr "Confirmación"
 
 #: ../qml/components/WizardAccountsPage.qml:45
 msgid "Chancho allows you to track the expenses and incomes in several accounts. Here you can add the accounts you want to work with. Don't worry you can add more accounts later."
-msgstr "Chancho te permite llevar al día en diferentes cuentas. En este paso puedes añadir todas aquellas cuentas con las que quieras trabajar. No te preocupes podrás añadir más cuentas en otro momento."
+msgstr "Chancho te permite llevar al día diferentes cuentas. En este paso puedes añadir todas aquellas cuentas con las que quieras trabajar. No te preocupes podrás añadir más cuentas en otro momento."
 
 #: ../qml/components/WizardAccountsPage.qml:90
 msgid "New account"
