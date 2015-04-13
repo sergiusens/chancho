@@ -40,7 +40,7 @@ msgstr "Marzo"
 
 #: ../qml/components/AccountForm.qml:68 ../qml/components/CategoryForm.qml:68
 msgid "April"
-msgstr "Apbril"
+msgstr "Abril"
 
 #: ../qml/components/AccountForm.qml:69 ../qml/components/CategoryForm.qml:69
 msgid "May"
