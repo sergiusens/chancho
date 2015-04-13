@@ -356,7 +356,7 @@ msgstr "Voulez-vous supprimer les comptes sélectionnés ?"
 #. ".. different types income an expense categories"
 #. in the english text "an" = "and" ?
 #: ../qml/components/WizardCategoriesPage.qml:45
-msgid "Categories allow you to indentify the different transactions. There are two different types income an expense categories. The following are some of the predefined ones but you can add as many as you want."
+msgid "Categories allow you to indentify the different transactions. There are two different types: income and expense categories. The following are some of the predefined ones but you can add as many as you want."
 msgstr "Les Catégories vous permettent d'identifier les différentes transactions. Il y a deux types différents: catégories de revenus et de dépenses. Ce qui suit  représente une partie des Catégories prédéfinies mais vous pouvez en ajouter autant que vous le désirez."
 
 #: ../qml/components/WizardCategoriesPage.qml:147
