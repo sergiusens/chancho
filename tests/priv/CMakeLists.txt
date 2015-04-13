@@ -6,6 +6,7 @@ set(PRIVATE_TESTS
     test_book_mocked
     test_book_transaction
     test_category
+    test_recurrence
     test_stats
     test_transaction
 )
