@@ -125,17 +125,6 @@ Component {
         RowLayout {
             Layout.fillWidth: true
             Button {
-                text: i18n.tr("Add")
-                color: UbuntuColors.orange
-                onClicked: {
-                    var properties = {
-                        "incomeModel": incomeModel,
-                        "expenseModel": expenseModel
-                    };
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/WizardNewCategoryDialog.qml"), page, properties);
-                }
-            }
-            Button {
                 text: i18n.tr("Remove")
                 onClicked: {
                     var showConfirmationDialog = CategoriesWizardJs.areCategoriesSelected(incomeModel, expenseModel);
@@ -150,6 +139,18 @@ Component {
                         };
                         PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
                     }
+                }
+            }
+
+            Button {
+                text: i18n.tr("Add")
+                color: UbuntuColors.orange
+                onClicked: {
+                    var properties = {
+                        "incomeModel": incomeModel,
+                        "expenseModel": expenseModel
+                    };
+                    PopupUtils.open(Qt.resolvedUrl("dialogs/WizardNewCategoryDialog.qml"), page, properties);
                 }
             }
         }

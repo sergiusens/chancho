@@ -109,6 +109,13 @@ Dialog {
     RowLayout {
         Layout.fillWidth: true
         spacing: units.gu(1)
+
+        Button {
+            Layout.fillWidth: true
+            text: i18n.tr("Cancel")
+            onClicked: PopupUtils.close(dialogue)
+        }
+
         Button {
             id: okButton
             enabled: false
@@ -121,11 +128,6 @@ Dialog {
                     colorChooser, incomeModel, expenseModel);
                 PopupUtils.close(dialogue)
             }
-        }
-        Button {
-            Layout.fillWidth: true
-            text: i18n.tr("Cancel")
-            onClicked: PopupUtils.close(dialogue)
         }
     }
 }
