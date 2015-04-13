@@ -35,7 +35,7 @@ execute_process(
 
 set(CHANCHO_VERSION_MAJOR 0)
 set(CHANCHO_VERSION_MINOR 1)
-set(CHANCHO_VERSION_PATCH 7)
+set(CHANCHO_VERSION_PATCH 8)
 
 #required bin helpers
 find_program(INTLTOOL_MERGE intltool-merge)

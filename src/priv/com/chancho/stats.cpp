@@ -32,7 +32,7 @@ namespace {
     const QString SELECT_ACCOUNT_MONTHS_FOR_YEAR = "SELECT month, month_amount FROM AccountsMonthTotal "\
         "WHERE account=:account AND year=:year ORDER BY month ASC";
     const QString SELECT_OCURRENCES_FOR_MONTH = "SELECT c.uuid AS uuid, c.name AS name, c.type AS type, "\
-        "c.color AS color, COUNT(*) AS ocurrences, SSUM(t.amount) FROM Transactions AS t INNER JOIN Categories AS c WHERE "\
+        "c.color AS color, COUNT(*) AS occurrences, SSUM(t.amount) FROM Transactions AS t INNER JOIN Categories AS c WHERE "\
         "t.category=c.uuid AND t.year=:year AND t.month=:month GROUP BY t.category";
     const QString SELECT_OCURRENCES_FOR_CATEGORY = "SELECT month, sum(amount) FROM Transactions "\
         "WHERE year=:year AND category=:category GROUP BY category, month ORDER BY month ASC";
@@ -133,7 +133,7 @@ Stats::categoryPercentages(int month, int year) {
     auto query = _db->createQuery();
 
     // SELECT_OCURRENCES_FOR_MONTH = SELECT c.uuid AS uuid, c.name AS name, c.type AS type,
-    //     c.color AS color, COUNT(*) AS ocurrences, SSUM(t.amount) FROM Transactions AS t INNER JOIN Categories AS c WHERE
+    //     c.color AS color, COUNT(*) AS occurrences, SSUM(t.amount) FROM Transactions AS t INNER JOIN Categories AS c WHERE
     //     t.category=c.uuid AND t.year=:year AND t.month=:month GROUP BY t.category
     query->prepare(SELECT_OCURRENCES_FOR_MONTH);
     query->bindValue(":month", month);
@@ -150,7 +150,7 @@ Stats::categoryPercentages(int month, int year) {
     // index 1 => name
     // index 2 => type
     // index 3 => color
-    // index 4 => ocurrences
+    // index 4 => occurrences
     // index 5 => amount
     while (query->next()) {
         auto uuid = QUuid(query->value(0).toString());
