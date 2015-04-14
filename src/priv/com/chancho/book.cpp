@@ -67,6 +67,27 @@ namespace {
         "memo TEXT, "\
         "FOREIGN KEY(account) REFERENCES Accounts(uuid), "\
         "FOREIGN KEY(category) REFERENCES Categories(uuid))";  // amounts are stored in text so that we can used the most precise number
+    const QString RECURRENT_TRANSACTION_TABLE = "CREATE TABLE IF NOT EXISTS RecurrentTransactions("\
+        "uuid VARCHAR(40) PRIMARY KEY, "\
+        "amount TEXT,"\
+        "account VARCHAR(40) NOT NULL, "\
+        "category VARCHAR(40) NOT NULL, "\
+        "contents TEXT, "\
+        "memo TEXT, "\
+        "startDay INT, "\
+        "startMonth INT, "\
+        "startYear INT, "\
+        "lastDay INT, "\
+        "lastMonth INT, "\
+        "lastYear INT, "\
+        "endDay INT, "\
+        "endMonth INT, "\
+        "endYear INT, "\
+        "defaultType INT, "\
+        "numberDays INT, "\
+        "occurrences INT, "\
+        "FOREIGN KEY(account) REFERENCES Accounts(uuid), "\
+        "FOREIGN KEY(category) REFERENCES Categories(uuid))";  // amounts are stored in text so that we can used the most precise number
     const QString TRANSACTION_INSERT_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionInsert AFTER INSERT ON Transactions "\
         "BEGIN "\
         "UPDATE Accounts SET amount=AddStringNumbers(amount, new.amount) WHERE uuid=new.account; "\
@@ -111,6 +132,11 @@ namespace {
         "day, month, year, contents, memo) VALUES (:uuid, :amount, :account, :category, :day, :month, :year, :contents, :memo)";
     const QString UPDATE_TRANSACTION = "UPDATE Transactions SET amount=:amount, account=:account, category=:category, "\
         "day=:day, month=:month, year=:year, contents=:contents, memo=:memo WHERE uuid=:uuid";
+    const QString INSERT_UPDATE_RECURRENT_TRANSACTION = "INSERT OR REPLACE INTO RecurrentTransactions("
+        "uuid, amount, account, category, contents, memo, startDay, startMonth, startYear, lastDay, lastMonth, lastYear, "\
+        "endDay, endMonth, endYear, defaultType, numberDays, occurrences) "\
+        "VALUES(:uuid, :amount, :account, :category, :contents, :memo, :startDay, :startMonth, :startYear, :lastDay, "\
+        ":lastMonth, :lastYear, :endDay, :endMonth, :endYear, :defaultType, :numberDays, :occurrences)";
     const QString DELETE_ACCOUNT = "DELETE FROM Accounts WHERE uuid=:uuid";
     const QString DELETE_CHILD_CATEGORIES = "DELETE FROM Categories WHERE parent=:uuid";
     const QString DELETE_CATEGORY = "DELETE FROM Categories WHERE uuid=:uuid";
@@ -183,7 +209,7 @@ namespace {
 }
 
 double Book::DB_VERSION = 0.1;
-std::set<QString> Book::TABLES {"categories"};
+std::set<QString> Book::TABLES {"accounts", "categories", "transactions", "recurrenttransactions"};
 
 STATIC_INIT(Book) {
     Book::initDatabse();
@@ -221,23 +247,30 @@ Book::initDatabse() {
     }
 
     // once the db has been created we need to check that it has the correct version and the required tables
-    bool hasToBeInit = false;
     auto tables = db->tables();
-    if (tables.count() > 0) {
-        LOG(INFO) << "Tables are " << tables.join(", ").toStdString();
-        foreach(const QString& expectedTable, Book::TABLES) {
-            if (!tables.contains(expectedTable, Qt::CaseInsensitive)) {
-                LOG(INFO) << "Table '" << expectedTable.toStdString() << "' missing";
-                hasToBeInit = true;
-                break;
-            }
-        }
-    } else {
-        DLOG(INFO) << "No tables present in the database";
-        hasToBeInit = true;
-    }
 
-    if (hasToBeInit) {
+    // only has to be init those dbs with less than 3 tables, the old versions
+    bool hasToBeInit = tables.count() < 3;
+
+    // all versions of the application do not have the recurrent transactions table
+    bool needsRecurrenceUpdate = !tables.contains("recurrenttransactions", Qt::CaseInsensitive);
+
+    if (!hasToBeInit && needsRecurrenceUpdate) {
+        db->transaction();
+
+        bool success = true;
+        auto query = db->createQuery();
+        success &= query->exec(RECURRENT_TRANSACTION_TABLE);
+
+        if (success)
+            db->commit();
+        else
+            db->rollback();
+
+        if (!success)
+            LOG(ERROR) << "Could not update the chancho db " << db->lastError().text().toStdString();
+
+    } else if (hasToBeInit) {
         LOG(INFO) << "The database needs to be init";
         db->transaction();
 
@@ -248,6 +281,7 @@ Book::initDatabse() {
         success &= query->exec(ACCOUNTS_TABLE);
         success &= query->exec(CATEGORIES_TABLE);
         success &= query->exec(TRANSACTION_TABLE);
+        success &= query->exec(RECURRENT_TRANSACTION_TABLE);
         success &= query->exec(TRANSACTION_INSERT_TRIGGER);
         success &= query->exec(TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER);
         success &= query->exec(TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER);
@@ -539,6 +573,150 @@ Book::store(QList<TransactionPtr> trans) {
 
     foreach(const TransactionPtr tran, trans) {
         auto success = storeSingleTransactions(tran);
+        if (!success) {
+            _db->rollback();
+            return;;
+        }
+    }
+    _db->commit();
+}
+
+bool
+Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
+
+    // usually accounts and categories must be stored before storing a transactions
+    if (recurrent->transaction->account && !recurrent->transaction->account->wasStoredInDb()) {
+        _lastError = "An account must be stored before adding a transaction to it.";
+        LOG(ERROR) << _lastError.toStdString();
+        return false;
+    }
+
+    if (recurrent->transaction->category && !recurrent->transaction->category->wasStoredInDb()) {
+        _lastError = "A category must be stored before adding a transaction to it.";
+        LOG(ERROR) << _lastError.toStdString();
+        return false;
+    }
+
+    auto isPresent = recurrent->wasStoredInDb();
+    if (!isPresent) {
+        recurrent->_dbId = QUuid::createUuid();
+    }
+
+
+    // store the data for the specific info
+
+    // INSERT_UPDATE_RECURRENT_TRANSACTION = INSERT OR REPLACE INTO RecurrentTransactions(
+    //    uuid, amount, account, category, contents, memo, startDay, startMonth, startYear, lastDay, lastMonth, lastYear,
+    //    endDay, endMonth, endYear, defaultType, numberDays, occurrences)
+    //    VALUES(:uuid, :amount, :account, :category, :contents, :memo, :startDay, :startMonth, :startYear, :lastDay,
+    //    :lastMonth, :lastYear, :endDay, :endMonth, :endYear, :defaultType, :numberDays, :occurrences
+    auto query = _db->createQuery();
+    query->prepare(INSERT_UPDATE_RECURRENT_TRANSACTION);
+    query->bindValue(":uuid", recurrent->_dbId.toString());
+    query->bindValue(":amount", QString::number(recurrent->transaction->amount));
+    query->bindValue(":account", recurrent->transaction->account->_dbId);
+    query->bindValue(":category", recurrent->transaction->category->_dbId);
+    query->bindValue(":contents", recurrent->transaction->contents);
+    query->bindValue(":memo", recurrent->transaction->memo);
+    query->bindValue(":startDay", recurrent->transaction->date.day());
+    query->bindValue(":startMonth", recurrent->transaction->date.month());
+    query->bindValue(":startYear", recurrent->transaction->date.year());
+
+
+    if (recurrent->recurrence->lastGenerated.isValid()) {
+        query->bindValue(":lastDay", recurrent->recurrence->lastGenerated.day());
+        query->bindValue(":lastMonth", recurrent->recurrence->lastGenerated.month());
+        query->bindValue(":lastYear", recurrent->recurrence->lastGenerated.year());
+    } else {
+        query->bindValue(":lastDay", QVariant());
+        query->bindValue(":lastMonth", QVariant());
+        query->bindValue(":lastYear", QVariant());
+    }
+
+    if (recurrent->recurrence->endDate.isValid()) {
+        query->bindValue(":endDay", recurrent->recurrence->endDate.day());
+        query->bindValue(":endMonth", recurrent->recurrence->endDate.month());
+        query->bindValue(":endYear", recurrent->recurrence->endDate.year());
+    } else {
+        query->bindValue(":endDay", QVariant());
+        query->bindValue(":endMonth", QVariant());
+        query->bindValue(":endYear", QVariant());
+    }
+
+    if (recurrent->recurrence->_defaults) {
+        query->bindValue(":defaultType", static_cast<int>(*recurrent->recurrence->_defaults));
+    } else {
+        query->bindValue(":defaultType", QVariant());
+    }
+
+    if (recurrent->recurrence->_numberOfDays) {
+        query->bindValue(":numberDays", *recurrent->recurrence->_numberOfDays);
+    } else {
+        query->bindValue(":numberDays", QVariant());
+    }
+
+    if (recurrent->recurrence->occurrences) {
+        query->bindValue(":occurrences", *recurrent->recurrence->occurrences);
+    } else {
+        query->bindValue(":occurrences", QVariant());
+    }
+
+    // no need to use a transaction since is a single insert
+    auto stored = query->exec();
+    if (!stored) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << _lastError.toStdString();
+        recurrent->_dbId = QUuid();
+    }
+    return stored;
+}
+
+void
+Book::store(RecurrentTransactionPtr tran) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+
+    // a transaction needs to be created because we are storing in two different tables
+    bool transaction = _db->transaction();
+    if (!transaction) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << "Error creating the transaction " << _lastError.toStdString();
+        return;
+    }
+    auto success = storeSingleRecurrentTransactions(tran);
+    if (!success) {
+        _db->rollback();
+        return;;
+    }
+    _db->commit();
+}
+
+void
+Book::store(QList<RecurrentTransactionPtr> trans) {
+    std::lock_guard<std::mutex> lock(_transactionMutex);
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+
+    bool transaction = _db->transaction();
+    if (!transaction) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << "Error creating the transaction " << _lastError.toStdString();
+        return;
+    }
+
+    foreach(const RecurrentTransactionPtr& tran, trans) {
+        auto success = storeSingleRecurrentTransactions(tran);
         if (!success) {
             _db->rollback();
             return;;

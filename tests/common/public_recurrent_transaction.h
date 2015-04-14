@@ -24,19 +24,13 @@
 
 #include <com/chancho/recurrent_transaction.h>
 
-class PublicRecurrence : public com::chancho::RecurrentTransaction::Recurrence {
+namespace chancho = com::chancho;
+
+class PublicRecurrentTransaction : public chancho::RecurrentTransaction {
  public:
-    PublicRecurrence(int n, QDate s, QDate e=QDate())
-            : com::chancho::RecurrentTransaction::Recurrence(n, s, e) {}
+    PublicRecurrentTransaction(chancho::TransactionPtr t, chancho::RecurrentTransaction::RecurrencePtr r)
+            : chancho::RecurrentTransaction(t, r) {
+    }
 
-    PublicRecurrence(int n, QDate s, boost::optional<int> o)
-            : com::chancho::RecurrentTransaction::Recurrence(n, s, o) {}
-
-    PublicRecurrence(com::chancho::RecurrentTransaction::Recurrence::Defaults n, QDate s, QDate e=QDate())
-            : com::chancho::RecurrentTransaction::Recurrence(n, s, e) {}
-
-    PublicRecurrence(com::chancho::RecurrentTransaction::Recurrence::Defaults n, QDate s, boost::optional<int> o)
-            : com::chancho::RecurrentTransaction::Recurrence(n, s, o) {}
-
-    using com::chancho::RecurrentTransaction::Recurrence::generateMissingDates;
+    using chancho::RecurrentTransaction::_dbId;
 };
