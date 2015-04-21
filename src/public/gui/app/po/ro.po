@@ -1,68 +1,58 @@
-# English translations for chancho.mandel package.
-# Copyright (C) 2015 Manuel de la Pena <mandel@themacaque.com>
-# This file is distributed under the same license as the chancho.mandel package.
-# Manuel de la Pena <mandel@themacaque.com>, 2015.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: chancho.mandel\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-10 16:36+0200\n"
-"PO-Revision-Date: 2015-04-10 17:17+0200\n"
-"Last-Translator: Manuel de la Pena <mandel@themacaque.com>\n"
-"Language-Team: English\n"
-"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: chancho.mandel\n"
+"Language: ro\n"
 
 #: ../qml/MainWindow.qml:78 ../qml/components/CategoryStatsPage.qml:50
 #: ../qml/components/MainPage.qml:45
 msgid "Bills"
-msgstr "Bills"
+msgstr "Facturi"
 
 #: ../qml/MainWindow.qml:88
 msgid "Stats"
-msgstr "Stats"
+msgstr "Statistici"
 
 #: ../qml/MainWindow.qml:97 ../qml/components/AccountsPage.qml:67
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Accounts"
-msgstr "Accounts"
+msgstr "Conturi"
 
 #: ../qml/MainWindow.qml:107 ../qml/components/CategoriesPage.qml:45
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Categories"
-msgstr "Categories"
+msgstr "Categorii"
 
 #: ../qml/components/AccountForm.qml:65 ../qml/components/CategoryForm.qml:65
 msgid "January"
-msgstr "January"
+msgstr "Ianuarie"
 
 #: ../qml/components/AccountForm.qml:66 ../qml/components/CategoryForm.qml:66
 msgid "February"
-msgstr "February"
+msgstr "Februarie"
 
 #: ../qml/components/AccountForm.qml:67 ../qml/components/CategoryForm.qml:67
 msgid "March"
-msgstr "March"
+msgstr "Martie"
 
 #: ../qml/components/AccountForm.qml:68 ../qml/components/CategoryForm.qml:68
 msgid "April"
-msgstr "April"
+msgstr "Aprilie"
 
 #: ../qml/components/AccountForm.qml:69 ../qml/components/CategoryForm.qml:69
 msgid "May"
-msgstr "May"
+msgstr "Mai"
 
 #: ../qml/components/AccountForm.qml:70 ../qml/components/CategoryForm.qml:70
 msgid "June"
-msgstr "June"
+msgstr "Iunie"
 
 #: ../qml/components/AccountForm.qml:71 ../qml/components/CategoryForm.qml:71
 msgid "July"
-msgstr "July"
+msgstr "Iulie"
 
 #: ../qml/components/AccountForm.qml:72 ../qml/components/CategoryForm.qml:72
 msgid "August"
@@ -70,31 +60,31 @@ msgstr "August"
 
 #: ../qml/components/AccountForm.qml:73 ../qml/components/CategoryForm.qml:73
 msgid "September"
-msgstr "September"
+msgstr "Septembrie"
 
 #: ../qml/components/AccountForm.qml:74 ../qml/components/CategoryForm.qml:74
 msgid "October"
-msgstr "October"
+msgstr "Octombrie"
 
 #: ../qml/components/AccountForm.qml:75 ../qml/components/CategoryForm.qml:75
 msgid "November"
-msgstr "November"
+msgstr "Noiembrie"
 
 #: ../qml/components/AccountForm.qml:76 ../qml/components/CategoryForm.qml:76
 msgid "December"
-msgstr "December"
+msgstr "Decembrie"
 
 #: ../qml/components/AccountForm.qml:174
 #: ../qml/components/CategoryForm.qml:163
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:48
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:84
 msgid "Name"
-msgstr "Name"
+msgstr "Nume"
 
 #: ../qml/components/AccountForm.qml:196
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:56
 msgid "Initial amount"
-msgstr "Initial amount"
+msgstr "Suma inițială"
 
 #: ../qml/components/AccountForm.qml:208
 #: ../qml/components/TransactionForm.qml:199
@@ -104,179 +94,175 @@ msgstr "Memo"
 
 #: ../qml/components/AccountsPage.qml:143 ../qml/components/NewAccount.qml:35
 msgid "Add new account"
-msgstr "Add new account"
+msgstr "Adăugați un cont nou"
 
 #: ../qml/components/CategoriesPage.qml:59
 #: ../qml/components/WizardCategoriesPage.qml:52
 #: ../qml/components/WizardLastPage.qml:87
 msgid "Income categories:"
-msgstr "Income categories:"
+msgstr "Categorii de venituri:"
 
 #: ../qml/components/CategoriesPage.qml:101
 #: ../qml/components/WizardCategoriesPage.qml:91
 #: ../qml/components/WizardLastPage.qml:117
 msgid "Expense categories:"
-msgstr "Expense categories:"
+msgstr "Categorii de cheltuieli:"
 
 #: ../qml/components/CategoriesPage.qml:142
 #: ../qml/components/NewCategory.qml:35
 msgid "Add new category"
-msgstr "Add new category"
+msgstr "Adăugați o nouă categorie"
 
 #: ../qml/components/CategoryForm.qml:186
 #: ../qml/components/TransactionForm.qml:87
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:53
 msgid "Expense"
-msgstr "Expense"
+msgstr "Cheltuieli"
 
 #: ../qml/components/CategoryForm.qml:190
 #: ../qml/components/TransactionForm.qml:91
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:57
 msgid "Income"
-msgstr "Income"
+msgstr "Venituri"
 
 #: ../qml/components/CategoryStatsPage.qml:132
 #: ../qml/components/MainPage.qml:137
 msgid "No entries were found!"
-msgstr "No entries were found!"
+msgstr "Nu s-au găsit înregistrari!"
 
 #: ../qml/components/ColorChooser.qml:127
 #: ../qml/components/dialogs/ConfirmationDialog.qml:38
 #: ../qml/components/dialogs/ErrorDialog.qml:33
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:116
 msgid "Ok"
-msgstr "Ok"
+msgstr "Bine"
 
 #: ../qml/components/ColorChooser.qml:139
 #: ../qml/components/dialogs/ConfirmationDialog.qml:50
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:101
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:126
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Anulare"
 
 #: ../qml/components/EditAccount.qml:51 ../qml/components/EditCategory.qml:78
 #: ../qml/components/EditTransaction.qml:60
 msgid "Edit"
-msgstr "Edit"
+msgstr "Editare"
 
 #: ../qml/components/EditAccount.qml:58 ../qml/components/EditCategory.qml:87
 #: ../qml/components/EditTransaction.qml:75
 msgid "Edit entry"
-msgstr "Edit entry"
+msgstr "Editați înregistrare"
 
 #: ../qml/components/EditAccount.qml:59
 #: ../qml/components/EditTransaction.qml:76
 msgid "Do you want to update this entry?"
-msgstr "Do you want to update this entry?"
+msgstr "Vreți să actualizați această înregistrare?"
 
 #: ../qml/components/EditAccount.qml:68 ../qml/components/EditCategory.qml:96
 #: ../qml/components/EditTransaction.qml:84
 msgid "Delete"
-msgstr "Delete"
+msgstr "Ștergere"
 
 #: ../qml/components/EditAccount.qml:77
 msgid "Delete entry"
-msgstr "Delete entry"
+msgstr "Ștergere înregistrare"
 
 #: ../qml/components/EditAccount.qml:78
 msgid "Do you want to remove this account?"
-msgstr "Do you want to remove this account?"
+msgstr "Vreți să ștergeți acest cont?"
 
 #: ../qml/components/EditAccount.qml:84
 msgid "Error"
-msgstr "Error"
+msgstr "Eroare"
 
 #: ../qml/components/EditAccount.qml:85
 msgid "You must have at least one account in the system."
-msgstr "You must have at least one account in the system."
+msgstr "Trebuie sa ai cel putin un cont registrat in sistem."
 
 #: ../qml/components/EditCategory.qml:88
 msgid "Do you want to update this category?"
-msgstr "Do you want to update this category?"
+msgstr "Doresti sa actualizezi aceasta categorie?"
 
 #: ../qml/components/EditCategory.qml:104
 msgid "Removal Error"
-msgstr "Removal Error"
+msgstr "Nu s-a putut elimina"
 
 #: ../qml/components/EditCategory.qml:105
-msgid ""
-"You cannot delete all categories in the system. You must have at least one "
-"of each type"
-msgstr ""
-"You cannot delete all categories in the system. You must have at least one "
-"of each type"
+msgid "You cannot delete all categories in the system. You must have at least one of each type"
+msgstr "Nu poti sa elimini toate categoriile sistemului . Trebuie sa fie cel putin una din fiecare tip."
 
 #: ../qml/components/EditCategory.qml:114
 msgid "Delete category"
-msgstr "Delete category"
+msgstr "Elimina categoria"
 
 #: ../qml/components/EditCategory.qml:115
 msgid "Do you want to remove this category?"
-msgstr "Do you want to remove this category?"
+msgstr "Doresti sa actualizezi aceasta categorie?"
 
 #: ../qml/components/EditTransaction.qml:91
 msgid "Delete transaction"
-msgstr "Delete transaction"
+msgstr "Elimina extrasul"
 
 #: ../qml/components/EditTransaction.qml:92
 msgid "Do you want to remove this transaction?"
-msgstr "Do you want to remove this transaction?"
+msgstr "Doresti sa elimini acest extras?"
 
 #: ../qml/components/MainPage.qml:148 ../qml/components/NewTransaction.qml:35
 msgid "Add new entry"
-msgstr "Add new entry"
+msgstr "Extras nou"
 
 #: ../qml/components/NewAccount.qml:40 ../qml/components/NewCategory.qml:40
 #: ../qml/components/NewTransaction.qml:40
 #: ../qml/components/WizardAccountsPage.qml:87
 #: ../qml/components/WizardCategoriesPage.qml:128
 msgid "Add"
-msgstr "Add"
+msgstr "Adauga"
 
 #: ../qml/components/NewAccount.qml:52 ../qml/components/NewCategory.qml:48
 #: ../qml/components/NewTransaction.qml:59
 msgid "Internal Error"
-msgstr "Internal Error"
+msgstr "Eroare interna"
 
 #: ../qml/components/NewAccount.qml:53
 msgid "The account could not be stored."
-msgstr "The account could not be stored."
+msgstr "Nu s-a putut crea contul."
 
 #: ../qml/components/NewCategory.qml:49
 msgid "The category could not be stored."
-msgstr "The category could not be stored."
+msgstr "Nu s-a putut actualiza categoria."
 
 #: ../qml/components/NewTransaction.qml:45
 msgid "Error: amount is missing"
-msgstr "Error: amount is missing"
+msgstr "Erroare: Nu s-a introdus suma"
 
 #: ../qml/components/NewTransaction.qml:46
 msgid "Transactions must have an amount."
-msgstr "Transactions must have an amount."
+msgstr "Noile extrase trebuie sa specifice o suma."
 
 #: ../qml/components/NewTransaction.qml:60
 msgid "The transaction could not be stored."
-msgstr "The transaction could not be stored."
+msgstr "Nu s-a putut crea extrasul."
 
 #: ../qml/components/TransactionForm.qml:152
 msgid "Date"
-msgstr "Date"
+msgstr "Data"
 
 #: ../qml/components/TransactionForm.qml:177
 msgid "Amount"
-msgstr "Amount"
+msgstr "Suma"
 
 #: ../qml/components/TransactionForm.qml:186
 msgid "Contents"
-msgstr "Contents"
+msgstr "Continut"
 
 #: ../qml/components/WelcomeWizard.qml:49
 msgid "Allowance"
-msgstr "Allowance"
+msgstr "Bani de buzunar pentru copii"
 
 #: ../qml/components/WelcomeWizard.qml:54
 msgid "Salary"
-msgstr "Salary"
+msgstr "Salariu"
 
 #: ../qml/components/WelcomeWizard.qml:59
 msgid "Bonus"
@@ -285,129 +271,110 @@ msgstr "Bonus"
 #: ../qml/components/WelcomeWizard.qml:64
 #: ../qml/components/WelcomeWizard.qml:132
 msgid "Other"
-msgstr "Other"
+msgstr "Altul"
 
 #: ../qml/components/WelcomeWizard.qml:77
 msgid "Food"
-msgstr "Food"
+msgstr "Mancare"
 
 #: ../qml/components/WelcomeWizard.qml:82
 msgid "Social Life"
-msgstr "Social Life"
+msgstr "Viata Solciala"
 
 #: ../qml/components/WelcomeWizard.qml:87
 msgid "Self-development"
-msgstr "Self-development"
+msgstr "Auto-dezvoltare"
 
 #: ../qml/components/WelcomeWizard.qml:92
 msgid "Transportation"
-msgstr "Transportation"
+msgstr "Transport"
 
 #: ../qml/components/WelcomeWizard.qml:97
 msgid "Culture"
-msgstr "Culture"
+msgstr "Cultura"
 
 #: ../qml/components/WelcomeWizard.qml:102
 msgid "Household"
-msgstr "Household"
+msgstr "Locuinta"
 
 #: ../qml/components/WelcomeWizard.qml:107
 msgid "Apparel"
-msgstr "Apparel"
+msgstr "Haine"
 
 #: ../qml/components/WelcomeWizard.qml:112
 msgid "Beauty"
-msgstr "Beauty"
+msgstr "Infrumusetare"
 
 #: ../qml/components/WelcomeWizard.qml:117
 msgid "Health"
-msgstr "Health"
+msgstr "Sanatate"
 
 #: ../qml/components/WelcomeWizard.qml:122
 msgid "Education"
-msgstr "Education"
+msgstr "Educatie"
 
 #: ../qml/components/WelcomeWizard.qml:127
 msgid "Gift"
-msgstr "Gift"
+msgstr "Cadouri"
 
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Confirmation"
-msgstr "Confirmation"
+msgstr "Confirmare"
 
 #: ../qml/components/WizardAccountsPage.qml:45
-msgid ""
-"Chancho allows you to track the expenses and incomes in several accounts. "
-"Here you can add the accounts you want to work with. Don't worry you can add "
-"more accounts later."
-msgstr ""
-"Chancho allows you to track the expenses and incomes in several accounts. "
-"Here you can add the accounts you want to work with. Don't worry you can add "
-"more accounts later."
+msgid "Chancho allows you to track the expenses and incomes in several accounts. Here you can add the accounts you want to work with. Don't worry you can add more accounts later."
+msgstr "Chancho va permite sa fiti la zi cu cheltuiele realizate. In aceasta etapa puteti sa adaugati toate conturile cu care doriti sa lucrati. Nu vă faceți griji, puteți adăuga mai multe conturi în alt moment."
 
 #: ../qml/components/WizardAccountsPage.qml:90
 msgid "New account"
-msgstr "New account"
+msgstr "Cont nou"
 
 #: ../qml/components/WizardAccountsPage.qml:91
 msgid "Please add the details of the new account."
-msgstr "Please add the details of the new account."
+msgstr "Va rugam completatii detaliile noului cont"
 
 #: ../qml/components/WizardAccountsPage.qml:101
 #: ../qml/components/WizardCategoriesPage.qml:139
 msgid "Remove"
-msgstr "Remove"
+msgstr "Elimina"
 
 #: ../qml/components/WizardAccountsPage.qml:109
 msgid "Delete accounts"
-msgstr "Delete accounts"
+msgstr "Elimina conturile"
 
 #: ../qml/components/WizardAccountsPage.qml:110
 msgid "Do you want to delete the selected accounts?"
-msgstr "Do you want to delete the selected accounts?"
+msgstr "Doresti sa elimini conturile selectionate?"
 
 #: ../qml/components/WizardCategoriesPage.qml:45
-msgid ""
-"Categories allow you to indentify the different transactions. There are two "
-"different types income an expense categories. The following are some of the "
-"predefined ones but you can add as many as you want."
-msgstr ""
-"Categories allow you to indentify the different transactions. There are two "
-"different types income an expense categories. The following are some of the "
-"predefined ones but you can add as many as you want."
+msgid "Categories allow you to indentify the different transactions. There are two different types: income and expense categories. The following are some of the predefined ones but you can add as many as you want."
+msgstr "Categoriile permit identificarea diferitelor extrase. Exista doua tipuri diferite:cheltuieli si venituri. Următoarele sunt câteva categorii predefinite, dar puteti adauga altele in alt moment."
 
 #: ../qml/components/WizardCategoriesPage.qml:147
 msgid "Delete categories"
-msgstr "Delete categories"
+msgstr "Sterge categoriile"
 
 #: ../qml/components/WizardCategoriesPage.qml:148
 msgid "Do you want to delete the selected categories?"
-msgstr "Do you want to delete the selected categories?"
+msgstr "Doresti sa elimini categoriile selectionate?"
 
 #: ../qml/components/WizardLastPage.qml:46
-msgid ""
-"You are nearly done! Bellow you can find the accounts and categories you "
-"will have. Are you happy with them?"
-msgstr ""
-"You are nearly done! Bellow you can find the accounts and categories you "
-"will have. Are you happy with them?"
+msgid "You are nearly done! Bellow you can find the accounts and categories you will have. Are you happy with them?"
+msgstr "Esti pe punctul de a termina. In continuare apar toate conturile si categoriile pe care le-ai adaugat"
 
 #: ../qml/components/WizardLastPage.qml:53
 msgid "Accounts:"
-msgstr "Accounts:"
+msgstr "Conturi:"
 
 #: ../qml/components/WizardLastPage.qml:147
 msgid "I'm ready"
-msgstr "I'm ready"
+msgstr "Sunt gata"
 
 #: ../qml/components/WizardLastPage.qml:157
 msgid "Init Error"
-msgstr "Init Error"
+msgstr "Eroare la inițiere"
 
 #: ../qml/components/WizardLastPage.qml:158
-msgid ""
-"Make sure that you have added at least one account and a category of each "
-"type."
-msgstr ""
-"Make sure that you have added at least one account and a category of each "
-"type."
+msgid "Make sure that you have added at least one account and a category of each type."
+msgstr "Asigurați-vă că ați adăugat cel puțin un cont și o categorie de fiecare tip."
+
