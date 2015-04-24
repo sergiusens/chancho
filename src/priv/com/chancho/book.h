@@ -36,6 +36,7 @@
 #include "account.h"
 #include "category.h"
 #include "transaction.h"
+#include "recurrent_transaction.h"
 
 
 namespace com {
@@ -113,6 +114,24 @@ class Book {
         \note When a transaction is newly added to the database a new unique identifier is provided for the account.
     */
     virtual void store(QList<TransactionPtr> trans);
+
+    /*!
+        \fn virtual void store(RecurrentTransactionPtr tran);
+
+        Stores or updates the given recurrent \a tran in the database.
+
+        \note When a transaction is newly added to the database a new unique identifier is provided for the account.
+    */
+    virtual void store(RecurrentTransactionPtr tran);
+
+    /*!
+        \fn virtual void store(TransactionPtr tran);
+
+        Stores or updates the given recurrent \a trans in the database.
+
+        \note When a transaction is newly added to the database a new unique identifier is provided for the account.
+    */
+    virtual void store(QList<RecurrentTransactionPtr> trans);
 
     /*!
         \fn virtual void remove(AccountPtr acc);
@@ -323,6 +342,7 @@ class Book {
     bool storeSingleAcc(AccountPtr ptr);
     bool storeSingleCat(CategoryPtr ptr);
     bool storeSingleTransactions(TransactionPtr ptr);
+    bool storeSingleRecurrentTransactions(RecurrentTransactionPtr tran);
 
  protected:
     std::shared_ptr<system::Database> _db;

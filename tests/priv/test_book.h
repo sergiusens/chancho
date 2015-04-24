@@ -42,4 +42,6 @@ class TestBook : public BaseTestCase {
     void testInitDatabase();
     void testInitDatabaseNoPresentTables();
     void testInitDatabasePresentTables();
+
+    void testUpgradeNoRecurrence();
 };

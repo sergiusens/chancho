@@ -104,7 +104,7 @@ TestBookMocked::testInitDatbaseMissingTables() {
         .WillOnce(Return(query));
 
     EXPECT_CALL(*query.get(), exec(Matcher<const QString&>(_)))
-        .Times(17)
+        .Times(18)
         .WillRepeatedly(Return(true));
 
     EXPECT_CALL(*db.get(), commit())
@@ -145,16 +145,17 @@ TestBookMocked::testInitDatbaseMissingTablesError() {
         .Times(1)
         .WillOnce(Return(tables));
 
-    EXPECT_CALL(*db.get(), transaction())
-        .Times(1)
-        .WillOnce(Return(true));
-
     EXPECT_CALL(*db.get(), createQuery())
         .Times(1)
         .WillOnce(Return(query));
 
+    EXPECT_CALL(*db.get(), transaction())
+        .Times(1)
+        .WillOnce(Return(true));
+
     EXPECT_CALL(*query.get(), exec(Matcher<const QString&>(_)))
-        .Times(17)
+        .Times(18)
+        .WillOnce(Return(true))
         .WillOnce(Return(true))
         .WillOnce(Return(true))
         .WillOnce(Return(true))
@@ -200,13 +201,22 @@ TestBookMocked::testInitDatabasePresentTables_data() {
     QTest::addColumn<QStringList>("tables");
 
     QStringList first;
+    first.append("Accounts");
+    first.append("Transactions");
     first.append("Categories");
+    first.append("recurrenttransactions");
 
     QStringList second;
     second.append("CATEGORIES");
+    second.append("accounts");
+    second.append("TraNsactions");
+    second.append("ReCurrenttransactions");
 
     QStringList third;
+    third.append("accountS");
+    third.append("TraNsacTions");
     third.append("CateGORIES");
+    third.append("ReCurrentTransactions");
 
     QTest::newRow("first-obj") << first;
     QTest::newRow("second-obj") << second;

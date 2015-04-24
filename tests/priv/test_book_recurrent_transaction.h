@@ -22,21 +22,43 @@
 
 #pragma once
 
-#include <com/chancho/recurrent_transaction.h>
+#include <com/chancho/book.h>
 
-class PublicRecurrence : public com::chancho::RecurrentTransaction::Recurrence {
+#include "public_book.h"
+#include "public_category.h"
+#include "base_testcase.h"
+
+namespace chancho = com::chancho;
+
+class TestBookRecurrentTransaction : public BaseTestCase {
+    Q_OBJECT
+
  public:
-    PublicRecurrence(int n, QDate s, QDate e=QDate())
-            : com::chancho::RecurrentTransaction::Recurrence(n, s, e) {}
+    explicit TestBookRecurrentTransaction(QObject *parent = 0)
+            : BaseTestCase("TestBookRecurrentTransaction", parent) { }
 
-    PublicRecurrence(int n, QDate s, boost::optional<int> o)
-            : com::chancho::RecurrentTransaction::Recurrence(n, s, o) {}
+ private slots:
 
-    PublicRecurrence(com::chancho::RecurrentTransaction::Recurrence::Defaults n, QDate s, QDate e=QDate())
-            : com::chancho::RecurrentTransaction::Recurrence(n, s, e) {}
+    void init() override;
+    void cleanup() override;
 
-    PublicRecurrence(com::chancho::RecurrentTransaction::Recurrence::Defaults n, QDate s, boost::optional<int> o)
-            : com::chancho::RecurrentTransaction::Recurrence(n, s, o) {}
-
-    using com::chancho::RecurrentTransaction::Recurrence::generateMissingDates;
+    void testStoreAccountNotStored();
+    void testStoreCategoryNotStored();
+    void testStoreLastGeneratedPresent_data();
+    void testStoreLastGeneratedPresent();
+    void testStoreLasteGeneratedMissing_data();
+    void testStoreLasteGeneratedMissing();
+    void testStoreEndDatePresent_data();
+    void testStoreEndDatePresent();
+    void testStoreEndDateMissing_data();
+    void testStoreEndDateMissing();
+    void testStoreDefaultsUsed_data();
+    void testStoreDefaultsUsed();
+    void testStoreNonDefaultsUsed_data();
+    void testStoreNonDefaultsUsed();
+    void testStoreOcurrencesPresent_data();
+    void testStoreOcurrencesPresent();
+    void testStoreOcurrencesMissing_data();
+    void testStoreOcurrencesMissing();
 };
+
