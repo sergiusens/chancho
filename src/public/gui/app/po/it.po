@@ -376,5 +376,5 @@ msgstr "Errore di inizializzazione"
 
 #: ../qml/components/WizardLastPage.qml:158
 msgid "Make sure that you have added at least one account and a category of each type."
-msgstr "Assicurarsi di aver aggiunto almeno un conto e una categoria di ogni tipo ."
+msgstr "Assicurati di aver aggiunto almeno un conto e una categoria per ogni tipo"
 
