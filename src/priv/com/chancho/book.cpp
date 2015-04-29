@@ -141,6 +141,7 @@ namespace {
     const QString DELETE_CHILD_CATEGORIES = "DELETE FROM Categories WHERE parent=:uuid";
     const QString DELETE_CATEGORY = "DELETE FROM Categories WHERE uuid=:uuid";
     const QString DELETE_TRANSACTION = "DELETE FROM Transactions WHERE uuid=:uuid";
+    const QString DELETE_RECURRENT_TRANSACTION = "DELETE FROM RecurrentTransactions WHERE uuid=:uuid";
     const QString SELECT_ALL_ACCOUNTS = "SELECT uuid, name, memo, color, initialAmount, amount FROM Accounts ORDER BY name ASC";
     const QString SELECT_ALL_ACCOUNTS_LIMIT = "SELECT uuid, name, memo, color, initialAmount, amount FROM Accounts ORDER BY name ASC "\
         "LIMIT :limit OFFSET :offset";
@@ -828,6 +829,36 @@ Book::remove(TransactionPtr tran) {
 
     auto query = _db->createQuery();
     query->prepare(DELETE_TRANSACTION);
+    query->bindValue(":uuid", tran->_dbId.toString());
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+    }
+
+    tran->_dbId = QUuid();
+}
+
+void
+Book::remove(RecurrentTransactionPtr tran) {
+    std::lock_guard<std::mutex> lock(_recurrentMutex);
+    if (tran->_dbId.isNull()) {
+        LOG(ERROR) << "Cannot delete transaction with a NULL id";
+        _lastError = "Cannot delete Account that was not added to the db";
+        return;
+    }
+
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+
+    auto query = _db->createQuery();
+    query->prepare(DELETE_RECURRENT_TRANSACTION);
     query->bindValue(":uuid", tran->_dbId.toString());
     auto success = query->exec();
 

@@ -999,4 +999,59 @@ TestBookRecurrentTransaction::testRecurrentTransactionsOffset() {
     QCOMPARE(result.count(), limit);
 }
 
+void
+TestBookRecurrentTransaction::testRemoveStoredTransaction() {
+    auto acc = std::make_shared<PublicAccount>("Bankia", 23.4);
+    auto cat = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+
+    auto trans  = std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(acc, 30, cat),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::DAILY, QDate::currentDate()));
+
+    PublicBook book;
+    book.store(acc);
+    QVERIFY(acc->wasStoredInDb());
+
+    book.store(cat);
+    QVERIFY(cat->wasStoredInDb());
+
+    book.store(trans);
+    QVERIFY(trans->wasStoredInDb());
+    auto id = trans->_dbId;
+
+    book.remove(trans);
+    QVERIFY(!book.isError());
+
+    auto dbPath = PublicBook::databasePath();
+
+    auto db = sys::DatabaseFactory::instance()->addDatabase("QSQLITE", QTest::currentTestFunction());
+    db->setDatabaseName(dbPath);
+
+    auto opened = db->open();
+    QVERIFY(opened);
+
+    auto query = db->createQuery();
+    query->prepare(SELECT_TRANSACTION_QUERY);
+    query->bindValue(":uuid", id);
+    auto success = query->exec();
+    QVERIFY(success);
+    QVERIFY(!query->next());
+}
+
+void
+TestBookRecurrentTransaction::testRemoveMissingTransaction() {
+    auto acc = std::make_shared<PublicAccount>("Bankia", 23.4);
+    auto cat = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+
+    auto trans  = std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(acc, 30, cat),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::DAILY, QDate::currentDate()));
+
+    PublicBook book;
+    book.remove(trans);
+    QVERIFY(book.isError());
+}
+
 QTEST_MAIN(TestBookRecurrentTransaction)

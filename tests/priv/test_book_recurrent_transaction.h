@@ -66,6 +66,8 @@ class TestBookRecurrentTransaction : public BaseTestCase {
     void testRecurrentTransactionsLimit();
     void testRecurrentTransactionsOffset_data();
     void testRecurrentTransactionsOffset();
+    void testRemoveStoredTransaction();
+    void testRemoveMissingTransaction();
 };
 
 Q_DECLARE_METATYPE(QList<com::chancho::RecurrentTransactionPtr>)
