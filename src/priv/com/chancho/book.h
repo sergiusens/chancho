@@ -255,7 +255,7 @@ class Book {
         Returns all the transactions that have be registered with the given category in a specific month.
     */
     virtual QList<TransactionPtr> transactions(CategoryPtr cat, boost::optional<int> month=boost::optional<int>(),
-            boost::optional<int> year=boost::optional<int>());
+                                               boost::optional<int> year=boost::optional<int>());
 
     /*!
         \fn virtual QList<TransactionPtr> transactions(AccountPtr acc);
@@ -271,7 +271,7 @@ class Book {
         given offset from the top result.
     */
     virtual QList<int> monthsWithTransactions(int year, boost::optional<int> limit=boost::optional<int>(),
-            boost::optional<int> offset=boost::optional<int>());
+                                              boost::optional<int> offset=boost::optional<int>());
 
     /*!
         \fn virtual int numberOfMonthsWithTransactions(int year);
@@ -287,7 +287,7 @@ class Book {
         given offset from the top result.
     */
     virtual QList<int> daysWithTransactions(int month, int year, boost::optional<int> limit=boost::optional<int>(),
-            boost::optional<int> offset=boost::optional<int>());
+                                            boost::optional<int> offset=boost::optional<int>());
 
     /*!
         \fn virtual int numberOfDaysWithTransactions(int month, int year);
@@ -295,6 +295,14 @@ class Book {
         Returns the number of days in a month that have registered transactions.
     */
     virtual int numberOfDaysWithTransactions(int month, int year);
+
+    /*!
+        \fn virtual QList<RecurrentTransactionPtr> recurrent_transactions();
+
+        Returns a list with all the recurrent transactions that have been created in the system.
+     */
+    virtual QList<RecurrentTransactionPtr> recurrent_transactions(boost::optional<int> limit=boost::optional<int>(),
+                                                                  boost::optional<int> offset=boost::optional<int>());
 
     /*!
         \fn virtual int incomeForDay(int day, int month, int year);
@@ -350,6 +358,7 @@ class Book {
 
  private:
     std::mutex _transactionMutex;
+    std::mutex _recurrentMutex;
     std::mutex _categoriesMutex;
     std::mutex _accountsMutex;
 };

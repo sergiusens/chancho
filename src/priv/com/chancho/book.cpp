@@ -187,6 +187,16 @@ namespace {
         "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.account=:account ORDER BY t.year, t.month";
+    const QString SELECT_RECURRENT_TRANSACTIONS = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo, "\
+        "t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear, "\
+        "t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount "\
+        "FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON "\
+        "t.account = a.uuid";
+    const QString SELECT_RECURRENT_TRANSACTIONS_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo, "\
+        "t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear, "\
+        "t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount "\
+        "FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON "\
+        "t.account = a.uuid LIMIT :limit OFFSET :offset";
     const QString SELECT_MONTHS_WITH_TRANSACTIONS = "SELECT DISTINCT month FROM Transactions WHERE year=:year "\
         "ORDER BY month DESC";
     const QString SELECT_MONTHS_WITH_TRANSACTIONS_LIMIT = "SELECT DISTINCT month FROM Transactions WHERE year=:year "\
@@ -673,7 +683,7 @@ Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
 
 void
 Book::store(RecurrentTransactionPtr tran) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
+    std::lock_guard<std::mutex> lock(_recurrentMutex);
     system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
     if (!dbLock.opened()) {
@@ -699,7 +709,7 @@ Book::store(RecurrentTransactionPtr tran) {
 
 void
 Book::store(QList<RecurrentTransactionPtr> trans) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
+    std::lock_guard<std::mutex> lock(_recurrentMutex);
     system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
 
     if (!dbLock.opened()) {
@@ -1521,6 +1531,162 @@ Book::numberOfDaysWithTransactions(int month, int year) {
     }
 
     return count;
+}
+
+QList<RecurrentTransactionPtr>
+Book::recurrent_transactions(boost::optional<int> limit, boost::optional<int> offset) {
+    QList<RecurrentTransactionPtr> result;
+    std::lock_guard<std::mutex> lock(_recurrentMutex);
+
+
+    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return result;
+    }
+
+    auto query = _db->createQuery();
+    if (limit) {
+
+        // SELECT_RECURRENT_TRANSACTIONS = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo,
+        //     t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear,
+        //     t.defaultType, t.numberDays, t.occurrences c.parent, c.name, c.type, a.name, a.memo, a.amount
+        //     FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON
+        //     t.account = a.uuid;
+        query->prepare(SELECT_RECURRENT_TRANSACTIONS_LIMIT);
+        query->bindValue(":limit", *limit);
+
+        if (offset) {
+            query->bindValue(":offset", *offset);
+        } else {
+            query->bindValue(":offset", 0);
+        }
+    } else {
+        // SELECT_RECURRENT_TRANSACTIONS_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo,
+        //     t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear,
+        //     t.defaultType, t.numberDays, t.occurrences c.parent, c.name, c.type, a.name, a.memo, a.amount
+        //     FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON
+        //     t.account = a.uuid LIMIT :limit OFFSET :offset;
+        query->prepare(SELECT_RECURRENT_TRANSACTIONS);
+    }
+
+    // accounts are categories are usually repeated so we can keep a map to just create them the first time the appear
+    // in the inner join
+    QMap<QUuid, AccountPtr> accounts;
+    QMap<QUuid, CategoryPtr> categories;
+
+    auto success = query->exec();
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(WARNING) << "Error retrieving the transactions " << _lastError.toStdString();
+        return result;
+    }
+
+    // indexes are faster than the use of columns names, here are the relations
+    // 0 => t.uuid
+    // 1 => t.amount
+    // 2 => t.account
+    // 3 => t.category
+    // 4 => t.contents
+    // 5 => t.memo
+    // 6 => t.startDay
+    // 7 => t.startMonth
+    // 8 => t.startYear
+    // 9 => t.lastDay
+    // 10 => t.lastMonth
+    // 11 => t.lastYear
+    // 12 => t.endDay
+    // 13 => t.endMonth
+    // 14 => t.endYear
+    // 15 => t.defaultType
+    // 16 => t.numberDays
+    // 17 => t.occurrences
+    // 18 => c.parent
+    // 19 => c.name
+    // 20 => c.type
+    // 21 => a.name
+    // 22 => a.memo
+    // 23 => a.amount
+    while (query->next()) {
+        auto transUuid = QUuid(query->value(0).toString());
+        auto transAmount = query->value(1).toString().toDouble();
+        auto accUuid = QUuid(query->value(2).toString());
+        auto catUuid = QUuid(query->value(3).toString());
+        auto transContents = query->value(4).toString();
+        auto transMemo = query->value(5).toString();
+
+        QDate startDate(query->value(8).toInt(), query->value(7).toInt(), query->value(6).toInt());
+
+        QDate lastGeneratedDay;
+        if (query->value(9).isNull()) {  // last date is null if any of the members is null
+            lastGeneratedDay = QDate();
+        } else {
+            lastGeneratedDay = QDate(query->value(11).toInt(), query->value(10).toInt(), query->value(9).toInt());
+        }
+
+        QDate endDate;
+        if (query->value(12).isNull()) {  // end date is null ig any of the members is null
+            endDate = QDate();
+        } else {
+            endDate = QDate(query->value(14).toInt(), query->value(13).toInt(), query->value(12).toInt());
+        }
+
+        auto defaults = boost::optional<RecurrentTransaction::Recurrence::Defaults>();
+        if (!query->value(15).isNull()) {
+            defaults = static_cast<RecurrentTransaction::Recurrence::Defaults>(query->value(14).toInt());
+        }
+
+        auto numberOfDays = boost::optional<int>();
+        if (!query->value(16).isNull()) {
+            numberOfDays = query->value(15).toInt();
+        }
+
+        CategoryPtr category;
+        if (categories.contains(catUuid)) {
+            category = categories[catUuid];
+        } else {
+            // ignore the parent
+            // auto catParent = query->value(9).toString();
+            auto catName = query->value(19).toString();
+            auto catType = static_cast<Category::Type>(query->value(20).toInt());
+            category = std::make_shared<Category>(catName, catType);
+            category->_dbId = catUuid;
+            // add it to be faster with other transactions with the same category
+            categories[catUuid] = category;
+        }
+
+        AccountPtr account;
+        if (accounts.contains(accUuid)) {
+            account = accounts[accUuid];
+        } else {
+            auto accName = query->value(21).toString();
+            auto accMemo = query->value(22).toString();
+            auto accAmount = query->value(23).toString().toDouble();
+            account = std::make_shared<Account>(accName, accAmount, accMemo);
+            account->_dbId = accUuid;
+            accounts[accUuid] = account;
+        }
+        RecurrentTransaction::RecurrencePtr recurrence;
+        if (defaults) {
+            recurrence = std::make_shared<RecurrentTransaction::Recurrence>(*defaults, startDate, endDate);
+        }
+        if (numberOfDays) {
+            recurrence = std::make_shared<RecurrentTransaction::Recurrence>(*numberOfDays, startDate, endDate);
+        }
+        recurrence->lastGenerated = lastGeneratedDay;
+        if (!query->value(17).isNull()) {
+            recurrence->occurrences = query->value(17).toInt();
+        }
+
+        auto transaction = std::make_shared<Transaction>(
+                account, transAmount, category, startDate, transContents, transMemo);
+        transaction->_dbId = transUuid;
+        auto recurrentTrans = std::make_shared<RecurrentTransaction>(transaction, recurrence);
+        result.append(recurrentTrans);
+    }
+
+    return result;
 }
 
 double
