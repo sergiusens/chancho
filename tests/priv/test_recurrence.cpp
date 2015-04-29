@@ -150,7 +150,6 @@ TestRecurrence::testRecurrenceMonthlyFromStart() {
     auto result = recurrence.generateMissingDates();
     QCOMPARE(result.count(), numberMonths);
     QCOMPARE(result.first(), startDate.addMonths(1));
-    QCOMPARE(result.last(), QDate::currentDate());
 }
 
 void
@@ -163,7 +162,6 @@ TestRecurrence::testRecurrenceMonthlyNotFromStart() {
     auto result = recurrence.generateMissingDates();
     QCOMPARE(result.count(), numberMonths/2);
     QCOMPARE(result.first(), lastGenerated.addMonths(1));
-    QCOMPARE(result.last(), QDate::currentDate());
 }
 
 QTEST_MAIN(TestRecurrence)
