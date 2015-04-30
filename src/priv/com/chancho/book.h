@@ -157,6 +157,13 @@ class Book {
     virtual void remove(TransactionPtr tran);
 
     /*!
+        \fn virtual void remove(RecurrentTransactionPtr tran);
+
+        Removes the given \a tran from the database.
+    */
+    virtual void remove(RecurrentTransactionPtr tran);
+
+    /*!
         \fn virtual QList<AccountPtr> accounts();
 
         Returns all the accounts that can be found in the database.
