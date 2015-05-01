@@ -317,7 +317,6 @@ Book::initDatabse() {
     }
 }
 
-
 Book::Book() {
     auto dbPath = Book::databasePath();
     _db = system::DatabaseFactory::instance()->addDatabase("QSQLITE", "BOOKS");
@@ -1565,7 +1564,7 @@ Book::numberOfDaysWithTransactions(int month, int year) {
 }
 
 QList<RecurrentTransactionPtr>
-Book::recurrent_transactions(boost::optional<int> limit, boost::optional<int> offset) {
+Book::recurrentTransactions(boost::optional<int> limit, boost::optional<int> offset) {
     QList<RecurrentTransactionPtr> result;
     std::lock_guard<std::mutex> lock(_recurrentMutex);
 
@@ -1665,12 +1664,12 @@ Book::recurrent_transactions(boost::optional<int> limit, boost::optional<int> of
 
         auto defaults = boost::optional<RecurrentTransaction::Recurrence::Defaults>();
         if (!query->value(15).isNull()) {
-            defaults = static_cast<RecurrentTransaction::Recurrence::Defaults>(query->value(14).toInt());
+            defaults = static_cast<RecurrentTransaction::Recurrence::Defaults>(query->value(15).toInt());
         }
 
         auto numberOfDays = boost::optional<int>();
         if (!query->value(16).isNull()) {
-            numberOfDays = query->value(15).toInt();
+            numberOfDays = query->value(16).toInt();
         }
 
         CategoryPtr category;
@@ -1718,6 +1717,34 @@ Book::recurrent_transactions(boost::optional<int> limit, boost::optional<int> of
     }
 
     return result;
+}
+
+void
+Book::generateRecurrentTransactions() {
+    // get all the recurrent transactions so that we can calculate the missing recurrent transactiosn
+    auto recurrent = recurrentTransactions();
+    QList<TransactionPtr> trans;
+
+    foreach(const RecurrentTransactionPtr& recurrentTrans, recurrent) {
+        auto missingDates = recurrentTrans->recurrence->generateMissingDates();
+        LOG(INFO) << "There are " << missingDates.count() << " transactions that have to be generated";
+        foreach(const QDate& currentDate, missingDates) {
+            auto currentTran = std::make_shared<Transaction>(recurrentTrans->transaction->account,
+                recurrentTrans->transaction->amount, recurrentTrans->transaction->category, currentDate,
+                recurrentTrans->transaction->contents, recurrentTrans->transaction->memo);
+            recurrentTrans->recurrence->lastGenerated = currentDate;
+            trans.append(currentTran);
+        }
+    }
+
+    LOG(INFO) << "We need to add " << trans.count() << " transactions";
+    // store the missing the transactions in the database
+    store(trans);
+    if (!isError()) {
+        store(recurrent);
+    } else {
+        LOG(INFO) << "Error generating recurrent transactions";
+    }
 }
 
 double

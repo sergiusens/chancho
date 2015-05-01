@@ -308,8 +308,16 @@ class Book {
 
         Returns a list with all the recurrent transactions that have been created in the system.
      */
-    virtual QList<RecurrentTransactionPtr> recurrent_transactions(boost::optional<int> limit=boost::optional<int>(),
-                                                                  boost::optional<int> offset=boost::optional<int>());
+    virtual QList<RecurrentTransactionPtr> recurrentTransactions(boost::optional<int> limit = boost::optional<int>(),
+                                                                 boost::optional<int> offset = boost::optional<int>());
+
+    /*!
+        \fn static void generateRecurrentTransactions();
+
+        Generates the recurrent transactions that have not been added since the last time the
+        application was used.
+     */
+    virtual void generateRecurrentTransactions();
 
     /*!
         \fn virtual int incomeForDay(int day, int month, int year);
@@ -327,6 +335,11 @@ class Book {
 
     virtual std::shared_ptr<Stats> stats();
 
+    /*!
+        \fn static void initDatabse();
+
+        Initializes the databse and ensures it is ready to be used.
+     */
     static void initDatabse();
 
     /*!
