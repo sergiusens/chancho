@@ -54,6 +54,8 @@ foreach(test ${PRIVATE_TESTS})
         ${PRIVATE_TESTS_LIBS}
     )
 
-    ADD_TEST(NAME ${test} COMMAND dbus-test-runner -m 180 --task=${CMAKE_CURRENT_BINARY_DIR}/app_lib_${test})
+    ADD_TEST(NAME app_lib_${test} COMMAND dbus-test-runner -m 180 --task=${CMAKE_CURRENT_BINARY_DIR}/app_lib_${test})
 
 endforeach(test)
+
+add_subdirectory(workers)

@@ -32,8 +32,28 @@ namespace chancho {
 
 namespace qml {
 
+namespace workers {
+
+namespace accounts {
+class WorkerFactory;
+}
+
+namespace categories {
+class WorkerFactory;
+}
+
+namespace transactions {
+class WorkerFactory;
+}
+
+}
+
 class Book : public QObject {
     Q_OBJECT
+
+    friend class workers::accounts::WorkerFactory;
+    friend class workers::categories::WorkerFactory;
+    friend class workers::transactions::WorkerFactory;
 
  public:
     enum TransactionType {
@@ -83,6 +103,18 @@ class Book : public QObject {
     void transactionRemoved(QDate date);
     void transactionUpdated(QDate oldDate, QDate newDate);
 
+ protected:
+    // protected for testing purposes
+    Book(BookPtr book, std::shared_ptr<workers::accounts::WorkerFactory> accounts,
+         std::shared_ptr<workers::categories::WorkerFactory> categories,
+         std::shared_ptr<workers::transactions::WorkerFactory> transactions,
+         QObject* parent=0);
+
+    std::shared_ptr<workers::accounts::WorkerFactory> _accountWorkersFactory;
+    std::shared_ptr<workers::categories::WorkerFactory> _categoryWorkersFactory;
+    std::shared_ptr<workers::transactions::WorkerFactory> _transactionWorkersFactory;
+
+
  private:
     BookPtr _book;
 };
@@ -92,3 +124,5 @@ class Book : public QObject {
 }
 
 }
+
+Q_DECLARE_METATYPE(com::chancho::qml::Book::TransactionType)

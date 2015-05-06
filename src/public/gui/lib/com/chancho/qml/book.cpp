@@ -27,6 +27,10 @@
 #include "models/day.h"
 #include "models/month.h"
 
+#include "workers/accounts.h"
+#include "workers/categories.h"
+#include "workers/transactions.h"
+
 #include "account.h"
 #include "transaction.h"
 
@@ -39,13 +43,25 @@ namespace chancho {
 namespace qml {
 
 Book::Book(QObject* parent)
-    : QObject(parent),
-      _book(std::make_shared<com::chancho::Book>()) {
-    qRegisterMetaType<Book::TransactionType>("Book::TransactionType");
+    : Book(std::make_shared<com::chancho::Book>(), parent) {
 }
 
 Book::Book(BookPtr book, QObject* parent)
+    : Book(book, std::make_shared<workers::accounts::WorkerFactory>(),
+           std::make_shared<workers::categories::WorkerFactory>(),
+           std::make_shared<workers::transactions::WorkerFactory>(),
+           parent){
+
+}
+
+Book::Book(BookPtr book, std::shared_ptr<workers::accounts::WorkerFactory> accounts,
+           std::shared_ptr<workers::categories::WorkerFactory> categories,
+           std::shared_ptr<workers::transactions::WorkerFactory> transactions,
+           QObject* parent)
     : QObject(parent),
+     _accountWorkersFactory(accounts),
+     _categoryWorkersFactory(categories),
+     _transactionWorkersFactory(transactions),
       _book(book) {
     qRegisterMetaType<Book::TransactionType>("Book::TransactionType");
 }
@@ -95,42 +111,16 @@ Book::monthsTotalForAccount(QObject* acc, int year) {
 
 bool
 Book::storeAccount(QString name, QString memo, QString color, double initialAmount) {
-
-    double amount = 0;
-    if (initialAmount != 0) {
-        amount = initialAmount;
-    }
-    auto acc = std::make_shared<com::chancho::Account>(name, amount, memo, color);
-    acc->initialAmount = initialAmount;
-    _book->store(acc);
-    if (_book->isError()) {
-        return false;
-    } else {
-        emit accountStored();
-        return true;
-    }
+    auto worker = _accountWorkersFactory->storeAccount(this, name, memo, color, initialAmount);
+    worker->start();
+    return true;
 }
 
 bool
 Book::storeAccounts(QVariantList accounts) {
-    QList<com::chancho::AccountPtr> accs;
-    foreach(const QVariant& var, accounts) {
-        auto map = var.toMap();
-        auto name = map["name"].toString();
-        auto memo = map["memo"].toString();
-        auto color = map["color"].toString();
-        auto amount = map["amount"].toDouble();
-        auto current = std::make_shared<com::chancho::Account>(name, amount, memo, color);
-        current->initialAmount = amount;
-        accs.append(current);
-    }
-    _book->store(accs);
-    if (_book->isError()) {
-        return false;
-    } else {
-        emit accountStored();
-        return true;
-    }
+    auto worker = _accountWorkersFactory->storeAccounts(this, accounts);
+    worker->start();
+    return true;
 }
 
 bool
@@ -139,13 +129,10 @@ Book::removeAccount(QObject* account) {
     if (acc == nullptr) {
         return false;
     }
-    _book->remove(acc->getAccount());
-    if (_book->isError()) {
-        return false;
-    } else {
-        emit accountRemoved();
-        return true;
-    }
+
+    auto worker = _accountWorkersFactory->removeAccount(this, acc->getAccount());
+    worker->start();
+    return true;
 }
 
 bool
@@ -154,23 +141,9 @@ Book::updateAccount(QObject* account, QString name, QString memo, QString color)
     if (acc == nullptr) {
         return false;
     }
-    auto accPtr = acc->getAccount();
-    if (accPtr->name != name
-            || accPtr->memo != memo
-            || accPtr->color != color) {
-        accPtr->name = name;
-        accPtr->memo = memo;
-        accPtr->color = color;
-        _book->store(accPtr);
-        if (_book->isError()) {
-            return false;
-        } else {
-            emit accountUpdated();
-            return true;
-        }
-    } else {
-        return false;
-    }
+    auto worker = _accountWorkersFactory->updateAccount(this, acc->getAccount(), name, memo, color );
+    worker->start();
+    return true;
 }
 
 bool
@@ -186,17 +159,11 @@ Book::storeTransaction(QObject* account, QObject* category, QDate date, double a
         return false;
     }
 
-    auto tran = std::make_shared<chancho::Transaction>(
-            acc->getAccount(), amount, cat->getCategory(), date, contents, memo);
-    _book->store(tran);
-
-    if (_book->isError()) {
-        return false;
-    } else {
-        emit accountUpdated();
-        emit transactionStored(date);
-        return true;
-    }
+    auto worker = _transactionWorkersFactory->storeTransaction(this, acc->getAccount(), cat->getCategory(), date,
+                                                               amount, contents, memo);
+    LOG(INFO) << "Run thread";
+    worker->start();
+    return true;
 }
 
 bool
@@ -205,14 +172,9 @@ Book::removeTransaction(QObject* transaction) {
     if (tran == nullptr) {
         return false;
     }
-    _book->remove(tran->getTransaction());
-    if (_book->isError()) {
-        return false;
-    } else {
-        emit accountUpdated();
-        emit transactionRemoved(tran->getTransaction()->date);
-        return true;
-    }
+    auto worker = _transactionWorkersFactory->removeTransaction(this, tran->getTransaction());
+    worker->start();
+    return true;
 }
 
 bool
@@ -246,32 +208,9 @@ Book::updateTransaction(QObject* tranObj, QObject* accObj, QObject* catObj, QDat
         return false;
     }
 
-    // decide if we need to perform the update
-    auto requiresUpdate = tran->account != acc || tran->category != cat || tran->date != date
-        || tran->contents != contents || tran->memo != memo || tran->amount != amount;
-
-    if (requiresUpdate) {
-        auto oldDate = tran->date;
-        tran->account = acc;
-        tran->category = cat;
-        tran->date = date;
-        tran->contents = contents;
-        tran->memo = memo;
-        tran->amount = amount;
-
-        _book->store(tran);
-        if (_book->isError()) {
-            return false;
-        } else {
-            emit accountUpdated();
-            emit transactionUpdated(oldDate, date);
-            return true;
-        }
-
-    } else {
-        return false;
-    }
-
+    auto worker = _transactionWorkersFactory->updateTransaction(this, tran, acc, cat, date, contents, memo, amount);
+    worker->start();
+    return true;
 }
 
 int
@@ -345,62 +284,16 @@ Book::monthsTotalForCategory(QObject* category, int year) {
 
 bool
 Book::storeCategory(QString name, QString color, Book::TransactionType type) {
-    DLOG(INFO) << __PRETTY_FUNCTION__ << " " << name.toStdString() << " " << color.toStdString();
-    com::chancho::Category::Type catType;
-    if (type == TransactionType::EXPENSE) {
-        catType = com::chancho::Category::Type::EXPENSE;
-    } else {
-        catType = com::chancho::Category::Type::INCOME;
-    }
-
-    auto cat = std::make_shared<com::chancho::Category>(name, catType, color);
-    _book->store(cat);
-
-    if (_book->isError()) {
-        return false;
-    } else {
-        LOG(INFO) << "Category stored being emited";
-        emit categoryStored(type);
-        return true;
-    }
+    auto worker = _categoryWorkersFactory->storeCategory(this, name, color, type);
+    worker->start();
+    return true;
 }
 
 bool
 Book::storeCategories(QVariantList categories) {
-    QList<com::chancho::CategoryPtr> cats;
-    bool foundExpense = false;
-    bool foundIncome = false;
-    foreach(const QVariant& var, categories) {
-        auto map = var.toMap();
-        auto name = map["name"].toString();
-        auto color = map["color"].toString();
-
-        auto qmlType = map["type"].toInt();
-        auto type = com::chancho::Category::Type::EXPENSE;
-        if (qmlType == TransactionType::INCOME) {
-            type = com::chancho::Category::Type::INCOME;
-            foundIncome = true;
-        } else {
-            foundExpense = true;
-        }
-
-        auto current = std::make_shared<com::chancho::Category>(name, type, color);
-        cats.append(current);
-    }
-    _book->store(cats);
-
-    if (_book->isError()) {
-        return false;
-    } else {
-        LOG(INFO) << "Category stored being emited";
-        if (foundIncome) {
-            emit categoryStored(TransactionType::INCOME);
-        }
-        if (foundExpense) {
-            emit categoryStored(TransactionType::EXPENSE);
-        }
-        return true;
-    }
+    auto worker = _categoryWorkersFactory->storeCategories(this, categories);
+    worker->start();
+    return true;
 }
 
 bool
@@ -410,38 +303,9 @@ Book::updateCategory(QObject* category, QString name, QString color, Book::Trans
         return false;
     }
     auto cat = catModel->getCategory();
-
-    com::chancho::Category::Type catType;
-    if (type == TransactionType::EXPENSE) {
-        catType = com::chancho::Category::Type::EXPENSE;
-    } else {
-        catType = com::chancho::Category::Type::INCOME;
-    }
-    auto typeChanged = catType != cat->type;
-
-    if (cat->name != name
-            || cat->color != color
-            || cat->type != catType) {
-        cat->name = name;
-        cat->type = catType;
-        cat->color = color;
-
-        _book->store(cat);
-
-        if (_book->isError()) {
-            return false;
-        } else {
-            if (typeChanged) {
-                LOG(INFO) << "Type updated!";
-                emit categoryTypeUpdated();
-            } else {
-                emit categoryUpdated(type);
-            }
-            return true;
-        }
-    } else {
-        return false;
-    }
+    auto worker = _categoryWorkersFactory->updateCategory(this, cat, name, color, type);
+    worker->start();
+    return true;
 }
 
 bool
@@ -450,15 +314,9 @@ Book::removeCategory(QObject* category) {
     if (catModel == nullptr) {
         return false;
     }
-    auto cat = catModel->getCategory();
-    _book->remove(cat);
-
-    if (_book->isError()) {
-        return false;
-    } else {
-        emit categoryRemoved(catModel->getType());
-        return true;
-    }
+    auto worker = _categoryWorkersFactory->removeCategory(this, catModel->getCategory());
+    worker->start();
+    return true;
 }
 
 QObject*

@@ -32,7 +32,7 @@ namespace tests {
 
 class PublicTransaction : public com::chancho::qml::Transaction {
  public:
-    PublicTransaction (com::chancho::TransactionPtr ptr, QObject* parent =0)
+    PublicTransaction(com::chancho::TransactionPtr ptr, QObject* parent =0)
         : com::chancho::qml::Transaction(ptr, parent) {
     }
 

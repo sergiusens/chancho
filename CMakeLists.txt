@@ -46,6 +46,7 @@ include_directories(${GMOCK_INCLUDE_DIR} ${GTEST_INCLUDE_DIR})
 
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Sql REQUIRED)

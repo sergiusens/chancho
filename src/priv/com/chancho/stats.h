@@ -23,6 +23,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 
 #include <QList>
 #include <QPair>
@@ -37,6 +38,7 @@ namespace com {
 namespace chancho {
 
 class Book;
+class StatsLock;
 
 /*!
    \class Stats
@@ -46,6 +48,7 @@ class Book;
 */
 class Stats {
     friend class Book;
+    friend class StatsLock;
 
  public:
 
@@ -108,8 +111,10 @@ class Stats {
  protected:
     Stats(std::shared_ptr<system::Database> db);
 
- private:
     std::shared_ptr<system::Database> _db;
+    std::mutex _dbMutex;
+
+ private:
     QString _lastError = QString::null;
 };
 

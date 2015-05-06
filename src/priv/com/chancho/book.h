@@ -44,6 +44,7 @@ namespace com {
 namespace chancho {
 
 class Stats;
+class BookLock;
 
  /*!
     \class Book
@@ -53,6 +54,7 @@ class Stats;
 */
 class Book {
     friend class Stats;
+    friend class BookLock;
 
  public:
     Book();
@@ -373,14 +375,12 @@ class Book {
     bool storeSingleRecurrentTransactions(RecurrentTransactionPtr tran);
 
  protected:
-    std::shared_ptr<system::Database> _db;
+    system::DatabasePtr _db;
+    std::mutex _dbMutex;
     QString _lastError = QString::null;
 
  private:
-    std::mutex _transactionMutex;
-    std::mutex _recurrentMutex;
-    std::mutex _categoriesMutex;
-    std::mutex _accountsMutex;
+    static std::mutex _initMutex;
 };
 
 typedef std::shared_ptr<Book> BookPtr;
