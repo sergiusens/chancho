@@ -20,6 +20,8 @@
  * THE SOFTWARE.
  */
 
+#include <glog/logging.h>
+
 #include "accounts.h"
 
 namespace com {
@@ -35,8 +37,10 @@ namespace accounts {
 WorkerThread<SingleStore>*
 WorkerFactory::storeAccount(qml::Book* book, QString name, QString memo, QString color, double initialAmount) {
     auto worker = new WorkerThread<SingleStore>(new SingleStore(book->_book, name, memo, color, initialAmount));
-    QObject::connect(worker->implementation(), &SingleStore::success, book, &Book::accountStored);
-    QObject::connect(worker->thread(), &QThread::finished, worker, &QObject::deleteLater);
+    CHECK(QObject::connect(worker->implementation(), &SingleStore::success, book, &Book::accountStored))
+        << "Could not connect to the success signal";
+    CHECK(QObject::connect(worker->thread(), &QThread::finished, worker, &QObject::deleteLater))
+        << "Could ot connect to the finished signal";
     // TODO: connect the failure signal
     return worker;
 }
@@ -44,8 +48,10 @@ WorkerFactory::storeAccount(qml::Book* book, QString name, QString memo, QString
 WorkerThread<MultiStore>*
 WorkerFactory::storeAccounts(qml::Book* book, QVariantList accounts) {
     auto worker = new WorkerThread<MultiStore>(new MultiStore(book->_book, accounts));
-    QObject::connect(worker->implementation(), &MultiStore::success, book, &Book::accountStored);
-    QObject::connect(worker->thread(), &QThread::finished, worker, &QObject::deleteLater);
+    CHECK(QObject::connect(worker->implementation(), &MultiStore::success, book, &Book::accountStored))
+        << "Could not connect to the success signal";
+    CHECK(QObject::connect(worker->thread(), &QThread::finished, worker, &QObject::deleteLater))
+        << "Could ot connect to the finished signal";
     // TODO: connect the failure signal
     return worker;
 }
@@ -53,8 +59,10 @@ WorkerFactory::storeAccounts(qml::Book* book, QVariantList accounts) {
 WorkerThread<SingleRemove>*
 WorkerFactory::removeAccount(qml::Book* book, com::chancho::AccountPtr account) {
     auto worker = new WorkerThread<SingleRemove>(new SingleRemove(book->_book, account));
-    QObject::connect(worker->implementation(), &SingleRemove::success, book, &Book::accountRemoved);
-    QObject::connect(worker->thread(), &QThread::finished, worker, &QObject::deleteLater);
+    CHECK(QObject::connect(worker->implementation(), &SingleRemove::success, book, &Book::accountRemoved))
+        << "Could not connect to the success signal";
+    CHECK(QObject::connect(worker->thread(), &QThread::finished, worker, &QObject::deleteLater))
+        << "Could ot connect to the finished signal";
     // TODO: connect the failure signal
     return worker;
 }
@@ -63,8 +71,10 @@ WorkerThread<SingleUpdate>*
 WorkerFactory::updateAccount(qml::Book* book, com::chancho::AccountPtr account, QString name, QString memo,
                              QString color) {
     auto worker = new WorkerThread<SingleUpdate>(new SingleUpdate(book->_book, account, name, memo, color));
-    QObject::connect(worker->implementation(), &SingleUpdate::success, book, &Book::accountUpdated);
-    QObject::connect(worker->thread(), &QThread::finished, worker, &QObject::deleteLater);
+    CHECK(QObject::connect(worker->implementation(), &SingleUpdate::success, book, &Book::accountUpdated))
+        << "Could not connect to the success signal";
+    CHECK(QObject::connect(worker->thread(), &QThread::finished, worker, &QObject::deleteLater))
+        << "Could ot connect to the finished signal";
     // TODO: connect the failure signal
     return worker;
 }
