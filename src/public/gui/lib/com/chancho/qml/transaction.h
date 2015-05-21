@@ -85,10 +85,6 @@ class Transaction : public QObject {
     QObject* getCategoryModel();
     void setCategoryModel(QObject* category);
 
-
- private:
-    Transaction(TransactionPtr transactionPtr, QObject* parent=0);
-
  signals:
     void accountChanged(QString account);
     void amountChanged(double amount);
@@ -98,6 +94,7 @@ class Transaction : public QObject {
     void memoChanged(QString memo);
 
  protected:
+    Transaction(TransactionPtr transactionPtr, QObject* parent=0);
     TransactionPtr getTransaction() const;
 
  private:

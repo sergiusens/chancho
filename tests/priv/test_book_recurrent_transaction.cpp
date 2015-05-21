@@ -858,7 +858,7 @@ TestBookRecurrentTransaction::testRecurrentTransactions() {
     book.store(transacions);
     QVERIFY(!book.isError());
 
-    auto result = book.recurrent_transactions();
+    auto result = book.recurrentTransactions();
     QVERIFY(!book.isError());
     QCOMPARE(result.count(), transacions.count());
 }
@@ -921,7 +921,7 @@ TestBookRecurrentTransaction::testRecurrentTransactionsLimit() {
     book.store(transacions);
     QVERIFY(!book.isError());
 
-    auto result = book.recurrent_transactions(1);
+    auto result = book.recurrentTransactions(1);
     QVERIFY(!book.isError());
     QCOMPARE(result.count(), 1);
 }
@@ -994,7 +994,7 @@ TestBookRecurrentTransaction::testRecurrentTransactionsOffset() {
     book.store(transacions);
     QVERIFY(!book.isError());
 
-    auto result = book.recurrent_transactions(limit, offset);
+    auto result = book.recurrentTransactions(limit, offset);
     QVERIFY(!book.isError());
     QCOMPARE(result.count(), limit);
 }
@@ -1052,6 +1052,61 @@ TestBookRecurrentTransaction::testRemoveMissingTransaction() {
     PublicBook book;
     book.remove(trans);
     QVERIFY(book.isError());
+}
+
+void
+TestBookRecurrentTransaction::testGenerateRecurrentTransactions() {
+    // create a list of recurrent transactions wit diff last dates and state that all the required transactions are
+    // generated and the date of the last generate one has been update
+    auto acc = std::make_shared<PublicAccount>("Bankia", 23.4);
+    auto cat = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    auto currentDate = QDate::currentDate();
+    auto startDate = currentDate.addMonths(-1);
+
+    QList<chancho::RecurrentTransactionPtr> trans;
+    trans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(acc, 19, cat, startDate),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::DAILY, startDate)
+    ));
+    trans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(acc, 21, cat, currentDate.addMonths(-1)),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::WEEKLY, startDate)
+    ));
+    trans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(acc, 150, cat, currentDate.addMonths(-1)),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::MONTHLY, startDate)
+    ));
+    trans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(acc, 150, cat, startDate),
+            std::make_shared<PublicRecurrence>(3, currentDate.addMonths(-1))
+    ));
+
+    PublicBook book;
+    book.store(acc);
+    QVERIFY(!book.isError());
+
+    book.store(cat);
+    QVERIFY(!book.isError());
+
+    book.store(trans);
+    QVERIFY(!book.isError());
+
+    // generate the transactions and ensure that the data is present
+    book.generateRecurrentTransactions();
+
+    auto count = 0;
+    foreach(const chancho::RecurrentTransactionPtr& recurrent, trans){
+        auto public_ptr = std::static_pointer_cast<PublicRecurrence>(recurrent->recurrence);
+        count += public_ptr->generateMissingDates().count();
+    }
+
+    // we expect to have 46 transactions
+    auto transactions = book.transactions(startDate.month(), startDate.year());
+    transactions.append(book.transactions(currentDate.month(), currentDate.year()));
+    QCOMPARE(transactions.count(), count);
 }
 
 QTEST_MAIN(TestBookRecurrentTransaction)

@@ -6,6 +6,7 @@ set(PRIVATE_TESTS
     test_book_mocked
     test_book_recurrent_transaction
     test_book_transaction
+    test_book_threading
     test_category
     test_recurrence
     test_stats
@@ -56,6 +57,6 @@ foreach(test ${PRIVATE_TESTS})
         ${PRIVATE_TESTS_LIBS}
     )
 
-    ADD_TEST(NAME ${test} COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${test})
+    ADD_TEST(NAME private_lib_${test} COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${test})
 
 endforeach(test)

@@ -219,6 +219,34 @@ namespace {
 
 }
 
+class BookLock {
+ public:
+
+    explicit BookLock(Book* book)
+            : _book(book) {
+        _book->_dbMutex.lock();
+        _opened = _book->_db->open();
+    }
+
+    ~BookLock() {
+        if (_opened) {
+            _book->_db->close();
+        }
+        _book->_dbMutex.unlock();
+    }
+
+    bool opened() const {
+        return _opened;
+    }
+
+    BookLock(const BookLock&) = delete;
+    BookLock& operator=(const BookLock&) = delete;
+
+ private:
+    bool _opened = false;
+    Book* _book;
+};
+
 double Book::DB_VERSION = 0.1;
 std::set<QString> Book::TABLES {"accounts", "categories", "transactions", "recurrenttransactions"};
 
@@ -317,7 +345,6 @@ Book::initDatabse() {
     }
 }
 
-
 Book::Book() {
     auto dbPath = Book::databasePath();
     _db = system::DatabaseFactory::instance()->addDatabase("QSQLITE", "BOOKS");
@@ -357,8 +384,7 @@ Book::storeSingleAcc(AccountPtr acc) {
 
 void
 Book::store(AccountPtr acc) {
-    std::lock_guard<std::mutex> lock(_accountsMutex);
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
@@ -369,8 +395,7 @@ Book::store(AccountPtr acc) {
 
 void
 Book::store(QList<AccountPtr> accs) {
-    std::lock_guard<std::mutex> lock(_accountsMutex);
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -438,8 +463,7 @@ Book::store(CategoryPtr cat) {
         store(cat->parent);
     }
 
-    std::lock_guard<std::mutex> lock(_categoriesMutex);
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -459,8 +483,7 @@ Book::store(QList<CategoryPtr> cats) {
         }
     }
 
-    std::lock_guard<std::mutex> lock(_categoriesMutex);
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -553,8 +576,7 @@ Book::storeSingleTransactions(TransactionPtr tran) {
 
 void
 Book::store(TransactionPtr tran) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -566,8 +588,7 @@ Book::store(TransactionPtr tran) {
 
 void
 Book::store(QList<TransactionPtr> trans) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -684,8 +705,7 @@ Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
 
 void
 Book::store(RecurrentTransactionPtr tran) {
-    std::lock_guard<std::mutex> lock(_recurrentMutex);
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -710,8 +730,7 @@ Book::store(RecurrentTransactionPtr tran) {
 
 void
 Book::store(QList<RecurrentTransactionPtr> trans) {
-    std::lock_guard<std::mutex> lock(_recurrentMutex);
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -738,7 +757,6 @@ Book::store(QList<RecurrentTransactionPtr> trans) {
 
 void
 Book::remove(AccountPtr acc) {
-    std::lock_guard<std::mutex> lock(_accountsMutex);
     if (acc->_dbId.isNull()) {
         LOG(ERROR) << "Cannot delete account '" << acc->name.toStdString()
                 << "' with a NULL id";
@@ -746,7 +764,7 @@ Book::remove(AccountPtr acc) {
         return;
     }
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -769,7 +787,6 @@ Book::remove(AccountPtr acc) {
 
 void
 Book::remove(CategoryPtr cat) {
-    std::lock_guard<std::mutex> lock(_categoriesMutex);
     if (cat->_dbId.isNull()) {
         LOG(ERROR) << "Cannot delete category '" << cat->name.toStdString()
                 << "' with a NULL id";
@@ -777,7 +794,7 @@ Book::remove(CategoryPtr cat) {
         return;
     }
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -812,14 +829,13 @@ Book::remove(CategoryPtr cat) {
 
 void
 Book::remove(TransactionPtr tran) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
     if (tran->_dbId.isNull()) {
         LOG(ERROR) << "Cannot delete transaction with a NULL id";
         _lastError = "Cannot delete Account that was not added to the db";
         return;
     }
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -842,14 +858,13 @@ Book::remove(TransactionPtr tran) {
 
 void
 Book::remove(RecurrentTransactionPtr tran) {
-    std::lock_guard<std::mutex> lock(_recurrentMutex);
     if (tran->_dbId.isNull()) {
         LOG(ERROR) << "Cannot delete transaction with a NULL id";
         _lastError = "Cannot delete Account that was not added to the db";
         return;
     }
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -872,10 +887,9 @@ Book::remove(RecurrentTransactionPtr tran) {
 
 QList<AccountPtr>
 Book::accounts(boost::optional<int> limit, boost::optional<int> offset) {
-    std::lock_guard<std::mutex> lock(_accountsMutex);
     QList<AccountPtr> accs;
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -932,10 +946,8 @@ Book::accounts(boost::optional<int> limit, boost::optional<int> offset) {
 
 int
 Book::numberOfAccounts() {
-    std::lock_guard<std::mutex> lock(_accountsMutex);
     int count = -1;
-
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -961,12 +973,11 @@ Book::numberOfAccounts() {
 
 QList<CategoryPtr>
 Book::categories(boost::optional<Category::Type> type, boost::optional<int> limit, boost::optional<int> offset) {
-    std::lock_guard<std::mutex> lock(_categoriesMutex);
     QMap<QUuid, QList<QUuid>> parentChildMap;
     QMap<QUuid, CategoryPtr> catsMap;
     QList<QUuid> orderedIds;
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -1088,10 +1099,9 @@ Book::categories(boost::optional<Category::Type> type, boost::optional<int> limi
 
 int
 Book::numberOfCategories(boost::optional<Category::Type> type) {
-    std::lock_guard<std::mutex> lock(_categoriesMutex);
     int count = -1;
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -1186,9 +1196,8 @@ Book::parseTransactions(std::shared_ptr<system::Query> query) {
 QList<TransactionPtr>
 Book::transactions(int year, int month, boost::optional<int> day, boost::optional<int> limit,
         boost::optional<int> offset) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
     QList<TransactionPtr> trans;
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -1257,10 +1266,9 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
 
 int
 Book::numberOfTransactions() {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
     int count = -1;
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -1284,10 +1292,9 @@ Book::numberOfTransactions() {
 
 int
 Book::numberOfTransactions(int month, int year) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
     int count = -1;
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -1313,10 +1320,8 @@ Book::numberOfTransactions(int month, int year) {
 
 int
 Book::numberOfTransactions(int day, int month, int year) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
     int count = -1;
-
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -1344,14 +1349,13 @@ Book::numberOfTransactions(int day, int month, int year) {
 
 QList<TransactionPtr>
 Book::transactions(CategoryPtr cat, boost::optional<int> month, boost::optional<int> year) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
     QList<TransactionPtr> trans;
 
     if (!cat->wasStoredInDb()) {
         LOG(INFO) << "Returning empty list because category was not stored.";
         return  trans;
     }
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -1387,14 +1391,13 @@ Book::transactions(CategoryPtr cat, boost::optional<int> month, boost::optional<
 
 QList<TransactionPtr>
 Book::transactions(AccountPtr acc) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
     QList<TransactionPtr> trans;
 
     if (!acc->wasStoredInDb()) {
         LOG(INFO) << "Returning empty list because account was not stored.";
         return  trans;
     }
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -1420,7 +1423,7 @@ Book::transactions(AccountPtr acc) {
 QList<int>
 Book::monthsWithTransactions(int year, boost::optional<int> limit, boost::optional<int> offset) {
     QList<int> result;
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
@@ -1460,10 +1463,9 @@ Book::monthsWithTransactions(int year, boost::optional<int> limit, boost::option
 
 int
 Book::numberOfMonthsWithTransactions(int year) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
     int count = -1;
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -1490,7 +1492,7 @@ Book::numberOfMonthsWithTransactions(int year) {
 QList<int>
 Book::daysWithTransactions(int month, int year, boost::optional<int> limit, boost::optional<int> offset) {
     QList<int> result;
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
@@ -1535,10 +1537,9 @@ Book::daysWithTransactions(int month, int year, boost::optional<int> limit, boos
 
 int
 Book::numberOfDaysWithTransactions(int month, int year) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
     int count = -1;
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -1565,12 +1566,10 @@ Book::numberOfDaysWithTransactions(int month, int year) {
 }
 
 QList<RecurrentTransactionPtr>
-Book::recurrent_transactions(boost::optional<int> limit, boost::optional<int> offset) {
+Book::recurrentTransactions(boost::optional<int> limit, boost::optional<int> offset) {
     QList<RecurrentTransactionPtr> result;
-    std::lock_guard<std::mutex> lock(_recurrentMutex);
+    BookLock dbLock(this);
 
-
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
@@ -1665,12 +1664,12 @@ Book::recurrent_transactions(boost::optional<int> limit, boost::optional<int> of
 
         auto defaults = boost::optional<RecurrentTransaction::Recurrence::Defaults>();
         if (!query->value(15).isNull()) {
-            defaults = static_cast<RecurrentTransaction::Recurrence::Defaults>(query->value(14).toInt());
+            defaults = static_cast<RecurrentTransaction::Recurrence::Defaults>(query->value(15).toInt());
         }
 
         auto numberOfDays = boost::optional<int>();
         if (!query->value(16).isNull()) {
-            numberOfDays = query->value(15).toInt();
+            numberOfDays = query->value(16).toInt();
         }
 
         CategoryPtr category;
@@ -1720,12 +1719,39 @@ Book::recurrent_transactions(boost::optional<int> limit, boost::optional<int> of
     return result;
 }
 
+void
+Book::generateRecurrentTransactions() {
+    // get all the recurrent transactions so that we can calculate the missing recurrent transactiosn
+    auto recurrent = recurrentTransactions();
+    QList<TransactionPtr> trans;
+
+    foreach(const RecurrentTransactionPtr& recurrentTrans, recurrent) {
+        auto missingDates = recurrentTrans->recurrence->generateMissingDates();
+        LOG(INFO) << "There are " << missingDates.count() << " transactions that have to be generated";
+        foreach(const QDate& currentDate, missingDates) {
+            auto currentTran = std::make_shared<Transaction>(recurrentTrans->transaction->account,
+                recurrentTrans->transaction->amount, recurrentTrans->transaction->category, currentDate,
+                recurrentTrans->transaction->contents, recurrentTrans->transaction->memo);
+            recurrentTrans->recurrence->lastGenerated = currentDate;
+            trans.append(currentTran);
+        }
+    }
+
+    LOG(INFO) << "We need to add " << trans.count() << " transactions";
+    // store the missing the transactions in the database
+    store(trans);
+    if (!isError()) {
+        store(recurrent);
+    } else {
+        LOG(INFO) << "Error generating recurrent transactions";
+    }
+}
+
 double
 Book::amountForTypeInDay(int day, int month, int year, Category::Type type) {
-    std::lock_guard<std::mutex> lock(_transactionMutex);
     double result = 0;
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    BookLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();

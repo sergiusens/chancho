@@ -42,6 +42,34 @@ namespace com {
 
 namespace chancho {
 
+class StatsLock {
+ public:
+
+    explicit StatsLock(Stats* stats)
+            : _stats(stats) {
+        _stats->_dbMutex.lock();
+        _opened = _stats->_db->open();
+    }
+
+    ~StatsLock() {
+        if (_opened) {
+            _stats->_db->close();
+        }
+        _stats->_dbMutex.unlock();
+    }
+
+    bool opened() const {
+        return _opened;
+    }
+
+    StatsLock(const StatsLock&) = delete;
+    StatsLock& operator=(const StatsLock&) = delete;
+
+ private:
+    bool _opened = false;
+    Stats* _stats;
+};
+
 
 Stats::Stats() {
     auto dbPath = Book::databasePath();
@@ -62,7 +90,7 @@ QList<double>
 Stats::monthsTotalForAccount(AccountPtr acc, int year) {
     QList<double> amounts;
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    StatsLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -122,7 +150,7 @@ Stats::categoryPercentages(int month, int year) {
     QList<CategoryPercentage> list;
     QPair<CategoryPercentageTotal, QList<CategoryPercentage>> result(total, list);
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    StatsLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
@@ -176,7 +204,7 @@ QList<double>
 Stats::monthsTotalForCategory(CategoryPtr cat, int year) {
     QList<double> result;
 
-    system::DatabaseLock<std::shared_ptr<system::Database>> dbLock(_db);
+    StatsLock dbLock(this);
 
     if (!dbLock.opened()) {
         _lastError = _db->lastError().text();
