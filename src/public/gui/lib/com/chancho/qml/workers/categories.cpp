@@ -106,7 +106,7 @@ class SingleUpdateExecutor : public QObject {
     SingleUpdateExecutor(qml::Book* book, com::chancho::Category::Type oldType, qml::Book::TransactionType newType,
                          QObject* parent=0)
         : QObject(parent),
-          _book(book)
+          _book(book),
           _oldType(oldType),
           _newType((newType == qml::Book::EXPENSE)?
                    com::chancho::Category::Type::EXPENSE: com::chancho::Category::Type::INCOME){
