@@ -86,6 +86,8 @@ set(SOURCES
 )
 
 set(QML_SOURCES
+    qml/components/images/chancho_logo.png
+    qml/components/images/chancho_wordmark.png
     qml/MainWindow.qml
     qml/components/AccountComponent.qml
     qml/components/AccountForm.qml
@@ -105,6 +107,7 @@ set(QML_SOURCES
     qml/components/NewCategory.qml
     qml/components/NewTransaction.qml
     qml/components/PageWithBottomEdge.qml
+    qml/components/SplashScreen.qml
     qml/components/TransactionComponent.qml
     qml/components/TransactionForm.qml
     qml/components/Walkthrough.qml

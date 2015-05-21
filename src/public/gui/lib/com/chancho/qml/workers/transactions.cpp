@@ -77,6 +77,7 @@ WorkerFactory::updateTransaction(qml::Book* book, chancho::TransactionPtr trans,
 WorkerThread<GenerateRecurrent>*
 WorkerFactory::generateRecurrentTransactions(qml::Book* book) {
     auto worker = new WorkerThread<GenerateRecurrent>(new GenerateRecurrent(book->_book));
+    QObject::connect(worker->implementation(), &SingleUpdate::success, book, &Book::recurrentTransactionsGenerated);
     QObject::connect(worker->thread(), &QThread::finished, worker, &QObject::deleteLater);
     return worker;
 }

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-21 10:57+0200\n"
+"POT-Creation-Date: 2015-05-22 08:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,20 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../qml/MainWindow.qml:78 ../qml/components/MainPage.qml:45
+#: ../qml/MainWindow.qml:54
+msgid "Updating database"
+msgstr ""
+
+#: ../qml/MainWindow.qml:118 ../qml/components/MainPage.qml:45
 msgid "Bills"
 msgstr ""
 
-#: ../qml/MainWindow.qml:88 ../qml/components/CategoryStatsPage.qml:50
+#: ../qml/MainWindow.qml:128 ../qml/components/CategoryStatsPage.qml:50
 msgid "Stats"
 msgstr ""
 
-#: ../qml/MainWindow.qml:97 ../qml/components/AccountsPage.qml:67
+#: ../qml/MainWindow.qml:137 ../qml/components/AccountsPage.qml:67
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Accounts"
 msgstr ""
 
-#: ../qml/MainWindow.qml:107 ../qml/components/CategoriesPage.qml:45
+#: ../qml/MainWindow.qml:147 ../qml/components/CategoriesPage.qml:45
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Categories"
 msgstr ""
@@ -96,7 +100,7 @@ msgid "Initial amount"
 msgstr ""
 
 #: ../qml/components/AccountForm.qml:211
-#: ../qml/components/TransactionForm.qml:202
+#: ../qml/components/TransactionForm.qml:201
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:65
 msgid "Memo"
 msgstr ""
@@ -134,8 +138,8 @@ msgstr ""
 msgid "Income"
 msgstr ""
 
-#: ../qml/components/CategoryStatsPage.qml:133
-#: ../qml/components/MainPage.qml:138
+#: ../qml/components/CategoryStatsPage.qml:132
+#: ../qml/components/MainPage.qml:137
 msgid "No entries were found!"
 msgstr ""
 
@@ -219,7 +223,7 @@ msgstr ""
 msgid "Do you want to remove this transaction?"
 msgstr ""
 
-#: ../qml/components/MainPage.qml:151 ../qml/components/NewTransaction.qml:35
+#: ../qml/components/MainPage.qml:150 ../qml/components/NewTransaction.qml:35
 msgid "Add new entry"
 msgstr ""
 
@@ -259,11 +263,11 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: ../qml/components/TransactionForm.qml:180
+#: ../qml/components/TransactionForm.qml:179
 msgid "Amount"
 msgstr ""
 
-#: ../qml/components/TransactionForm.qml:189
+#: ../qml/components/TransactionForm.qml:188
 msgid "Contents"
 msgstr ""
 

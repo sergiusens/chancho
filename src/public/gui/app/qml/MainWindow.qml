@@ -51,9 +51,33 @@ MainView {
             pagestack.push(tabsComponent);
             pagestack.push(Qt.resolvedUrl("components/WelcomeWizard.qml"));
         } else {
-            pagestack.push(tabsComponent)
+            splashComponent.operationText = i18n.tr("Updating database");
+            pagestack.push(tabsComponent);
+            pagestack.push(splashComponent.component);
+            Book.generateRecurrentTransactions();
         }
+    }
 
+    Item {
+        Timer {
+            id: delay
+            interval: 2000
+            running: false
+            repeat: false
+            onTriggered:  {
+                pagestack.pop();
+            }
+        }
+    }
+
+    Connections {
+        target: Book
+        onRecurrentTransactionsGenerated: {
+            console.log("Recurrent transactions completed");
+            splashComponent.progressUnknown = true;
+            splashComponent.progressValue = 0.5;
+            delay.start();
+        }
     }
 
 
@@ -67,6 +91,22 @@ MainView {
 
     PageStack {
         id: pagestack
+    }
+
+    Item {
+        id: splashComponent
+        property string operationText
+        property bool progressUnknown: true
+        property real progressValue: 0
+
+        property var component: Component {
+            SplashScreen {
+                id: splashScreen
+                operationText: splashComponent.operationText
+                progressUnknown: splashComponent.progressUnknown
+                progressValue: splashComponent.progressValue
+            }
+        }
     }
 
     Component {
