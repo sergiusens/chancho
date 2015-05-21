@@ -1,8 +1,19 @@
 project(chancho)
 
 cmake_minimum_required(VERSION 2.8)
+
+option(CLICK_MODE "Installs to a contained location" off)
+option(SANITIZERS "Add the sanitizer check to the code to find bugs in the application" off)
+
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -pthread")
+
+if(SANITIZERS)
+    # add the address sanitazer which can be used to crash the application and get information
+    # for wrong used variables.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -O3 -fno-omit-frame-pointer")
+	message(STATUS "Setting build type to use sanitizers.")
+endif(SANITIZERS)
 
 
 # Standard install paths
@@ -25,8 +36,6 @@ IF(CMAKE_BUILD_TYPE MATCHES [cC][oO][vV][eE][rR][aA][gG][eE])
   ENABLE_COVERAGE_REPORT(TARGETS ${movie-tracker-priv} ${movie-tracker-cli})
 ENDIF(CMAKE_BUILD_TYPE MATCHES [cC][oO][vV][eE][rR][aA][gG][eE])
 
-option(CLICK_MODE "Installs to a contained location" off)
-
 execute_process(
     COMMAND qmake -query QT_INSTALL_QML
     OUTPUT_VARIABLE QT_INSTALL_QML
@@ -35,7 +44,7 @@ execute_process(
 
 set(CHANCHO_VERSION_MAJOR 0)
 set(CHANCHO_VERSION_MINOR 1)
-set(CHANCHO_VERSION_PATCH 11)
+set(CHANCHO_VERSION_PATCH 12)
 
 #required bin helpers
 find_program(INTLTOOL_MERGE intltool-merge)
