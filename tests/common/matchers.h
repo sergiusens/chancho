@@ -93,6 +93,26 @@ MATCHER_P(CategoryListEquals, value, "Returns if the two list of categories are 
 
 MATCHER_P(TransactionEquals, value, "Returns if the two categories are equal.") {
     return arg->account->name == value->account->name && arg->amount == value->amount
-           && arg->category->name == arg->category->name && arg->date == value->date
+           && arg->category->name == value->category->name && arg->date == value->date
            && arg->contents == value->contents && arg->memo == value->memo;
+}
+
+MATCHER_P(RecurrentTransactionEquals, value, "Returns if the two categories are equal.") {
+    auto argTran = arg->transaction;
+    auto valueTran = value->transaction;
+    auto transEqual = argTran->account->name == valueTran->account->name && argTran->amount == valueTran->amount
+           && argTran->category->name == valueTran->category->name && argTran->date == valueTran->date
+           && argTran->contents == valueTran->contents && argTran->memo == valueTran->memo;
+
+    auto argRecurrence = arg->recurrence;
+    auto valueRecurrence = value->recurrence;
+
+    auto recurrenceEqual = argRecurrence->startDate == valueRecurrence->startDate
+        && argRecurrence->lastGenerated  == valueRecurrence->lastGenerated
+        && argRecurrence->endDate  == valueRecurrence->endDate
+        && argRecurrence->occurrences == valueRecurrence->occurrences
+        && argRecurrence->numberOfDays() == valueRecurrence->numberOfDays()
+        && argRecurrence->defaults() == valueRecurrence->defaults();
+
+    return transEqual && recurrenceEqual;
 }

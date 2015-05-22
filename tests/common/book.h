@@ -39,6 +39,7 @@ class MockBook: public com::chancho::Book {
     MOCK_METHOD1(store, void(CategoryPtr));
     MOCK_METHOD1(store, void(QList<CategoryPtr>));
     MOCK_METHOD1(store, void(TransactionPtr));
+    MOCK_METHOD1(store, void(RecurrentTransactionPtr));
     MOCK_METHOD1(remove, void(AccountPtr));
     MOCK_METHOD1(remove, void(CategoryPtr));
     MOCK_METHOD1(remove, void(TransactionPtr));

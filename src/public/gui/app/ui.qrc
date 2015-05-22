@@ -28,6 +28,7 @@
         <file>qml/components/WizardCategoriesPage.qml</file>
         <file>qml/components/WizardLastPage.qml</file>
         <file>qml/components/dialogs/ErrorDialog.qml</file>
+        <file>qml/components/dialogs/RecurrenceDialog.qml</file>
         <file>qml/components/dialogs/ConfirmationDialog.qml</file>
         <file>qml/components/dialogs/WizardNewAccountDialog.qml</file>
         <file>qml/components/dialogs/WizardNewCategoryDialog.qml</file>

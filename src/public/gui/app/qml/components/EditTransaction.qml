@@ -100,6 +100,7 @@ Page {
 
     TransactionForm {
         id: form
+        showRecurrence: false
         anchors.fill: parent
         anchors.margins: units.gu(1)
     }

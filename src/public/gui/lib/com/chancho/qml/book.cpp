@@ -154,7 +154,7 @@ Book::generateRecurrentTransactions() {
 
 bool
 Book::storeTransaction(QObject* account, QObject* category, QDate date, double amount, QString contents,
-        QString memo) {
+        QString memo, QVariantMap recurrence) {
     auto acc = qobject_cast<qml::Account*>(account);
     if (acc == nullptr) {
         return false;
@@ -166,7 +166,7 @@ Book::storeTransaction(QObject* account, QObject* category, QDate date, double a
     }
 
     auto worker = _transactionWorkersFactory->storeTransaction(this, acc->getAccount(), cat->getCategory(), date,
-                                                               amount, contents, memo);
+                                                               amount, contents, memo, recurrence);
     LOG(INFO) << "Run thread";
     worker->start();
     return true;

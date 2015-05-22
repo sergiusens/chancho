@@ -723,7 +723,13 @@ Book::store(RecurrentTransactionPtr tran) {
     auto success = storeSingleRecurrentTransactions(tran);
     if (!success) {
         _db->rollback();
-        return;;
+        return;
+    }
+
+    success = storeSingleTransactions(tran->transaction);
+    if (!success) {
+        _db->rollback();
+        return;
     }
     _db->commit();
 }
@@ -1662,12 +1668,12 @@ Book::recurrentTransactions(boost::optional<int> limit, boost::optional<int> off
             endDate = QDate(query->value(14).toInt(), query->value(13).toInt(), query->value(12).toInt());
         }
 
-        auto defaults = boost::optional<RecurrentTransaction::Recurrence::Defaults>();
+        boost::optional<RecurrentTransaction::Recurrence::Defaults> defaults = boost::none;
         if (!query->value(15).isNull()) {
             defaults = static_cast<RecurrentTransaction::Recurrence::Defaults>(query->value(15).toInt());
         }
 
-        auto numberOfDays = boost::optional<int>();
+        boost::optional<int> numberOfDays = boost::none;
         if (!query->value(16).isNull()) {
             numberOfDays = query->value(16).toInt();
         }
@@ -1727,7 +1733,7 @@ Book::generateRecurrentTransactions() {
 
     foreach(const RecurrentTransactionPtr& recurrentTrans, recurrent) {
         auto missingDates = recurrentTrans->recurrence->generateMissingDates();
-        LOG(INFO) << "There are " << missingDates.count() << " transactions that have to be generated";
+        DLOG(INFO) << "There are " << missingDates.count() << " transactions that have to be generated";
         foreach(const QDate& currentDate, missingDates) {
             auto currentTran = std::make_shared<Transaction>(recurrentTrans->transaction->account,
                 recurrentTrans->transaction->amount, recurrentTrans->transaction->category, currentDate,
@@ -1737,7 +1743,7 @@ Book::generateRecurrentTransactions() {
         }
     }
 
-    LOG(INFO) << "We need to add " << trans.count() << " transactions";
+    DLOG(INFO) << "We need to add " << trans.count() << " transactions";
     // store the missing the transactions in the database
     store(trans);
     if (!isError()) {

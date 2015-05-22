@@ -53,7 +53,9 @@ Page {
                     var date = form.date;
                     var contents = form.contents;
                     var memo = form.memo;
-                    var success = Book.storeTransaction(account, category, date, parseFloat(amount), contents, memo);
+                    var recurrence = form.recurrence
+                    var success = Book.storeTransaction(account, category, date, parseFloat(amount), contents, memo,
+                                                        recurrence);
                     if (success) {
                         mainPageStack.pop();
                     } else {
@@ -68,6 +70,7 @@ Page {
 
     TransactionForm {
         id: form
+        showRecurrence: true
         anchors.fill: parent
         anchors.margins: units.gu(1)
     }

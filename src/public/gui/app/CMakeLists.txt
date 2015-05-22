@@ -117,6 +117,7 @@ set(QML_SOURCES
     qml/components/WizardLastPage.qml
     qml/components/dialogs/ConfirmationDialog.qml
     qml/components/dialogs/ErrorDialog.qml
+    qml/components/dialogs/RecurrenceDialog.qml
     qml/components/dialogs/WizardNewAccountDialog.qml
     qml/components/dialogs/WizardNewCategoryDialog.qml
     qml/components/dialogs/js/accounts_wizard.js

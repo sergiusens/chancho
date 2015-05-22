@@ -31,6 +31,7 @@ import com.chancho 1.0
 import "models"
 
 UbuntuShape {
+    id: form
 
     property alias selectedTypeIndex: typeSelector.selectedIndex
     property alias accountModel: accountSelector.model
@@ -41,10 +42,13 @@ UbuntuShape {
     property alias contents: contentsField.text;
     property alias memo: memoTextArea.text;
     property alias amount: amountField.text;
+    property bool showRecurrence
+    property var recurrence
 
     onHeightChanged : {
-        if (height > flickable.contentHeight) {
-            flickable.contentHeight = height;
+        if (childrenRect.height > flickable.contentHeight) {
+            console.log("Height is " + height + " and children height is " + childrenRect.height + " and content height is " + flickable.contentHeight);
+            flickable.contentHeight = childrenRect.height;
         }
     }
 
@@ -96,10 +100,7 @@ UbuntuShape {
 
             OptionSelector {
                 id: typeSelector
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-                width: parent.width
+                Layout.fillWidth : true
 
                 model: typeModel
                 delegate: typeDelegate
@@ -142,24 +143,57 @@ UbuntuShape {
                 delegate: categoriesDelegate
             }
 
-            TextField {
-                id: datePicker
-                property date date: new Date()
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: units.gu(1)
 
-                anchors.left: parent.left
-                anchors.right: parent.right
+                TextField {
+                    id: datePicker
+                    Layout.fillWidth: true
 
-                placeholderText: i18n.tr("Date")
-                onDateChanged: {
-                    datePicker.text = Qt.formatDateTime(date, "dd/MM/yyyy");
+                    property date date: new Date()
+
+                    placeholderText: i18n.tr("Date")
+                    onDateChanged: {
+                        datePicker.text = Qt.formatDateTime(date, "dd/MM/yyyy");
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        onClicked: {
+                            var popup = PickerPanel.openDatePicker(datePicker, "date", "Days|Years|Months");
+                            popup.picker.minimum = new Date(1900, 1, 1);
+                        }
+                    }
                 }
 
-                MouseArea {
-                    anchors.fill: parent
+                Label {
+                    visible: showRecurrence
+                    text: i18n.tr("Repeat:")
+                }
 
-                    onClicked: {
-                        var popup = PickerPanel.openDatePicker(datePicker, "date", "Days|Years|Months");
-                        popup.picker.minimum = new Date(1900, 1, 1);
+                Switch {
+                    id: repeatSwitch
+                    visible: showRecurrence
+                    checked: false
+
+                    onCheckedChanged: {
+                        console.log("Show the recurrence dialog!")
+                        if (checked) {
+                            var recurrenceOkCb = function(recurrenceObj) {
+                                console.log("Got a new recurrence data " + recurrenceObj["type"]);
+                                form.recurrence = recurrenceObj
+                            };
+                            var properties = {
+                                "okCallback": recurrenceOkCb
+                            }
+
+                            PopupUtils.open(Qt.resolvedUrl("dialogs/RecurrenceDialog.qml"), repeatSwitch, properties);
+                        } else {
+                            console.log("Forget recurrence settings.");
+                            recurrence = {}
+                        }
                     }
                 }
             }
