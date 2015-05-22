@@ -21,7 +21,6 @@
  */
 
 #include "single_store.h"
-#include "../../../../../../../../../../../../../usr/include/x86_64-linux-gnu/qt5/QtCore/qthread.h"
 
 namespace com {
 

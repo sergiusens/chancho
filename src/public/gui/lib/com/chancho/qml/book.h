@@ -40,10 +40,16 @@ class WorkerFactory;
 
 namespace categories {
 class WorkerFactory;
+class MultiStoreExecutor;
+class SingleStoreExecutor;
+class SingleRemoveExecutor;
 }
 
 namespace transactions {
 class WorkerFactory;
+class StoreTransactionExecutor;
+class RemoveTransactionExecutor;
+class UpdateTransactionExecutor;
 }
 
 }
@@ -54,6 +60,16 @@ class Book : public QObject {
     friend class workers::accounts::WorkerFactory;
     friend class workers::categories::WorkerFactory;
     friend class workers::transactions::WorkerFactory;
+
+#if QT_VERSION < 0x050300
+        friend class workers::transactions::StoreTransactionExecutor;
+        friend class workers::transactions::RemoveTransactionExecutor;
+        friend class workers::transactions::UpdateTransactionExecutor;
+
+        friend class workers::categories::MultiStoreExecutor;
+        friend class workers::categories::SingleStoreExecutor;
+        friend class workers::categories::SingleRemoveExecutor;
+#endif
 
  public:
     enum TransactionType {
