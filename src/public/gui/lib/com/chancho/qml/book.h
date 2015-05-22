@@ -32,8 +32,44 @@ namespace chancho {
 
 namespace qml {
 
+namespace workers {
+
+namespace accounts {
+class WorkerFactory;
+}
+
+namespace categories {
+class WorkerFactory;
+class MultiStoreExecutor;
+class SingleStoreExecutor;
+class SingleRemoveExecutor;
+}
+
+namespace transactions {
+class WorkerFactory;
+class StoreTransactionExecutor;
+class RemoveTransactionExecutor;
+class UpdateTransactionExecutor;
+}
+
+}
+
 class Book : public QObject {
     Q_OBJECT
+
+    friend class workers::accounts::WorkerFactory;
+    friend class workers::categories::WorkerFactory;
+    friend class workers::transactions::WorkerFactory;
+
+#if QT_VERSION < 0x050300
+        friend class workers::transactions::StoreTransactionExecutor;
+        friend class workers::transactions::RemoveTransactionExecutor;
+        friend class workers::transactions::UpdateTransactionExecutor;
+
+        friend class workers::categories::MultiStoreExecutor;
+        friend class workers::categories::SingleStoreExecutor;
+        friend class workers::categories::SingleRemoveExecutor;
+#endif
 
  public:
     enum TransactionType {
@@ -53,12 +89,15 @@ class Book : public QObject {
     Q_INVOKABLE bool storeAccounts(QVariantList accounts);
     Q_INVOKABLE bool removeAccount(QObject* account);
     Q_INVOKABLE bool updateAccount(QObject* account, QString name, QString memo, QString color);
+
+    Q_INVOKABLE void generateRecurrentTransactions();
+
     Q_INVOKABLE bool storeTransaction(QObject* account, QObject* category, QDate date, double amount,
             QString contents, QString memo);
     Q_INVOKABLE bool removeTransaction(QObject* transaction);
-
     Q_INVOKABLE bool updateTransaction(QObject* transaction, QObject* accModel, QObject* catModel, QDate date,
                                        QString contents, QString memo, double amount);
+
     Q_INVOKABLE int numberOfCategories(TransactionType type);
     Q_INVOKABLE QObject* categoriesModel();
     Q_INVOKABLE QObject* categoriesModelForType(TransactionType type);
@@ -68,6 +107,7 @@ class Book : public QObject {
     Q_INVOKABLE bool storeCategories(QVariantList categories);
     Q_INVOKABLE bool updateCategory(QObject* category, QString name, QString color, Book::TransactionType type);
     Q_INVOKABLE bool removeCategory(QObject* category);
+
     Q_INVOKABLE QObject* dayModel(int day, int month, int year);
     Q_INVOKABLE QObject* monthModel(QDate date);
 
@@ -82,6 +122,18 @@ class Book : public QObject {
     void transactionStored(QDate date);
     void transactionRemoved(QDate date);
     void transactionUpdated(QDate oldDate, QDate newDate);
+    void recurrentTransactionsGenerated();
+
+ protected:
+    // protected for testing purposes
+    Book(BookPtr book, std::shared_ptr<workers::accounts::WorkerFactory> accounts,
+         std::shared_ptr<workers::categories::WorkerFactory> categories,
+         std::shared_ptr<workers::transactions::WorkerFactory> transactions,
+         QObject* parent=0);
+
+    std::shared_ptr<workers::accounts::WorkerFactory> _accountWorkersFactory;
+    std::shared_ptr<workers::categories::WorkerFactory> _categoryWorkersFactory;
+    std::shared_ptr<workers::transactions::WorkerFactory> _transactionWorkersFactory;
 
  private:
     BookPtr _book;
@@ -92,3 +144,5 @@ class Book : public QObject {
 }
 
 }
+
+Q_DECLARE_METATYPE(com::chancho::qml::Book::TransactionType)

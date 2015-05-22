@@ -36,6 +36,7 @@
 #include "account.h"
 #include "category.h"
 #include "transaction.h"
+#include "recurrent_transaction.h"
 
 
 namespace com {
@@ -43,6 +44,7 @@ namespace com {
 namespace chancho {
 
 class Stats;
+class BookLock;
 
  /*!
     \class Book
@@ -52,6 +54,7 @@ class Stats;
 */
 class Book {
     friend class Stats;
+    friend class BookLock;
 
  public:
     Book();
@@ -115,6 +118,24 @@ class Book {
     virtual void store(QList<TransactionPtr> trans);
 
     /*!
+        \fn virtual void store(RecurrentTransactionPtr tran);
+
+        Stores or updates the given recurrent \a tran in the database.
+
+        \note When a transaction is newly added to the database a new unique identifier is provided for the account.
+    */
+    virtual void store(RecurrentTransactionPtr tran);
+
+    /*!
+        \fn virtual void store(TransactionPtr tran);
+
+        Stores or updates the given recurrent \a trans in the database.
+
+        \note When a transaction is newly added to the database a new unique identifier is provided for the account.
+    */
+    virtual void store(QList<RecurrentTransactionPtr> trans);
+
+    /*!
         \fn virtual void remove(AccountPtr acc);
 
         Removes the given \a acc from the database.
@@ -136,6 +157,13 @@ class Book {
         Removes the given \a tran from the database.
     */
     virtual void remove(TransactionPtr tran);
+
+    /*!
+        \fn virtual void remove(RecurrentTransactionPtr tran);
+
+        Removes the given \a tran from the database.
+    */
+    virtual void remove(RecurrentTransactionPtr tran);
 
     /*!
         \fn virtual QList<AccountPtr> accounts();
@@ -236,7 +264,7 @@ class Book {
         Returns all the transactions that have be registered with the given category in a specific month.
     */
     virtual QList<TransactionPtr> transactions(CategoryPtr cat, boost::optional<int> month=boost::optional<int>(),
-            boost::optional<int> year=boost::optional<int>());
+                                               boost::optional<int> year=boost::optional<int>());
 
     /*!
         \fn virtual QList<TransactionPtr> transactions(AccountPtr acc);
@@ -252,7 +280,7 @@ class Book {
         given offset from the top result.
     */
     virtual QList<int> monthsWithTransactions(int year, boost::optional<int> limit=boost::optional<int>(),
-            boost::optional<int> offset=boost::optional<int>());
+                                              boost::optional<int> offset=boost::optional<int>());
 
     /*!
         \fn virtual int numberOfMonthsWithTransactions(int year);
@@ -268,7 +296,7 @@ class Book {
         given offset from the top result.
     */
     virtual QList<int> daysWithTransactions(int month, int year, boost::optional<int> limit=boost::optional<int>(),
-            boost::optional<int> offset=boost::optional<int>());
+                                            boost::optional<int> offset=boost::optional<int>());
 
     /*!
         \fn virtual int numberOfDaysWithTransactions(int month, int year);
@@ -276,6 +304,22 @@ class Book {
         Returns the number of days in a month that have registered transactions.
     */
     virtual int numberOfDaysWithTransactions(int month, int year);
+
+    /*!
+        \fn virtual QList<RecurrentTransactionPtr> recurrent_transactions();
+
+        Returns a list with all the recurrent transactions that have been created in the system.
+     */
+    virtual QList<RecurrentTransactionPtr> recurrentTransactions(boost::optional<int> limit = boost::optional<int>(),
+                                                                 boost::optional<int> offset = boost::optional<int>());
+
+    /*!
+        \fn static void generateRecurrentTransactions();
+
+        Generates the recurrent transactions that have not been added since the last time the
+        application was used.
+     */
+    virtual void generateRecurrentTransactions();
 
     /*!
         \fn virtual int incomeForDay(int day, int month, int year);
@@ -293,6 +337,11 @@ class Book {
 
     virtual std::shared_ptr<Stats> stats();
 
+    /*!
+        \fn static void initDatabse();
+
+        Initializes the databse and ensures it is ready to be used.
+     */
     static void initDatabse();
 
     /*!
@@ -323,15 +372,15 @@ class Book {
     bool storeSingleAcc(AccountPtr ptr);
     bool storeSingleCat(CategoryPtr ptr);
     bool storeSingleTransactions(TransactionPtr ptr);
+    bool storeSingleRecurrentTransactions(RecurrentTransactionPtr tran);
 
  protected:
-    std::shared_ptr<system::Database> _db;
+    system::DatabasePtr _db;
+    std::mutex _dbMutex;
     QString _lastError = QString::null;
 
  private:
-    std::mutex _transactionMutex;
-    std::mutex _categoriesMutex;
-    std::mutex _accountsMutex;
+    static std::mutex _initMutex;
 };
 
 typedef std::shared_ptr<Book> BookPtr;

@@ -25,6 +25,7 @@
 #include <boost/optional.hpp>
 
 #include <QDate>
+#include <QMetaType>
 
 #include "transaction.h"
 
@@ -34,14 +35,19 @@ namespace chancho {
 
 class RecurrentTransaction {
 
+   friend class Book;
+
  public:
     class Recurrence {
+
+       friend class Book;
 
      public:
         enum class Defaults {
            DAILY,
            MONTHLY,
-           WEEKLY
+           WEEKLY,
+           OTHER
         };
 
         Recurrence() = default;
@@ -53,7 +59,7 @@ class RecurrentTransaction {
 
         QDate startDate = QDate();  // the date when we started repeating
         QDate lastGenerated = QDate();  // last time we added a transaction in the db, needed to not recreate
-        QDate endData = QDate();  // shall we stop at some date
+        QDate endDate = QDate();  // shall we stop at some date
         boost::optional<int> occurrences;  // shall we stop afater a number of times
 
      protected:
@@ -72,10 +78,12 @@ class RecurrentTransaction {
     RecurrentTransaction(TransactionPtr t, RecurrencePtr r);
     ~RecurrentTransaction() = default;
 
+    virtual bool wasStoredInDb() const;
+
     TransactionPtr transaction;  // example transaction to be used to repeat
     RecurrencePtr recurrence;
 
- private:
+ protected:
    // optional so that we know if a category was added to the db or not
    QUuid _dbId;
 
@@ -86,3 +94,5 @@ typedef std::shared_ptr<RecurrentTransaction> RecurrentTransactionPtr;
 }
 
 }
+
+Q_DECLARE_METATYPE(com::chancho::RecurrentTransaction::Recurrence::Defaults)

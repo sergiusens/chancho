@@ -51,4 +51,6 @@ class PublicTransaction : public chancho::Transaction {
     using chancho::Transaction::_dbId;
 };
 
+typedef std::shared_ptr<PublicTransaction> PublicTransactionPtr;
+
 Q_DECLARE_METATYPE(std::shared_ptr<PublicTransaction>)

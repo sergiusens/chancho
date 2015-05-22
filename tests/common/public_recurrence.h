@@ -23,7 +23,6 @@
 #pragma once
 
 #include <com/chancho/recurrent_transaction.h>
-#include "../../src/priv/com/chancho/recurrent_transaction.h"
 
 class PublicRecurrence : public com::chancho::RecurrentTransaction::Recurrence {
  public:
@@ -33,10 +32,10 @@ class PublicRecurrence : public com::chancho::RecurrentTransaction::Recurrence {
     PublicRecurrence(int n, QDate s, boost::optional<int> o)
             : com::chancho::RecurrentTransaction::Recurrence(n, s, o) {}
 
-    PublicRecurrence(Recurrence::Defaults n, QDate s, QDate e=QDate())
+    PublicRecurrence(com::chancho::RecurrentTransaction::Recurrence::Defaults n, QDate s, QDate e=QDate())
             : com::chancho::RecurrentTransaction::Recurrence(n, s, e) {}
 
-    PublicRecurrence(Recurrence::Defaults n, QDate s, boost::optional<int> o)
+    PublicRecurrence(com::chancho::RecurrentTransaction::Recurrence::Defaults n, QDate s, boost::optional<int> o)
             : com::chancho::RecurrentTransaction::Recurrence(n, s, o) {}
 
     using com::chancho::RecurrentTransaction::Recurrence::generateMissingDates;

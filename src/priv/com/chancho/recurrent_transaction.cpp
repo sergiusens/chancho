@@ -30,7 +30,7 @@ namespace chancho {
 
 RecurrentTransaction::Recurrence::Recurrence(int n, QDate s, QDate e)
     : startDate(s),
-      endData(e),
+      endDate(e),
       _numberOfDays(n) {
 }
 
@@ -43,7 +43,7 @@ RecurrentTransaction::Recurrence::Recurrence(int n, QDate s, boost::optional<int
 
 RecurrentTransaction::Recurrence::Recurrence(Recurrence::Defaults n, QDate s, QDate e)
     : startDate(s),
-      endData(e),
+      endDate(e),
       _defaults(n) {
 }
 
@@ -103,6 +103,11 @@ RecurrentTransaction::Recurrence::generateMissingDates() {
 
     // calculate which dates should be used since the last time we had a recurrence created
     auto today = QDate::currentDate();
+    if (endDate.isValid() && endDate < today) {
+        LOG(INFO) << "Found end date " << endDate.day() << "/" << endDate.month() << "/" << endDate.year();
+        today = endDate;
+    }
+
     if (startDate > today) {
         LOG(INFO) << "Returning empty list because the start date is smaller than the current date";
         return result;
@@ -167,6 +172,11 @@ RecurrentTransaction::Recurrence::generateMissingDates() {
 RecurrentTransaction::RecurrentTransaction(TransactionPtr t, RecurrencePtr r)
     : transaction(t),
       recurrence(r) {
+}
+
+bool
+RecurrentTransaction::wasStoredInDb() const {
+    return !_dbId.isNull();
 }
 
 }

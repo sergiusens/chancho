@@ -24,7 +24,11 @@
 
 #include <gmock/gmock.h>
 
+#include <QList>
+#include <QMap>
 #include <QString>
+
+#include <com/chancho/account.h>
 
 MATCHER_P(QStringEqual, value, "Returns if two QStrings are equal.") {
     auto argStr = static_cast<QString>(arg);
@@ -39,7 +43,56 @@ MATCHER_P(AccountEquals, value, "Returns if the two accounts are equal.") {
             && arg->color == value->color;
 }
 
+MATCHER_P(AccountListEquals, value, "Returns if the two list of accounts are equal using the account name as uuid.") {
+    QMap<QString, com::chancho::AccountPtr> valueSorted;
+    foreach(const com::chancho::AccountPtr& acc, value) {
+        valueSorted[acc->name] = acc;
+    }
+
+    foreach(const com::chancho::AccountPtr& acc, arg) {
+        if (valueSorted.contains(acc->name)) {
+            auto expected = valueSorted[acc->name];
+            if (acc->name != expected->name
+                || acc->amount != expected->amount
+                || acc->initialAmount != expected->initialAmount
+                || acc->memo != expected->memo
+                || acc->color != expected->color) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    return true;
+}
+
 MATCHER_P(CategoryEquals, value, "Returns if the two categories are equal.") {
     return arg->name == value->name && arg->type == value->type && arg->color == value->color;
 }
 
+MATCHER_P(CategoryListEquals, value, "Returns if the two list of categories are equal using the account name as uuid.") {
+    QMap<QString, com::chancho::CategoryPtr> valueSorted;
+    foreach(const com::chancho::CategoryPtr& cat, value) {
+        valueSorted[cat->name] = cat;
+    }
+
+    foreach(const com::chancho::CategoryPtr& cat, arg) {
+        if (valueSorted.contains(cat->name)) {
+            auto expected = valueSorted[cat->name];
+            if (cat->name != cat->name
+                || cat->type != expected->type
+                || cat->color != expected->color) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    return true;
+}
+
+MATCHER_P(TransactionEquals, value, "Returns if the two categories are equal.") {
+    return arg->account->name == value->account->name && arg->amount == value->amount
+           && arg->category->name == arg->category->name && arg->date == value->date
+           && arg->contents == value->contents && arg->memo == value->memo;
+}

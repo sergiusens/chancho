@@ -41,42 +41,28 @@ class TestBook : public BaseTestCase {
     void testStoreTransaction();
     void testStoreTransactionWrongAccount();
     void testStoreTransactionWrongCategory();
-    void testStoreTransactionBookError();
 
     void testRemoveTransaction();
     void testRemoveTransactionWrongObject();
-    void testRemoveTransactionBookError();
 
     void testUpdateTransactionWrongAccount();
     void testUpdateTransactionWrongCategory();
     void testUpdateTransactionWrongObject();
     void testUpdateTransactionNeedsUpdate();
-    void testUpdateTransactionBookError();
 
     void testStoreAccountInitialAmount();
-    void testStoreAccountNoInitialAmount();
-    void testStoreAccountBookError();
 
     void testRemoveAccountWrongObj();
     void testRemoveAccount();
-    void testRemoveAccountBookError();
 
     void testUpdateAccountWrongObj();
-    void testUpdateAccountNoNeed();
     void testUpdateAccount();
-    void testUpdateAccountBookError();
 
-    void testStoreCategoryIncome();
-    void testStoreCategoryExpense();
-    void testStoreCategoryBookError();
+    void testStoreCategory();
 
     void testUpdateCategoryWrongObj();
     void testUpdateCategoryNoUpdate();
-    void testUpdateSameType();
-    void testUpdateDiffType();
-    void testUpdateBookError();
 
     void testRemoveCategoryWrongObj();
     void testRemoveCategory();
-    void testRemoveCategoryBookError();
 };

@@ -35,7 +35,9 @@ namespace tests {
 class MockBook: public com::chancho::Book {
  public:
     MOCK_METHOD1(store, void(AccountPtr));
+    MOCK_METHOD1(store, void(QList<AccountPtr>));
     MOCK_METHOD1(store, void(CategoryPtr));
+    MOCK_METHOD1(store, void(QList<CategoryPtr>));
     MOCK_METHOD1(store, void(TransactionPtr));
     MOCK_METHOD1(remove, void(AccountPtr));
     MOCK_METHOD1(remove, void(CategoryPtr));
@@ -61,6 +63,7 @@ class MockBook: public com::chancho::Book {
     MOCK_METHOD0(lastError, QString());
     MOCK_METHOD3(incomeForDay, double(int, int, int));
     MOCK_METHOD3(expenseForDay, double(int, int, int));
+    MOCK_METHOD0(generateRecurrentTransactions, void());
 };
 
 }
