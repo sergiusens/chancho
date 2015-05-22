@@ -146,6 +146,12 @@ Book::updateAccount(QObject* account, QString name, QString memo, QString color)
     return true;
 }
 
+void
+Book::generateRecurrentTransactions() {
+    auto worker = _transactionWorkersFactory->generateRecurrentTransactions(this);
+    worker->start();  // the factory makes sure that when the thread is done the resource is cleaned
+}
+
 bool
 Book::storeTransaction(QObject* account, QObject* category, QDate date, double amount, QString contents,
         QString memo) {

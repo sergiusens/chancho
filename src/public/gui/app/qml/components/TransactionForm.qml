@@ -151,7 +151,6 @@ UbuntuShape {
 
                 placeholderText: i18n.tr("Date")
                 onDateChanged: {
-                    console.log("Date changed!");
                     datePicker.text = Qt.formatDateTime(date, "dd/MM/yyyy");
                 }
 

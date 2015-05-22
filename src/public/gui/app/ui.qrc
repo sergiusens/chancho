@@ -19,6 +19,7 @@
         <file>qml/components/NewCategory.qml</file>
         <file>qml/components/NewTransaction.qml</file>
         <file>qml/components/PageWithBottomEdge.qml</file>
+        <file>qml/components/SplashScreen.qml</file>
         <file>qml/components/TransactionComponent.qml</file>
         <file>qml/components/TransactionForm.qml</file>
         <file>qml/components/Walkthrough.qml</file>
@@ -32,6 +33,8 @@
         <file>qml/components/dialogs/WizardNewCategoryDialog.qml</file>
         <file>qml/components/dialogs/js/accounts_wizard.js</file>
         <file>qml/components/dialogs/js/categories_wizard.js</file>
+        <file>qml/components/images/chancho_logo.png</file>
+        <file>qml/components/images/chancho_wordmark.png</file>
         <file>qml/components/js/accounts.js</file>
         <file>qml/components/js/accounts_wizard.js</file>
         <file>qml/components/js/categories.js</file>

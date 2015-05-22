@@ -50,7 +50,6 @@ PageStack {
            property var monthModel: Book.monthModel(date)
 
            Component.onCompleted: {
-               console.log("Adding the date on component load.");
                dateTitle.date = new Date();
            }
 
