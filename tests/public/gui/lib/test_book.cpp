@@ -77,14 +77,14 @@ TestBook::testStoreTransaction() {
     QString contents = "The contents of the transaction";
     QString memo = "The memo";
 
-    EXPECT_CALL(*transactions.get(), storeTransaction(_, _, _, date, amount, contents, memo))
+    EXPECT_CALL(*transactions.get(), storeTransaction(_, _, _, date, amount, contents, memo, QVariantMap()))
             .Times(1)
             .WillOnce(Return(singleStore.get()));
 
     EXPECT_CALL(*singleStore.get(), start())
             .Times(1);
 
-    auto stored = qmlBook->storeTransaction(account, category, date, amount, contents, memo);
+    auto stored = qmlBook->storeTransaction(account, category, date, amount, contents, memo, QVariantMap());
     QVERIFY(stored);
 }
 
@@ -104,10 +104,10 @@ TestBook::testStoreTransactionWrongAccount() {
     QString contents = "The contents of the transaction";
     QString memo = "The memo";
 
-    EXPECT_CALL(*transactions.get(), storeTransaction(_, _, _, date, amount, contents, memo))
+    EXPECT_CALL(*transactions.get(), storeTransaction(_, _, _, date, amount, contents, memo, QVariantMap()))
             .Times(0);
 
-    auto stored = qmlBook->storeTransaction(account, category, date, amount, contents, memo);
+    auto stored = qmlBook->storeTransaction(account, category, date, amount, contents, memo, QVariantMap());
 
     QVERIFY(!stored);
 }
@@ -128,10 +128,10 @@ TestBook::testStoreTransactionWrongCategory() {
     QString contents = "The contents of the transaction";
     QString memo = "The memo";
 
-    EXPECT_CALL(*transactions.get(), storeTransaction(_, _, _, date, amount, contents, memo))
+    EXPECT_CALL(*transactions.get(), storeTransaction(_, _, _, date, amount, contents, memo, QVariantMap()))
             .Times(0);
 
-    auto stored = qmlBook->storeTransaction(account, category, date, amount, contents, memo);
+    auto stored = qmlBook->storeTransaction(account, category, date, amount, contents, memo, QVariantMap());
 
     QVERIFY(!stored);
 }

@@ -54,6 +54,11 @@ class TestSingleStore : public BaseTestCase {
     void testRun();
 
     void testRunBookError();
+
+    void testRecurrenceStoreTypeMissing();
+    void testRecurrenceStoreBothEndPresent();
+    void testRecurrenctStore_data();
+    void testRecurrenctStore();
 };
 
 }

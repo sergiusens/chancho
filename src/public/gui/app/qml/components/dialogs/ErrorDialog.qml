@@ -34,4 +34,4 @@ Dialog {
          color: UbuntuColors.orange
          onClicked: PopupUtils.close(dialogue)
      }
- }
+}
