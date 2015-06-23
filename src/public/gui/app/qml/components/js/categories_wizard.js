@@ -21,6 +21,22 @@
  */
 
 /**
+ * Function that returns the number of selected items in a model.
+ * @param model The model that is under test.
+ * @returns {number} The number of items selected in the model.
+ */
+function numberOfSelectedItems(model) {
+    var count = 0;
+    for(var index=0; index < model.count; index++) {
+        var acc = model.get(index);
+        if (acc.selected) {
+            count += 1;
+        }
+    }
+    return count;
+}
+
+/**
  * Function that returns if the model has a selected item.
  * @param model The model to look for selected items.
  * @returns {boolean} If there are any selected items.

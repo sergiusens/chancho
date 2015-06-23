@@ -14,7 +14,7 @@ before_install:
   - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 50
   - sudo pip install cpp-coveralls
 
-script: mkdir build && cd build && cmake .. -DSANITIZERS=1 -DCMAKE_BUILD_TYPE=coverage && make -j4 && CTEST_OUTPUT_ON_FAILURE=TRUE make test
+script: mkdir build && cd build && cmake .. -DSANITIZERS=1 -DCMAKE_BUILD_TYPE=coverage && make -j2 && CTEST_OUTPUT_ON_FAILURE=TRUE make test
 
 after_success:
   - cd ..

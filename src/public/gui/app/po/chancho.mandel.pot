@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-09 10:35+0200\n"
+"POT-Creation-Date: 2015-06-23 11:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,7 +90,7 @@ msgstr ""
 #: ../qml/components/AccountForm.qml:174
 #: ../qml/components/CategoryForm.qml:163
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:48
-#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:84
+#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:86
 msgid "Name"
 msgstr ""
 
@@ -127,14 +127,24 @@ msgid "Add new category"
 msgstr ""
 
 #: ../qml/components/CategoryForm.qml:186
+<<<<<<< HEAD
 #: ../qml/components/TransactionForm.qml:91
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:53
+=======
+#: ../qml/components/TransactionForm.qml:87
+#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:55
+>>>>>>> issue-124
 msgid "Expense"
 msgstr ""
 
 #: ../qml/components/CategoryForm.qml:190
+<<<<<<< HEAD
 #: ../qml/components/TransactionForm.qml:95
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:57
+=======
+#: ../qml/components/TransactionForm.qml:91
+#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:59
+>>>>>>> issue-124
 msgid "Income"
 msgstr ""
 
@@ -147,15 +157,19 @@ msgstr ""
 #: ../qml/components/dialogs/ConfirmationDialog.qml:38
 #: ../qml/components/dialogs/RecurrenceDialog.qml:197
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:94
-#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:115
+#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:117
 msgid "Cancel"
 msgstr ""
 
 #: ../qml/components/ColorChooser.qml:138
 #: ../qml/components/dialogs/ConfirmationDialog.qml:44
 #: ../qml/components/dialogs/ErrorDialog.qml:33
+<<<<<<< HEAD
 #: ../qml/components/dialogs/RecurrenceDialog.qml:203
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:123
+=======
+#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:125
+>>>>>>> issue-124
 msgid "Ok"
 msgstr ""
 
@@ -200,10 +214,12 @@ msgid "Do you want to update this category?"
 msgstr ""
 
 #: ../qml/components/EditCategory.qml:105
+#: ../qml/components/WizardCategoriesPage.qml:136
 msgid "Removal Error"
 msgstr ""
 
 #: ../qml/components/EditCategory.qml:106
+#: ../qml/components/WizardCategoriesPage.qml:137
 msgid ""
 "You cannot delete all categories in the system. You must have at least one "
 "of each type"
@@ -232,7 +248,7 @@ msgstr ""
 #: ../qml/components/NewAccount.qml:40 ../qml/components/NewCategory.qml:40
 #: ../qml/components/NewTransaction.qml:40
 #: ../qml/components/WizardAccountsPage.qml:105
-#: ../qml/components/WizardCategoriesPage.qml:146
+#: ../qml/components/WizardCategoriesPage.qml:160
 msgid "Add"
 msgstr ""
 
@@ -380,11 +396,11 @@ msgid ""
 "the predefined ones but you can add as many as you want."
 msgstr ""
 
-#: ../qml/components/WizardCategoriesPage.qml:136
+#: ../qml/components/WizardCategoriesPage.qml:150
 msgid "Delete categories"
 msgstr ""
 
-#: ../qml/components/WizardCategoriesPage.qml:137
+#: ../qml/components/WizardCategoriesPage.qml:151
 msgid "Do you want to delete the selected categories?"
 msgstr ""
 
