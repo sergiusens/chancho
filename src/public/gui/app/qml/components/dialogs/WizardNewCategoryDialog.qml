@@ -26,6 +26,8 @@ import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.1
 import Ubuntu.Components.Popups 1.0
 
+import com.chancho 1.0
+
 import "../models"
 import "js/categories_wizard.js" as CategoriesWizardJs
 

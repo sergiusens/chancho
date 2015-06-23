@@ -127,8 +127,22 @@ Component {
             Button {
                 text: i18n.tr("Remove")
                 onClicked: {
+                    var incomeAfterRemoval = incomeModel.count - CategoriesWizardJs.numberOfSelectedItems(incomeModel);
+                    var expenseAfterRemoval = expenseModel.count - CategoriesWizardJs.numberOfSelectedItems(expenseModel);
+
+                    if (incomeAfterRemoval <= 0 || expenseAfterRemoval <= 0) {
+                        console.log("Trying to delete the last category.");
+                        var properties = {
+                            "title": i18n.tr("Removal Error"),
+                            "text": i18n.tr("You cannot delete all categories in the system. You must have at least one of each type")
+                        };
+                        PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, properties);
+                        return;
+                    }
                     var showConfirmationDialog = CategoriesWizardJs.areCategoriesSelected(incomeModel, expenseModel);
+                    console.log("Should we show the removal dialog " + showConfirmationDialog);
                     if (showConfirmationDialog) {
+                        console.log("Categories selected for removal.");
                         var deleteCategoriesCb = function() {
                             CategoriesWizardJs.deleteCategoriesCallback(incomeModel, expenseModel);
                         };
