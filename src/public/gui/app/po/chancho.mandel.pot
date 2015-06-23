@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-23 11:51+0200\n"
+"POT-Creation-Date: 2015-06-23 19:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -127,24 +127,14 @@ msgid "Add new category"
 msgstr ""
 
 #: ../qml/components/CategoryForm.qml:186
-<<<<<<< HEAD
 #: ../qml/components/TransactionForm.qml:91
-#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:53
-=======
-#: ../qml/components/TransactionForm.qml:87
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:55
->>>>>>> issue-124
 msgid "Expense"
 msgstr ""
 
 #: ../qml/components/CategoryForm.qml:190
-<<<<<<< HEAD
 #: ../qml/components/TransactionForm.qml:95
-#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:57
-=======
-#: ../qml/components/TransactionForm.qml:91
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:59
->>>>>>> issue-124
 msgid "Income"
 msgstr ""
 
@@ -164,12 +154,8 @@ msgstr ""
 #: ../qml/components/ColorChooser.qml:138
 #: ../qml/components/dialogs/ConfirmationDialog.qml:44
 #: ../qml/components/dialogs/ErrorDialog.qml:33
-<<<<<<< HEAD
 #: ../qml/components/dialogs/RecurrenceDialog.qml:203
-#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:123
-=======
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:125
->>>>>>> issue-124
 msgid "Ok"
 msgstr ""
 
