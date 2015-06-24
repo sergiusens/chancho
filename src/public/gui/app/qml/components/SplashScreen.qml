@@ -73,6 +73,9 @@ Page {
             ProgressBar {
                 id: startUpProgress
                 Layout.alignment: Qt.AlignHCenter
+                anchors.leftMargin: units.gu(2)
+                anchors.rightMargin: units.gu(2)
+
                 indeterminate: true
 
                 maximumValue: 1
