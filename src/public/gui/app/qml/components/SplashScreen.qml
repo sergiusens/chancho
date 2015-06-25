@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Manuel de la PeÃ±a <mandel@themacaque.com>
+ * Copyright (c) 2015 Manuel de la Peña <mandel@themacaque.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -73,8 +73,7 @@ Page {
             ProgressBar {
                 id: startUpProgress
                 Layout.alignment: Qt.AlignHCenter
-                anchors.leftMargin: units.gu(2)
-                anchors.rightMargin: units.gu(2)
+                Layout.preferredWidth: mainShape.width - units.gu(2)
 
                 indeterminate: true
 
