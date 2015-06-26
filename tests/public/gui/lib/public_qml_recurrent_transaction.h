@@ -20,41 +20,28 @@
  * THE SOFTWARE.
  */
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.1
+#pragma once
 
-import Ubuntu.Components 1.1
-import Ubuntu.Components.Pickers 0.1
-import Ubuntu.Components.Popups 1.0
-import Ubuntu.Components.ListItems 1.0 as ListItems
+#include <com/chancho/qml/recurrent_transaction.h>
 
-import jbQuick.Charts 1.0
+namespace com {
 
-import com.chancho 1.0
+namespace chancho {
 
-PageStack {
-    id: transactionsPageStack
+namespace tests {
 
-    PageWithBottomEdge {
-       id: mainPage
-       title: i18n.tr("Recurrent Transactions")
-
-       ColumnLayout {
-           anchors.fill: parent
-           anchors.margins: units.gu(2) /* two unit so that we have the same as the main page. */
-           spacing: units.gu(2)
-           UbuntuShape {
-               id: transactionsShape
-               color: "white"
-               Layout.fillHeight: true
-               anchors.left: parent.left
-               anchors.right: parent.right
-
-           } // UbuntuShape for list
-
-       } // ColumnLayout
-
-       bottomEdgePageComponent: NewAccount {}
-       bottomEdgeTitle: i18n.tr("Add new account")
+class PublicRecurrentTransaction : public com::chancho::qml::RecurrentTransaction {
+ public:
+    PublicRecurrentTransaction(com::chancho::RecurrentTransactionPtr ptr, QObject* parent =0)
+            : com::chancho::qml::RecurrentTransaction(ptr, parent) {
     }
-} // page stack
+
+    using com::chancho::qml::RecurrentTransaction::getTransaction;
+};
+
+}
+
+}
+
+}
+

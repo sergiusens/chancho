@@ -6,6 +6,8 @@ set(PRIVATE_TESTS
     test_category
     test_day_model
     test_month_model
+    test_recurrent_transaction
+    test_transaction
 )
 
 foreach(test ${PRIVATE_TESTS})
