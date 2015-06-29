@@ -121,8 +121,16 @@ MainView {
                     anchors.fill: parent
                     source: (tabs.selectedTab === mainTab) ? Qt.resolvedUrl("components/MainPage.qml") : ""
                 }
-            } // tab
-
+            }
+            Tab {
+                id: recurrentTab
+                title: i18n.tr("Recurrent Transactions")
+                page: Loader {
+                    parent: recurrentTab
+                    anchors.fill: parent
+                    source: (tabs.selectedTab === recurrentTab) ? Qt.resolvedUrl("components/RecurrentTransactionsPage.qml") : ""
+                }
+            }
             Tab {
                 id: statsTab
                 title: i18n.tr("Stats")

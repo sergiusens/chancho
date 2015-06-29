@@ -35,6 +35,7 @@ namespace qml {
 
 class Book;
 class Transaction;
+class RecurrentTransaction;
 
 namespace models {
 
@@ -51,6 +52,7 @@ class Category : public QObject {
     friend class models::Categories;
     friend class qml::Book;
     friend class qml::Transaction;
+    friend class qml::RecurrentTransaction;
 
  public:
     explicit Category(QObject* parent=0);

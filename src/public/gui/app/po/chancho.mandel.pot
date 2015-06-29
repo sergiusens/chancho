@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-23 11:51+0200\n"
+"POT-Creation-Date: 2015-06-29 10:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,16 +25,21 @@ msgstr ""
 msgid "Bills"
 msgstr ""
 
-#: ../qml/MainWindow.qml:128 ../qml/components/CategoryStatsPage.qml:50
+#: ../qml/MainWindow.qml:127
+#: ../qml/components/RecurrentTransactionsPage.qml:40
+msgid "Recurrent Transactions"
+msgstr ""
+
+#: ../qml/MainWindow.qml:136 ../qml/components/CategoryStatsPage.qml:50
 msgid "Stats"
 msgstr ""
 
-#: ../qml/MainWindow.qml:137 ../qml/components/AccountsPage.qml:67
+#: ../qml/MainWindow.qml:145 ../qml/components/AccountsPage.qml:67
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Accounts"
 msgstr ""
 
-#: ../qml/MainWindow.qml:147 ../qml/components/CategoriesPage.qml:45
+#: ../qml/MainWindow.qml:155 ../qml/components/CategoriesPage.qml:45
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Categories"
 msgstr ""
@@ -106,6 +111,7 @@ msgid "Memo"
 msgstr ""
 
 #: ../qml/components/AccountsPage.qml:143 ../qml/components/NewAccount.qml:35
+#: ../qml/components/RecurrentTransactionsPage.qml:58
 msgid "Add new account"
 msgstr ""
 
@@ -127,24 +133,14 @@ msgid "Add new category"
 msgstr ""
 
 #: ../qml/components/CategoryForm.qml:186
-<<<<<<< HEAD
 #: ../qml/components/TransactionForm.qml:91
-#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:53
-=======
-#: ../qml/components/TransactionForm.qml:87
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:55
->>>>>>> issue-124
 msgid "Expense"
 msgstr ""
 
 #: ../qml/components/CategoryForm.qml:190
-<<<<<<< HEAD
 #: ../qml/components/TransactionForm.qml:95
-#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:57
-=======
-#: ../qml/components/TransactionForm.qml:91
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:59
->>>>>>> issue-124
 msgid "Income"
 msgstr ""
 
@@ -164,12 +160,8 @@ msgstr ""
 #: ../qml/components/ColorChooser.qml:138
 #: ../qml/components/dialogs/ConfirmationDialog.qml:44
 #: ../qml/components/dialogs/ErrorDialog.qml:33
-<<<<<<< HEAD
 #: ../qml/components/dialogs/RecurrenceDialog.qml:203
-#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:123
-=======
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:125
->>>>>>> issue-124
 msgid "Ok"
 msgstr ""
 

@@ -35,6 +35,7 @@ namespace qml {
 class Book;
 class Stats;
 class Transaction;
+class RecurrentTransaction;
 
 namespace models {
 
@@ -53,6 +54,7 @@ class Account : public QObject {
     friend class qml::Book;
     friend class qml::Stats;
     friend class qml::Transaction;
+    friend class qml::RecurrentTransaction;
 
  public:
     explicit Account(QObject* parent=0);
