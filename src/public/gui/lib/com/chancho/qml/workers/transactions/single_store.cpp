@@ -64,6 +64,7 @@ SingleStore::SingleStore(BookPtr book, chancho::AccountPtr account, chancho::Cat
 
 void
 SingleStore::run() {
+    DLOG(INFO) << __PRETTY_FUNCTION__;
     if (_recurrence.count() > 0) {
         DLOG(INFO) << "SToring new recurrenct transaction";
         storeRecurrentTransaction();
@@ -118,7 +119,7 @@ SingleStore::storeRecurrentTransaction() {
     //         "occurrences": int
     //     }
     // }
-
+    DLOG(INFO) << __PRETTY_FUNCTION__;
     if (_recurrence.count() == 0
             || (!_recurrence.contains(RECURRENCE_TYPE_KEY)
                        && !_recurrence.contains(RECURRENCE_DAYS_KEY))) {
@@ -191,12 +192,14 @@ SingleStore::storeRecurrentTransaction() {
 
     // store the transaction AND generate which ever new transaction that has to be added
     _book->store(recurrent);
+    DLOG(INFO) << "Store the recurrent transaction";
     if (_book->isError()) {
         emit failure();
         return;;
     }
 
     _book->generateRecurrentTransactions();
+    DLOG(INFO) << "Generate the needed transactions.";
     if (_book->isError()) {
         emit failure();
         return;

@@ -26,6 +26,7 @@
 #include "models/categories.h"
 #include "models/day.h"
 #include "models/month.h"
+#include "models/recurrent_transactions.h"
 
 #include "workers/accounts.h"
 #include "workers/categories.h"
@@ -165,9 +166,10 @@ Book::storeTransaction(QObject* account, QObject* category, QDate date, double a
         return false;
     }
 
+    DLOG(INFO) << __PRETTY_FUNCTION__ << " " << acc->getMemo().toStdString() << " " << cat->getName().toStdString()
+        << " " << amount << " " << contents.toStdString() << " " << memo.toStdString();
     auto worker = _transactionWorkersFactory->storeTransaction(this, acc->getAccount(), cat->getCategory(), date,
                                                                amount, contents, memo, recurrence);
-    LOG(INFO) << "Run thread";
     worker->start();
     return true;
 }
@@ -217,6 +219,12 @@ Book::updateTransaction(QObject* tranObj, QObject* accObj, QObject* catObj, QDat
     auto worker = _transactionWorkersFactory->updateTransaction(this, tran, acc, cat, date, contents, memo, amount);
     worker->start();
     return true;
+}
+
+QObject*
+Book::recurrentTransactionsModel() {
+    auto model = new models::RecurrentTransactions(_book);
+    return model;
 }
 
 int

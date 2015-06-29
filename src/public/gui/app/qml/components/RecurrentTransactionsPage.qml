@@ -54,9 +54,29 @@ PageStack {
                anchors.left: parent.left
                anchors.right: parent.right
 
-           } // UbuntuShape for list
+               UbuntuListView {
+                   id: incomeList
+                   anchors.fill: parent
+                   anchors.topMargin: units.gu(1)
+                   anchors.bottomMargin: units.gu(1)
+                   clip: true
 
-       } // ColumnLayout
+                   spacing: units.gu(1)
+                   model: Book.recurrentTransactionsModel()
+                   delegate: Label {
+                       text: model.display.account
+
+                       MouseArea {
+                           anchors.fill: parent
+                           onClicked: {
+                               console.log("Recurrent transactions!");
+                           }
+                       }
+                   }
+               }
+           } // Sahpe
+       } // Column
+
 
        bottomEdgePageComponent: NewAccount {}
        bottomEdgeTitle: i18n.tr("Add new account")
