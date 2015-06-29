@@ -20,45 +20,51 @@
  * THE SOFTWARE.
  */
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.1
+#pragma once
 
-import Ubuntu.Components 1.1
-import Ubuntu.Components.Pickers 0.1
-import Ubuntu.Components.Popups 1.0
-import Ubuntu.Components.ListItems 1.0 as ListItems
+#include <QAbstractListModel>
+#include <QModelIndex>
 
-import jbQuick.Charts 1.0
+#include <com/chancho/book.h>
 
-import com.chancho 1.0
+namespace com {
 
-PageStack {
-    id: transactionsPageStack
+namespace chancho {
 
-    Component.onCompleted: {
-        push(mainPage);
-    }
+namespace qml {
 
-    PageWithBottomEdge {
-       id: mainPage
-       title: i18n.tr("Recurrent Transactions")
+class Book;
 
-       ColumnLayout {
-           anchors.fill: parent
-           anchors.margins: units.gu(2) /* two unit so that we have the same as the main page. */
-           spacing: units.gu(2)
-           UbuntuShape {
-               id: transactionsShape
-               color: "white"
-               Layout.fillHeight: true
-               anchors.left: parent.left
-               anchors.right: parent.right
+namespace models {
 
-           } // UbuntuShape for list
+class RecurrentTransactions : public QAbstractListModel {
+    Q_OBJECT
 
-       } // ColumnLayout
+    friend class com::chancho::qml::Book;
 
-       bottomEdgePageComponent: NewAccount {}
-       bottomEdgeTitle: i18n.tr("Add new account")
-    }
-} // page stack
+ public:
+    explicit RecurrentTransactions(QObject* parent = 0);
+    virtual ~RecurrentTransactions();
+
+    // methods to override to allow the model to be used from qml
+    Q_INVOKABLE int numberOfTransactions() const;
+    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+    QVariant data(int row, int role) const;
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
+ protected:
+    RecurrentTransactions(BookPtr book, QObject* parent = 0);
+
+ private:
+    BookPtr _book;
+};
+
+}
+
+}
+
+}
+
+}
+

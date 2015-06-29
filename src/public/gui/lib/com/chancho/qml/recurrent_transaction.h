@@ -36,6 +36,12 @@ class Account;
 class Book;
 class Category;
 
+namespace models {
+
+class RecurrentTransactions;
+
+}
+
 class RecurrentTransaction : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString account READ getAccount NOTIFY accountChanged)
@@ -51,6 +57,8 @@ class RecurrentTransaction : public QObject {
     Q_PROPERTY(QString memo READ getMemo WRITE setMemo NOTIFY memoChanged)
     Q_PROPERTY(com::chancho::qml::Book::TransactionType type READ getType)
     Q_PROPERTY(com::chancho::qml::Book::RecurrenceType recurrence READ getRecurrenceType)
+
+    friend class models::RecurrentTransactions;
 
  public:
     explicit RecurrentTransaction(QObject* parent =0);

@@ -20,6 +20,7 @@ set(HEADERS
     com/chancho/qml/models/categories.h
     com/chancho/qml/models/day.h
     com/chancho/qml/models/month.h
+    com/chancho/qml/models/recurrent_transactions.h
     com/chancho/qml/workers/accounts.h
     com/chancho/qml/workers/categories.h
     com/chancho/qml/workers/transactions.h
@@ -50,6 +51,7 @@ set(SOURCES
     com/chancho/qml/models/categories.cpp
     com/chancho/qml/models/day.cpp
     com/chancho/qml/models/month.cpp
+    com/chancho/qml/models/recurrent_transactions.cpp
     com/chancho/qml/workers/accounts.cpp
     com/chancho/qml/workers/categories.cpp
     com/chancho/qml/workers/transactions.cpp
