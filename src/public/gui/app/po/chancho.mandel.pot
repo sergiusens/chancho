@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-29 10:36+0200\n"
+"POT-Creation-Date: 2015-06-29 18:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgid "Bills"
 msgstr ""
 
 #: ../qml/MainWindow.qml:127
-#: ../qml/components/RecurrentTransactionsPage.qml:40
+#: ../qml/components/RecurrentTransactionsPage.qml:44
 msgid "Recurrent Transactions"
 msgstr ""
 
@@ -111,7 +111,7 @@ msgid "Memo"
 msgstr ""
 
 #: ../qml/components/AccountsPage.qml:143 ../qml/components/NewAccount.qml:35
-#: ../qml/components/RecurrentTransactionsPage.qml:58
+#: ../qml/components/RecurrentTransactionsPage.qml:62
 msgid "Add new account"
 msgstr ""
 

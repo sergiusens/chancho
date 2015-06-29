@@ -314,6 +314,13 @@ class Book {
                                                                  boost::optional<int> offset = boost::optional<int>());
 
     /*!
+        \fn virtual int numberOfRecurrentTransactions()
+
+        Returns the number of recurrent transactions in the system.
+    */
+    virtual int numberOfRecurrentTransactions();
+
+    /*!
         \fn static void generateRecurrentTransactions();
 
         Generates the recurrent transactions that have not been added since the last time the

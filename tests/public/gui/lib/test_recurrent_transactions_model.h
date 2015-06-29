@@ -20,45 +20,34 @@
  * THE SOFTWARE.
  */
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.1
+#pragma once
 
-import Ubuntu.Components 1.1
-import Ubuntu.Components.Pickers 0.1
-import Ubuntu.Components.Popups 1.0
-import Ubuntu.Components.ListItems 1.0 as ListItems
+#include <memory>
 
-import jbQuick.Charts 1.0
+#include <com/chancho/qml/models/recurrent_transactions.h>
 
-import com.chancho 1.0
+#include "book.h"
+#include "base_testcase.h"
+#include "public_recurrent_transactions_model.h"
 
-PageStack {
-    id: transactionsPageStack
+class TestRecurrentTransactionsModel : public BaseTestCase {
+    Q_OBJECT
 
-    Component.onCompleted: {
-        push(mainPage);
-    }
+ public:
+    explicit TestRecurrentTransactionsModel(QObject *parent = 0)
+            : BaseTestCase("TestRecurrentTransactionsModel", parent) { }
 
-    PageWithBottomEdge {
-       id: mainPage
-       title: i18n.tr("Recurrent Transactions")
+ private slots:
 
-       ColumnLayout {
-           anchors.fill: parent
-           anchors.margins: units.gu(2) /* two unit so that we have the same as the main page. */
-           spacing: units.gu(2)
-           UbuntuShape {
-               id: transactionsShape
-               color: "white"
-               Layout.fillHeight: true
-               anchors.left: parent.left
-               anchors.right: parent.right
+    void init() override;
+    void cleanup() override;
 
-           } // UbuntuShape for list
+    void testRowCount();
+    void testRowCountError();
 
-       } // ColumnLayout
-
-       bottomEdgePageComponent: NewAccount {}
-       bottomEdgeTitle: i18n.tr("Add new account")
-    }
-} // page stack
+    void testDataNotValidIndex();
+    void testDataOutOfIndex();
+    void testDataBookError();
+    void testDataNoData();
+    void testDataGetTransaction();
+};
