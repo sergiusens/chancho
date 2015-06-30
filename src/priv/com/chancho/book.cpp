@@ -647,7 +647,14 @@ Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
     auto query = _db->createQuery();
     query->prepare(INSERT_UPDATE_RECURRENT_TRANSACTION);
     query->bindValue(":uuid", recurrent->_dbId.toString());
-    query->bindValue(":amount", QString::number(recurrent->transaction->amount));
+
+    // amounts are positive yet if it is an expense we must multiple by -1 to update the account accordingly
+    if (recurrent->transaction->type() == Category::Type::EXPENSE && recurrent->transaction->amount > 0) {
+        query->bindValue(":amount", QString::number(-1 * recurrent->transaction->amount));
+    } else {
+        query->bindValue(":amount", QString::number(recurrent->transaction->amount));
+    }
+
     query->bindValue(":account", recurrent->transaction->account->_dbId);
     query->bindValue(":category", recurrent->transaction->category->_dbId);
     query->bindValue(":contents", recurrent->transaction->contents);

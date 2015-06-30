@@ -39,7 +39,7 @@ PageStack {
         push(mainPage);
     }
 
-    PageWithBottomEdge {
+    Page {
        id: mainPage
        title: i18n.tr("Recurrent Transactions")
 
@@ -57,14 +57,16 @@ PageStack {
                UbuntuListView {
                    id: incomeList
                    anchors.fill: parent
-                   anchors.topMargin: units.gu(1)
-                   anchors.bottomMargin: units.gu(1)
+                   anchors.margins: units.gu(1)
+                   spacing: units.gu(2)
                    clip: true
 
-                   spacing: units.gu(1)
                    model: Book.recurrentTransactionsModel()
-                   delegate: Label {
-                       text: model.display.account
+                   delegate: RecurrentTransactionComponent {
+                       account: model.display.account
+                       amount: model.display.amount
+                       category: model.display.category
+                       contents: model.display.contents
 
                        MouseArea {
                            anchors.fill: parent
@@ -76,9 +78,5 @@ PageStack {
                }
            } // Sahpe
        } // Column
-
-
-       bottomEdgePageComponent: NewAccount {}
-       bottomEdgeTitle: i18n.tr("Add new account")
     }
 } // page stack

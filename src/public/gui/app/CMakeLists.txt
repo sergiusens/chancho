@@ -107,6 +107,7 @@ set(QML_SOURCES
     qml/components/NewCategory.qml
     qml/components/NewTransaction.qml
     qml/components/PageWithBottomEdge.qml
+    qml/components/RecurrentTransactionComponent.qml
     qml/components/RecurrentTransactionsPage.qml
     qml/components/SplashScreen.qml
     qml/components/TransactionComponent.qml
