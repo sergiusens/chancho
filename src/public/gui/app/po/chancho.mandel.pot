@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-29 21:15+0200\n"
+"POT-Creation-Date: 2015-06-30 21:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,7 +111,6 @@ msgid "Memo"
 msgstr ""
 
 #: ../qml/components/AccountsPage.qml:143 ../qml/components/NewAccount.qml:35
-#: ../qml/components/RecurrentTransactionsPage.qml:82
 msgid "Add new account"
 msgstr ""
 

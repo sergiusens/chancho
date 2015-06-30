@@ -199,6 +199,16 @@ namespace {
         "t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount "\
         "FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON "\
         "t.account = a.uuid LIMIT :limit OFFSET :offset";
+    const QString SELECT_RECURRENT_TRANSACTIONS_CATEGORY = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo, "\
+        "t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear, "\
+        "t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount "\
+        "FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON "\
+        "t.account = a.uuid WHERE t.category=:category";
+    const QString SELECT_RECURRENT_TRANSACTIONS_CATEGORY_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo, "\
+        "t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear, "\
+        "t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount "\
+        "FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON "\
+        "t.account = a.uuid WHERE t.category=:category LIMIT :limit OFFSET :offset";
     const QString SELECT_MONTHS_WITH_TRANSACTIONS = "SELECT DISTINCT month FROM Transactions WHERE year=:year "\
         "ORDER BY month DESC";
     const QString SELECT_MONTHS_WITH_TRANSACTIONS_LIMIT = "SELECT DISTINCT month FROM Transactions WHERE year=:year "\
@@ -647,7 +657,14 @@ Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
     auto query = _db->createQuery();
     query->prepare(INSERT_UPDATE_RECURRENT_TRANSACTION);
     query->bindValue(":uuid", recurrent->_dbId.toString());
-    query->bindValue(":amount", QString::number(recurrent->transaction->amount));
+
+    // amounts are positive yet if it is an expense we must multiple by -1 to update the account accordingly
+    if (recurrent->transaction->type() == Category::Type::EXPENSE && recurrent->transaction->amount > 0) {
+        query->bindValue(":amount", QString::number(-1 * recurrent->transaction->amount));
+    } else {
+        query->bindValue(":amount", QString::number(recurrent->transaction->amount));
+    }
+
     query->bindValue(":account", recurrent->transaction->account->_dbId);
     query->bindValue(":category", recurrent->transaction->category->_dbId);
     query->bindValue(":contents", recurrent->transaction->contents);
@@ -1578,41 +1595,8 @@ Book::numberOfDaysWithTransactions(int month, int year) {
 }
 
 QList<RecurrentTransactionPtr>
-Book::recurrentTransactions(boost::optional<int> limit, boost::optional<int> offset) {
+Book::parseRecurrentTransactions(std::shared_ptr<system::Query> query) {
     QList<RecurrentTransactionPtr> result;
-    BookLock dbLock(this);
-
-    if (!dbLock.opened()) {
-        _lastError = _db->lastError().text();
-        LOG(ERROR) << _lastError.toStdString();
-        return result;
-    }
-
-    auto query = _db->createQuery();
-    if (limit) {
-
-        // SELECT_RECURRENT_TRANSACTIONS = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo,
-        //     t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear,
-        //     t.defaultType, t.numberDays, t.occurrences c.parent, c.name, c.type, a.name, a.memo, a.amount
-        //     FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON
-        //     t.account = a.uuid;
-        query->prepare(SELECT_RECURRENT_TRANSACTIONS_LIMIT);
-        query->bindValue(":limit", *limit);
-
-        if (offset) {
-            query->bindValue(":offset", *offset);
-        } else {
-            query->bindValue(":offset", 0);
-        }
-    } else {
-        // SELECT_RECURRENT_TRANSACTIONS_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo,
-        //     t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear,
-        //     t.defaultType, t.numberDays, t.occurrences c.parent, c.name, c.type, a.name, a.memo, a.amount
-        //     FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON
-        //     t.account = a.uuid LIMIT :limit OFFSET :offset;
-        query->prepare(SELECT_RECURRENT_TRANSACTIONS);
-    }
-
     // accounts are categories are usually repeated so we can keep a map to just create them the first time the appear
     // in the inner join
     QMap<QUuid, AccountPtr> accounts;
@@ -1728,6 +1712,54 @@ Book::recurrentTransactions(boost::optional<int> limit, boost::optional<int> off
         result.append(recurrentTrans);
     }
 
+    return result;
+}
+
+QList<RecurrentTransactionPtr>
+Book::recurrentTransactions(boost::optional<int> limit, boost::optional<int> offset) {
+    QList<RecurrentTransactionPtr> result;
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return result;
+    }
+
+    auto query = _db->createQuery();
+    if (limit) {
+
+        // SELECT_RECURRENT_TRANSACTIONS = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo,
+        //     t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear,
+        //     t.defaultType, t.numberDays, t.occurrences c.parent, c.name, c.type, a.name, a.memo, a.amount
+        //     FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON
+        //     t.account = a.uuid;
+        query->prepare(SELECT_RECURRENT_TRANSACTIONS_LIMIT);
+        query->bindValue(":limit", *limit);
+
+        if (offset) {
+            query->bindValue(":offset", *offset);
+        } else {
+            query->bindValue(":offset", 0);
+        }
+    } else {
+        // SELECT_RECURRENT_TRANSACTIONS_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo,
+        //     t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear,
+        //     t.defaultType, t.numberDays, t.occurrences c.parent, c.name, c.type, a.name, a.memo, a.amount
+        //     FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON
+        //     t.account = a.uuid LIMIT :limit OFFSET :offset;
+        query->prepare(SELECT_RECURRENT_TRANSACTIONS);
+    }
+
+    return parseRecurrentTransactions(query);
+}
+
+QList<RecurrentTransactionPtr>
+Book::recurrentTransactions(CategoryPtr cat, boost::optional<int> limit, boost::optional<int> offset) {
+    Q_UNUSED(cat);
+    Q_UNUSED(limit);
+    Q_UNUSED(offset);
+    QList<RecurrentTransactionPtr> result;
     return result;
 }
 
