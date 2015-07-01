@@ -106,6 +106,7 @@ class Book : public QObject {
     Q_INVOKABLE bool removeTransaction(QObject* transaction);
     Q_INVOKABLE bool updateTransaction(QObject* transaction, QObject* accModel, QObject* catModel, QDate date,
                                        QString contents, QString memo, double amount);
+    Q_INVOKABLE QObject* recurrentTransactionsModel();
 
     Q_INVOKABLE int numberOfCategories(TransactionType type);
     Q_INVOKABLE QObject* categoriesModel();

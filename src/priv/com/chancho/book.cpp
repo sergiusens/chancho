@@ -589,6 +589,7 @@ Book::store(TransactionPtr tran) {
 
 void
 Book::store(QList<TransactionPtr> trans) {
+    DLOG(INFO) << __PRETTY_FUNCTION__;
     BookLock dbLock(this);
 
     if (!dbLock.opened()) {
@@ -616,7 +617,7 @@ Book::store(QList<TransactionPtr> trans) {
 
 bool
 Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
-
+    LOG(INFO) << __PRETTY_FUNCTION__;
     // usually accounts and categories must be stored before storing a transactions
     if (recurrent->transaction->account && !recurrent->transaction->account->wasStoredInDb()) {
         _lastError = "An account must be stored before adding a transaction to it.";
@@ -646,7 +647,14 @@ Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
     auto query = _db->createQuery();
     query->prepare(INSERT_UPDATE_RECURRENT_TRANSACTION);
     query->bindValue(":uuid", recurrent->_dbId.toString());
-    query->bindValue(":amount", QString::number(recurrent->transaction->amount));
+
+    // amounts are positive yet if it is an expense we must multiple by -1 to update the account accordingly
+    if (recurrent->transaction->type() == Category::Type::EXPENSE && recurrent->transaction->amount > 0) {
+        query->bindValue(":amount", QString::number(-1 * recurrent->transaction->amount));
+    } else {
+        query->bindValue(":amount", QString::number(recurrent->transaction->amount));
+    }
+
     query->bindValue(":account", recurrent->transaction->account->_dbId);
     query->bindValue(":category", recurrent->transaction->category->_dbId);
     query->bindValue(":contents", recurrent->transaction->contents);
@@ -696,6 +704,7 @@ Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
 
     // no need to use a transaction since is a single insert
     auto stored = query->exec();
+    LOG(INFO) << "Executed query";
     if (!stored) {
         _lastError = _db->lastError().text();
         LOG(INFO) << _lastError.toStdString();
@@ -706,6 +715,7 @@ Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
 
 void
 Book::store(RecurrentTransactionPtr tran) {
+    LOG(INFO) << __PRETTY_FUNCTION__;
     BookLock dbLock(this);
 
     if (!dbLock.opened()) {
@@ -722,12 +732,14 @@ Book::store(RecurrentTransactionPtr tran) {
         return;
     }
     auto success = storeSingleRecurrentTransactions(tran);
+    LOG(INFO) << "Recurrent transaction stored " << success;
     if (!success) {
         _db->rollback();
         return;
     }
 
     success = storeSingleTransactions(tran->transaction);
+    LOG(INFO) << "Single transaction stored " << success;
     if (!success) {
         _db->rollback();
         return;
@@ -1760,7 +1772,7 @@ Book::generateRecurrentTransactions() {
 
     foreach(const RecurrentTransactionPtr& recurrentTrans, recurrent) {
         auto missingDates = recurrentTrans->recurrence->generateMissingDates();
-        DLOG(INFO) << "There are " << missingDates.count() << " transactions that have to be generated";
+        LOG(INFO) << "There are " << missingDates.count() << " transactions that have to be generated";
         foreach(const QDate& currentDate, missingDates) {
             auto currentTran = std::make_shared<Transaction>(recurrentTrans->transaction->account,
                 recurrentTrans->transaction->amount, recurrentTrans->transaction->category, currentDate,
@@ -1770,12 +1782,10 @@ Book::generateRecurrentTransactions() {
         }
     }
 
-    DLOG(INFO) << "We need to add " << trans.count() << " transactions";
+    LOG(INFO) << "We need to add " << trans.count() << " transactions";
     // store the missing the transactions in the database
     store(trans);
-    if (!isError()) {
-        store(recurrent);
-    } else {
+    if (isError()) {
         LOG(INFO) << "Error generating recurrent transactions";
     }
 }

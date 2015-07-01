@@ -19,6 +19,7 @@
         <file>qml/components/NewCategory.qml</file>
         <file>qml/components/NewTransaction.qml</file>
         <file>qml/components/PageWithBottomEdge.qml</file>
+        <file>qml/components/RecurrentTransactionComponent.qml</file>
         <file>qml/components/RecurrentTransactionsPage.qml</file>
         <file>qml/components/SplashScreen.qml</file>
         <file>qml/components/TransactionComponent.qml</file>

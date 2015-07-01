@@ -39,7 +39,7 @@ PageStack {
         push(mainPage);
     }
 
-    PageWithBottomEdge {
+    Page {
        id: mainPage
        title: i18n.tr("Recurrent Transactions")
 
@@ -54,11 +54,29 @@ PageStack {
                anchors.left: parent.left
                anchors.right: parent.right
 
-           } // UbuntuShape for list
+               UbuntuListView {
+                   id: incomeList
+                   anchors.fill: parent
+                   anchors.margins: units.gu(1)
+                   spacing: units.gu(2)
+                   clip: true
 
-       } // ColumnLayout
+                   model: Book.recurrentTransactionsModel()
+                   delegate: RecurrentTransactionComponent {
+                       account: model.display.account
+                       amount: model.display.amount
+                       category: model.display.category
+                       contents: model.display.contents
 
-       bottomEdgePageComponent: NewAccount {}
-       bottomEdgeTitle: i18n.tr("Add new account")
+                       MouseArea {
+                           anchors.fill: parent
+                           onClicked: {
+                               console.log("Recurrent transactions!");
+                           }
+                       }
+                   }
+               }
+           } // Sahpe
+       } // Column
     }
 } // page stack
