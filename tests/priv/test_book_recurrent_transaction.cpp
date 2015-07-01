@@ -168,7 +168,11 @@ TestBookRecurrentTransaction::testStoreLastGeneratedPresent() {
 
     QVERIFY(success);
     QVERIFY(query->next());
-    QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    if (transaction->category->type == com::chancho::Category::Type::EXPENSE && transaction->amount > 0) {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount * -1));
+    } else {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    }
     QCOMPARE(query->value("account").toString(), account->_dbId.toString());
     QCOMPARE(query->value("category").toString(), category->_dbId.toString());
     QCOMPARE(query->value("contents").toString(), transaction->contents);
@@ -254,8 +258,11 @@ TestBookRecurrentTransaction::testStoreLasteGeneratedMissing() {
 
     QVERIFY(success);
     QVERIFY(query->next());
-    QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
-    QCOMPARE(query->value("account").toString(), account->_dbId.toString());
+    if (transaction->category->type == com::chancho::Category::Type::EXPENSE && transaction->amount > 0) {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount * -1));
+    } else {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    }
     QCOMPARE(query->value("category").toString(), category->_dbId.toString());
     QCOMPARE(query->value("contents").toString(), transaction->contents);
     QCOMPARE(query->value("memo").toString(), transaction->memo);
@@ -345,7 +352,11 @@ TestBookRecurrentTransaction::testStoreEndDatePresent() {
 
     QVERIFY(success);
     QVERIFY(query->next());
-    QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    if (transaction->category->type == com::chancho::Category::Type::EXPENSE && transaction->amount > 0) {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount * -1));
+    } else {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    }
     QCOMPARE(query->value("account").toString(), account->_dbId.toString());
     QCOMPARE(query->value("category").toString(), category->_dbId.toString());
     QCOMPARE(query->value("contents").toString(), transaction->contents);
@@ -431,7 +442,11 @@ TestBookRecurrentTransaction::testStoreEndDateMissing() {
 
     QVERIFY(success);
     QVERIFY(query->next());
-    QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    if (transaction->category->type == com::chancho::Category::Type::EXPENSE && transaction->amount > 0) {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount * -1));
+    } else {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    }
     QCOMPARE(query->value("account").toString(), account->_dbId.toString());
     QCOMPARE(query->value("category").toString(), category->_dbId.toString());
     QCOMPARE(query->value("contents").toString(), transaction->contents);
@@ -517,7 +532,11 @@ TestBookRecurrentTransaction::testStoreDefaultsUsed() {
 
     QVERIFY(success);
     QVERIFY(query->next());
-    QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    if (transaction->category->type == com::chancho::Category::Type::EXPENSE && transaction->amount > 0) {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount * -1));
+    } else {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    }
     QCOMPARE(query->value("account").toString(), account->_dbId.toString());
     QCOMPARE(query->value("category").toString(), category->_dbId.toString());
     QCOMPARE(query->value("contents").toString(), transaction->contents);
@@ -600,7 +619,11 @@ TestBookRecurrentTransaction::testStoreNonDefaultsUsed() {
 
     QVERIFY(success);
     QVERIFY(query->next());
-    QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    if (transaction->category->type == com::chancho::Category::Type::EXPENSE && transaction->amount > 0) {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount * -1));
+    } else {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    }
     QCOMPARE(query->value("account").toString(), account->_dbId.toString());
     QCOMPARE(query->value("category").toString(), category->_dbId.toString());
     QCOMPARE(query->value("contents").toString(), transaction->contents);
@@ -689,7 +712,11 @@ TestBookRecurrentTransaction::testStoreOcurrencesPresent() {
 
     QVERIFY(success);
     QVERIFY(query->next());
-    QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    if (transaction->category->type == com::chancho::Category::Type::EXPENSE && transaction->amount > 0) {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount * -1));
+    } else {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    }
     QCOMPARE(query->value("account").toString(), account->_dbId.toString());
     QCOMPARE(query->value("category").toString(), category->_dbId.toString());
     QCOMPARE(query->value("contents").toString(), transaction->contents);
@@ -775,7 +802,11 @@ TestBookRecurrentTransaction::testStoreOcurrencesMissing() {
 
     QVERIFY(success);
     QVERIFY(query->next());
-    QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    if (transaction->category->type == com::chancho::Category::Type::EXPENSE && transaction->amount > 0) {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount * -1));
+    } else {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    }
     QCOMPARE(query->value("account").toString(), account->_dbId.toString());
     QCOMPARE(query->value("category").toString(), category->_dbId.toString());
     QCOMPARE(query->value("contents").toString(), transaction->contents);
