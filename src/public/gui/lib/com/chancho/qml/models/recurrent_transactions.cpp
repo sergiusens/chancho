@@ -37,9 +37,21 @@ RecurrentTransactions::RecurrentTransactions(QObject* parent)
     : RecurrentTransactions(std::make_shared<com::chancho::Book>(), parent) {
 }
 
+RecurrentTransactions::RecurrentTransactions(qml::Category* cat, QObject* parent)
+    : RecurrentTransactions(cat, std::make_shared<com::chancho::Book>(), parent) {
+
+}
+
 RecurrentTransactions::RecurrentTransactions(BookPtr book, QObject* parent)
     : QAbstractListModel(parent),
       _book(book) {
+}
+
+RecurrentTransactions::RecurrentTransactions(qml::Category* cat, BookPtr book, QObject* parent)
+        : QAbstractListModel(parent),
+          _cat(cat->getCategory()),
+          _book(book) {
+
 }
 
 RecurrentTransactions::~RecurrentTransactions() {
@@ -47,7 +59,12 @@ RecurrentTransactions::~RecurrentTransactions() {
 
 int
 RecurrentTransactions::numberOfTransactions() const {
-    auto count = _book->numberOfRecurrentTransactions();
+    int count;
+    if (_cat) {
+        count = _book->numberOfRecurrentTransactions(_cat);
+    } else {
+        count = _book->numberOfRecurrentTransactions();
+    }
     if (_book->isError()) {
         return 0;
     }
@@ -61,7 +78,12 @@ RecurrentTransactions::rowCount(const QModelIndex&) const {
 
 QVariant
 RecurrentTransactions::data(int row, int role) const {
-    auto count = _book->numberOfRecurrentTransactions();
+    int count;
+    if (_cat) {
+        count = _book->numberOfRecurrentTransactions(_cat);
+    } else {
+        count = _book->numberOfRecurrentTransactions();
+    }
     if (_book->isError()) {
         return QVariant();
     }
@@ -72,7 +94,12 @@ RecurrentTransactions::data(int row, int role) const {
     }
 
     if (role == Qt::DisplayRole) {
-        auto transactions = _book->recurrentTransactions(1, row);
+        QList<RecurrentTransactionPtr> transactions;
+        if (_cat) {
+            transactions = _book->recurrentTransactions(_cat, 1, row);
+        } else {
+            transactions = _book->recurrentTransactions(1, row);
+        }
         if (_book->isError()) {
             LOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
             return QVariant();

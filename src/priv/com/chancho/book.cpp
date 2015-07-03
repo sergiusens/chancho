@@ -189,6 +189,8 @@ namespace {
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.account=:account ORDER BY t.year, t.month";
     const QString SELECT_RECURRENT_TRANSACTIONS_COUNT = "SELECT count(uuid) FROM RecurrentTransactions";
+    const QString SELECT_RECURRENT_TRANSACTIONS_CATEGORY_COUNT = "SELECT count(uuid) FROM RecurrentTransactions "\
+        "WHERE category=:category";
     const QString SELECT_RECURRENT_TRANSACTIONS = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo, "\
         "t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear, "\
         "t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount "\
@@ -665,8 +667,8 @@ Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
         query->bindValue(":amount", QString::number(recurrent->transaction->amount));
     }
 
-    query->bindValue(":account", recurrent->transaction->account->_dbId);
-    query->bindValue(":category", recurrent->transaction->category->_dbId);
+    query->bindValue(":account", recurrent->transaction->account->_dbId.toString());
+    query->bindValue(":category", recurrent->transaction->category->_dbId.toString());
     query->bindValue(":contents", recurrent->transaction->contents);
     query->bindValue(":memo", recurrent->transaction->memo);
     query->bindValue(":startDay", recurrent->transaction->date.day());
@@ -1790,7 +1792,7 @@ Book::recurrentTransactions(CategoryPtr cat, boost::optional<int> limit, boost::
         //     t.account = a.uuid WHERE t.category=:category
         query->prepare(SELECT_RECURRENT_TRANSACTIONS_CATEGORY);
     }
-    query->bindValue(":category", cat->_dbId);
+    query->bindValue(":category", cat->_dbId.toString());
 
     return parseRecurrentTransactions(query);
 }
@@ -1809,6 +1811,35 @@ Book::numberOfRecurrentTransactions() {
 
     auto query = _db->createQuery();
     query->prepare(SELECT_RECURRENT_TRANSACTIONS_COUNT);
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the transactions count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
+}
+
+int
+Book::numberOfRecurrentTransactions(CategoryPtr cat) {
+    int count = -1;
+
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return count;
+    }
+
+    auto query = _db->createQuery();
+    // SELECT_RECURRENT_TRANSACTIONS_CATEGORY_COUNT = SELECT count(uuid) FROM RecurrentTransactions
+    //     WHERE category=:category
+    query->prepare(SELECT_RECURRENT_TRANSACTIONS_CATEGORY_COUNT);
+    query->bindValue(":category", cat->_dbId.toString());
     auto success = query->exec();
 
     if (!success) {

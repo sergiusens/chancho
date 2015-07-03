@@ -1298,4 +1298,95 @@ TestBookRecurrentTransaction::testRecurrentTransactionsForCategory() {
     QCOMPARE(trans.count(), categoryCountPair.second);
 }
 
+void
+TestBookRecurrentTransaction::testNumberOfRecurrentTransactionsCategory_data() {
+    QTest::addColumn<PublicAccountPtr>("account");
+    QTest::addColumn<QList<QPair<PublicCategoryPtr, int>>>("categoryCountPair");
+    QTest::addColumn<QList<chancho::RecurrentTransactionPtr>>("transactions");
+
+    auto firstAcc = std::make_shared<PublicAccount>("Bankia", 23.4);
+    auto firstCat = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    QList<QPair<PublicCategoryPtr, int>> firstCategories;
+    firstCategories.append(QPair<PublicCategoryPtr, int>(firstCat, 1));
+
+    QList<chancho::RecurrentTransactionPtr> firstTrans;
+    firstTrans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(firstAcc, 30, firstCat),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::DAILY, QDate::currentDate())
+    ));
+
+    QTest::newRow("first-obj") << firstAcc <<  firstCategories << firstTrans;
+
+    auto secondAcc = std::make_shared<PublicAccount>("BBVA", 30);
+    auto secondFirstCat = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
+    auto secondSecondCat = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    QList<QPair<PublicCategoryPtr, int>> secondCategories;
+    secondCategories.append(QPair<PublicCategoryPtr, int>(secondFirstCat, 3));
+    secondCategories.append(QPair<PublicCategoryPtr, int>(secondSecondCat, 2));
+
+    QList<chancho::RecurrentTransactionPtr> secondTrans;
+    secondTrans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(secondAcc, 89, secondFirstCat),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::MONTHLY, QDate::currentDate())
+    ));
+    secondTrans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(secondAcc, 9, secondFirstCat),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::WEEKLY, QDate::currentDate())
+    ));
+    secondTrans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(secondAcc, 19, secondFirstCat),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::DAILY, QDate::currentDate())
+    ));
+    secondTrans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(secondAcc, 19, secondSecondCat),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::DAILY, QDate::currentDate())
+    ));
+    secondTrans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(secondAcc, 9, secondSecondCat),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::WEEKLY, QDate::currentDate())
+    ));
+
+    QTest::newRow("second-obj") << secondAcc << secondCategories << secondTrans;
+
+    auto lastAcc = std::make_shared<PublicAccount>("ING", 0);
+    auto lastCat = std::make_shared<PublicCategory>("Bonus", chancho::Category::Type::INCOME);
+    QList<QPair<PublicCategoryPtr, int>> thirdCategories;
+    thirdCategories.append(QPair<PublicCategoryPtr, int>(lastCat, 0));
+    QList<chancho::RecurrentTransactionPtr> lastTrans;
+
+    QTest::newRow("last-obj") << lastAcc << thirdCategories << lastTrans;
+}
+
+void
+TestBookRecurrentTransaction::testNumberOfRecurrentTransactionsCategory() {
+    typedef QPair<PublicCategoryPtr, int> CatPair;
+    typedef QList<CatPair> CatPairList;
+    QFETCH(PublicAccountPtr, account);
+    QFETCH(CatPairList, categoryCountPair);
+    QFETCH(QList<chancho::RecurrentTransactionPtr>, transactions);
+
+    PublicBook book;
+    book.store(account);
+    QVERIFY(account->wasStoredInDb());
+
+    foreach(const CatPair& pair, categoryCountPair) {
+        book.store(pair.first);
+        QVERIFY(pair.first->wasStoredInDb());
+    }
+
+    book.store(transactions);
+    QVERIFY(!book.isError());
+
+    foreach(const CatPair& pair, categoryCountPair) {
+        auto count = book.numberOfRecurrentTransactions(pair.first);
+        QCOMPARE(count, pair.second);
+    }
+}
+
 QTEST_MAIN(TestBookRecurrentTransaction)
