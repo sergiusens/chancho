@@ -306,11 +306,23 @@ class Book {
     virtual int numberOfDaysWithTransactions(int month, int year);
 
     /*!
-        \fn virtual QList<RecurrentTransactionPtr> recurrent_transactions();
+        \fn virtual QList<RecurrentTransactionPtr> recurrent_transactions(
+        boost::optional<int> limit = boost::optional<int>(), boost::optional<int> offset = boost::optional<int>());
 
         Returns a list with all the recurrent transactions that have been created in the system.
      */
     virtual QList<RecurrentTransactionPtr> recurrentTransactions(boost::optional<int> limit = boost::optional<int>(),
+                                                                 boost::optional<int> offset = boost::optional<int>());
+
+    /*!
+        \fn virtual QList<RecurrentTransactionPtr> recurrentTransactions(CategoryPtr cat,
+                                                                 boost::optional<int> limit = boost::optional<int>(),
+                                                                 boost::optional<int> offset = boost::optional<int>());
+
+        Returns a list with all the recurrent transactions that have the given category.
+     */
+    virtual QList<RecurrentTransactionPtr> recurrentTransactions(CategoryPtr cat,
+                                                                 boost::optional<int> limit = boost::optional<int>(),
                                                                  boost::optional<int> offset = boost::optional<int>());
 
     /*!
@@ -374,6 +386,7 @@ class Book {
 
  private:
     QList<TransactionPtr> parseTransactions(std::shared_ptr<system::Query> query);
+    QList<RecurrentTransactionPtr> parseRecurrentTransactions(std::shared_ptr<system::Query> query);
     QList<TransactionPtr> transactions(int year, int month, boost::optional<int> day, boost::optional<int> limit,
            boost::optional<int> offset);
     bool storeSingleAcc(AccountPtr ptr);
