@@ -40,6 +40,7 @@ class RecurrentTransaction;
 namespace models {
 
 class Categories;
+class RecurrentTransactions;
 
 }
 
@@ -50,6 +51,7 @@ class Category : public QObject {
     Q_PROPERTY(QString color READ getColor WRITE setColor NOTIFY colorChanged)
 
     friend class models::Categories;
+    friend class models::RecurrentTransactions;
     friend class qml::Book;
     friend class qml::Transaction;
     friend class qml::RecurrentTransaction;

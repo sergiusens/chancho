@@ -29,6 +29,8 @@
 #include "book.h"
 #include "base_testcase.h"
 #include "public_recurrent_transactions_model.h"
+#include "public_category.h"
+#include "public_qml_category.h"
 
 class TestRecurrentTransactionsModel : public BaseTestCase {
     Q_OBJECT
@@ -43,11 +45,14 @@ class TestRecurrentTransactionsModel : public BaseTestCase {
     void cleanup() override;
 
     void testRowCount();
+    void testRowCountCategory();
     void testRowCountError();
 
     void testDataNotValidIndex();
     void testDataOutOfIndex();
     void testDataBookError();
+    void testDataBookCategoryError();
     void testDataNoData();
     void testDataGetTransaction();
+    void testDataGetTransactionCategory();
 };

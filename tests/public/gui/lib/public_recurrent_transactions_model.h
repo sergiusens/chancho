@@ -35,6 +35,9 @@ class PublicRecurrentTransactionsModel : public com::chancho::qml::models::Recur
  public:
     PublicRecurrentTransactionsModel(BookPtr book, QObject* parent=0)
             : com::chancho::qml::models::RecurrentTransactions(book, parent) {}
+
+    PublicRecurrentTransactionsModel(qml::Category* cat, BookPtr book, QObject* parent=0)
+            : com::chancho::qml::models::RecurrentTransactions(cat, book, parent) {}
 };
 
 }

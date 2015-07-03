@@ -66,7 +66,9 @@ class MockBook: public com::chancho::Book {
     MOCK_METHOD3(expenseForDay, double(int, int, int));
     MOCK_METHOD0(generateRecurrentTransactions, void());
     MOCK_METHOD2(recurrentTransactions, QList<RecurrentTransactionPtr>(boost::optional<int>, boost::optional<int>));
+    MOCK_METHOD3(recurrentTransactions, QList<RecurrentTransactionPtr>(CategoryPtr, boost::optional<int>, boost::optional<int>));
     MOCK_METHOD0(numberOfRecurrentTransactions, int());
+    MOCK_METHOD1(numberOfRecurrentTransactions, int(CategoryPtr));
 };
 
 }

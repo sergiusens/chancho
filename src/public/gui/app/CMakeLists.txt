@@ -96,6 +96,7 @@ set(QML_SOURCES
     qml/components/CategoriesPage.qml
     qml/components/CategoryComponent.qml
     qml/components/CategoryForm.qml
+    qml/components/CategoryHeaderComponent.qml
     qml/components/CategoryStatsPage.qml
     qml/components/ColorChooser.qml
     qml/components/DateHeaderComponent.qml

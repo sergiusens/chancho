@@ -8,6 +8,7 @@
         <file>qml/components/CategoriesPage.qml</file>
         <file>qml/components/CategoryComponent.qml</file>
         <file>qml/components/CategoryForm.qml</file>
+        <file>qml/components/CategoryHeaderComponent.qml</file>
         <file>qml/components/CategoryStatsPage.qml</file>
         <file>qml/components/ColorChooser.qml</file>
         <file>qml/components/DateHeaderComponent.qml</file>

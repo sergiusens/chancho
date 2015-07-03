@@ -26,6 +26,8 @@
 #include <QModelIndex>
 
 #include <com/chancho/book.h>
+#include <com/chancho/category.h>
+#include "com/chancho/qml/category.h"
 
 namespace com {
 
@@ -44,6 +46,7 @@ class RecurrentTransactions : public QAbstractListModel {
 
  public:
     explicit RecurrentTransactions(QObject* parent = 0);
+    RecurrentTransactions(qml::Category* cat, QObject* parent = 0);
     virtual ~RecurrentTransactions();
 
     // methods to override to allow the model to be used from qml
@@ -55,9 +58,12 @@ class RecurrentTransactions : public QAbstractListModel {
 
  protected:
     RecurrentTransactions(BookPtr book, QObject* parent = 0);
+    RecurrentTransactions(qml::Category* cat, BookPtr book, QObject* parent = 0);
 
  private:
+    CategoryPtr _cat;
     BookPtr _book;
+
 };
 
 }

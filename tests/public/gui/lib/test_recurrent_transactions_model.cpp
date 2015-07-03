@@ -61,6 +61,29 @@ TestRecurrentTransactionsModel::testRowCount() {
 }
 
 void
+TestRecurrentTransactionsModel::testRowCountCategory() {
+    int count = 5;
+
+    auto cat = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
+    auto catQml = std::make_shared<com::chancho::tests::PublicCategory>(cat);
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicRecurrentTransactionsModel>(catQml.get(), book);
+
+    EXPECT_CALL(*book.get(), numberOfRecurrentTransactions(_))
+            .Times(1)
+            .WillOnce(Return(count));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    auto result = model->rowCount(QModelIndex());
+
+    QVERIFY(Mock::VerifyAndClearExpectations(book.get()));
+    QCOMPARE(result, count);
+}
+
+void
 TestRecurrentTransactionsModel::testRowCountError() {
     int count = 5;
 
@@ -145,6 +168,39 @@ TestRecurrentTransactionsModel::testDataBookError() {
 }
 
 void
+TestRecurrentTransactionsModel::testDataBookCategoryError() {
+    int count = 5;
+    int index = count - 1;
+
+    auto cat = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
+    auto catQml = std::make_shared<com::chancho::tests::PublicCategory>(cat);
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicRecurrentTransactionsModel>(catQml.get(), book);
+
+    EXPECT_CALL(*book.get(), numberOfRecurrentTransactions(_))
+            .Times(1)
+            .WillOnce(Return(count));
+
+    EXPECT_CALL(*book.get(), recurrentTransactions(_, boost::optional<int>(1), boost::optional<int>(index)))
+            .Times(1)
+            .WillOnce(Return(QList<com::chancho::RecurrentTransactionPtr>()));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(2)
+            .WillOnce(Return(false))
+            .WillOnce(Return(true));
+
+    EXPECT_CALL(*book.get(), lastError())
+            .Times(1)
+            .WillOnce(Return(QString("Foo")));
+
+    auto result = model->data(index, Qt::DisplayRole);
+    QVERIFY(!result.isValid());
+
+    QVERIFY(Mock::VerifyAndClearExpectations(book.get()));
+}
+
+void
 TestRecurrentTransactionsModel::testDataNoData() {
     int count = 5;
     int index = count - 1;
@@ -187,6 +243,38 @@ TestRecurrentTransactionsModel::testDataGetTransaction() {
             .WillOnce(Return(count));
 
     EXPECT_CALL(*book.get(), recurrentTransactions(boost::optional<int>(1), boost::optional<int>(index)))
+            .Times(1)
+            .WillOnce(Return(list));
+
+    EXPECT_CALL(*book.get(), isError())
+            .Times(2)
+            .WillOnce(Return(false))
+            .WillOnce(Return(false));
+
+    auto result = model->data(index, Qt::DisplayRole);
+    QVERIFY(result.isValid());
+
+    QVERIFY(Mock::VerifyAndClearExpectations(book.get()));
+}
+
+void
+TestRecurrentTransactionsModel::testDataGetTransactionCategory() {
+    int count = 5;
+    int index = count - 1;
+
+    auto cat = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
+    auto catQml = std::make_shared<com::chancho::tests::PublicCategory>(cat);
+    auto book = std::make_shared<com::chancho::tests::MockBook>();
+    auto model = std::make_shared<com::chancho::tests::PublicRecurrentTransactionsModel>(catQml.get(), book);
+    auto transaction = std::make_shared<com::chancho::RecurrentTransaction>();
+    QList<com::chancho::RecurrentTransactionPtr> list;
+    list.append(transaction);
+
+    EXPECT_CALL(*book.get(), numberOfRecurrentTransactions(_))
+            .Times(1)
+            .WillOnce(Return(count));
+
+    EXPECT_CALL(*book.get(), recurrentTransactions(_, boost::optional<int>(1), boost::optional<int>(index)))
             .Times(1)
             .WillOnce(Return(list));
 
