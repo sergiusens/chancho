@@ -324,6 +324,8 @@ class Book {
     virtual QList<RecurrentTransactionPtr> recurrentTransactions(CategoryPtr cat,
                                                                  boost::optional<int> limit = boost::optional<int>(),
                                                                  boost::optional<int> offset = boost::optional<int>());
+    virtual QList<CategoryPtr> recurrentCategories(boost::optional<int> limit = boost::optional<int>(),
+                                                   boost::optional<int> offset = boost::optional<int>());
 
     /*!
         \fn virtual int numberOfRecurrentTransactions()
@@ -392,6 +394,7 @@ class Book {
     double amountForTypeInDay(int day, int month, int year, Category::Type type);
 
  private:
+    QList<CategoryPtr> parseCategories(std::shared_ptr<system::Query> query);
     QList<TransactionPtr> parseTransactions(std::shared_ptr<system::Query> query);
     QList<RecurrentTransactionPtr> parseRecurrentTransactions(std::shared_ptr<system::Query> query);
     QList<TransactionPtr> transactions(int year, int month, boost::optional<int> day, boost::optional<int> limit,

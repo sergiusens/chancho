@@ -155,6 +155,10 @@ namespace {
         "WHERE type=:type ORDER BY name ASC LIMIT :limit OFFSET :offset";
     const QString SELECT_CATEGORIES_COUNT = "SELECT count(*) FROM Categories";
     const QString SELECT_CATEGORIES_COUNT_TYPE = "SELECT count(*) FROM Categories WHERE type=:type";
+    const QString SELECT_CATEGORIES_RECURRENT = "SELECT uuid, parent, name, type, color FROM Categories WHERE uuid IN "\
+        "(SELECT category from RecurrentTransactions GROUP BY category)";
+    const QString SELECT_CATEGORIES_RECURRENT_LIMIT = "SELECT uuid, parent, name, type, color FROM Categories WHERE uuid IN "\
+        "(SELECT category from RecurrentTransactions GROUP BY category) LIMIT :limit OFFSET :offset";
     const QString SELECT_TRANSACTIONS_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
         "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
@@ -1001,59 +1005,11 @@ Book::numberOfAccounts() {
     return count;
 }
 
-
 QList<CategoryPtr>
-Book::categories(boost::optional<Category::Type> type, boost::optional<int> limit, boost::optional<int> offset) {
+Book::parseCategories(std::shared_ptr<system::Query> query) {
     QMap<QUuid, QList<QUuid>> parentChildMap;
     QMap<QUuid, CategoryPtr> catsMap;
     QList<QUuid> orderedIds;
-
-    BookLock dbLock(this);
-
-    if (!dbLock.opened()) {
-        _lastError = _db->lastError().text();
-        LOG(ERROR) << _lastError.toStdString();
-        QList<CategoryPtr> cats;
-        return cats;
-    }
-
-    auto query = _db->createQuery();
-
-    if (type) {
-        if (limit) {
-            // SELECT_ALL_CATEGORIES_TYPE_LIMIT = "SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
-            //     WHERE type=:type LIMIT :limit OFFSET :offset
-            query->prepare(SELECT_ALL_CATEGORIES_TYPE_LIMIT);
-            query->bindValue(":type", static_cast<int>(*type));
-            query->bindValue(":limit", *limit);
-
-            if (offset) {
-                query->bindValue(":offset", *offset);
-            } else {
-                query->bindValue(":offset", 0);
-            }
-        } else {
-            // SELECT_ALL_CATEGORIES_TYPE = SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
-            // WHERE type=:type
-            query->prepare(SELECT_ALL_CATEGORIES_TYPE);
-            query->bindValue(":type", static_cast<int>(*type));
-        }
-    } else {
-        if (limit) {
-            // SELECT_ALL_CATEGORIES_LIMIT = SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
-            //     LIMIT :limit OFFSET :offset;
-            query->prepare(SELECT_ALL_CATEGORIES_LIMIT);
-            query->bindValue(":limit", *limit);
-
-            if (offset) {
-                query->bindValue(":offset", *offset);
-            } else {
-                query->bindValue(":offset", 0);
-            }
-        } else {
-            query->prepare(SELECT_ALL_CATEGORIES);
-        }
-    }
 
     auto success = query->exec();
 
@@ -1105,13 +1061,13 @@ Book::categories(boost::optional<Category::Type> type, boost::optional<int> limi
     foreach(const QUuid& parentId, parentChildMap.keys()) {
         if (!catsMap.contains(parentId)) {
             LOG(ERROR) << "DB consintency error categori with id '" << parentId.toString().toStdString()
-                    << "' not found.";
+                << "' not found.";
             continue;
         }
         foreach(const QUuid& childId, parentChildMap[parentId]) {
             if (!catsMap.contains(childId)) {
                 LOG(ERROR) << "DB consintency error categori with id '" << parentId.toString().toStdString()
-                        << "' not found.";
+                    << "' not found.";
                 continue;
             }
             // set the parent, do not worry about points since we are using std::shared_ptr
@@ -1123,9 +1079,62 @@ Book::categories(boost::optional<Category::Type> type, boost::optional<int> limi
     // the order that the select returned
     QList<CategoryPtr> orderedCats;
     foreach(const QUuid& id, orderedIds) {
-            orderedCats.append(catsMap[id]);
+        orderedCats.append(catsMap[id]);
     }
     return orderedCats;
+}
+
+QList<CategoryPtr>
+Book::categories(boost::optional<Category::Type> type, boost::optional<int> limit, boost::optional<int> offset) {
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        QList<CategoryPtr> cats;
+        return cats;
+    }
+
+    auto query = _db->createQuery();
+
+    if (type) {
+        if (limit) {
+            // SELECT_ALL_CATEGORIES_TYPE_LIMIT = "SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
+            //     WHERE type=:type LIMIT :limit OFFSET :offset
+            query->prepare(SELECT_ALL_CATEGORIES_TYPE_LIMIT);
+            query->bindValue(":type", static_cast<int>(*type));
+            query->bindValue(":limit", *limit);
+
+            if (offset) {
+                query->bindValue(":offset", *offset);
+            } else {
+                query->bindValue(":offset", 0);
+            }
+        } else {
+            // SELECT_ALL_CATEGORIES_TYPE = SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
+            // WHERE type=:type
+            query->prepare(SELECT_ALL_CATEGORIES_TYPE);
+            query->bindValue(":type", static_cast<int>(*type));
+        }
+    } else {
+        if (limit) {
+            // SELECT_ALL_CATEGORIES_LIMIT = SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
+            //     LIMIT :limit OFFSET :offset;
+            query->prepare(SELECT_ALL_CATEGORIES_LIMIT);
+            query->bindValue(":limit", *limit);
+
+            if (offset) {
+                query->bindValue(":offset", *offset);
+            } else {
+                query->bindValue(":offset", 0);
+            }
+        } else {
+            query->prepare(SELECT_ALL_CATEGORIES);
+        }
+    }
+
+    auto cats = parseCategories(query);
+    return cats;
 }
 
 int
@@ -1795,6 +1804,36 @@ Book::recurrentTransactions(CategoryPtr cat, boost::optional<int> limit, boost::
     query->bindValue(":category", cat->_dbId.toString());
 
     return parseRecurrentTransactions(query);
+}
+
+QList<CategoryPtr>
+Book::recurrentCategories(boost::optional<int> limit, boost::optional<int> offset) {
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        QList<CategoryPtr> cats;
+        return cats;
+    }
+
+    auto query = _db->createQuery();
+
+    if (limit) {
+        query->prepare(SELECT_CATEGORIES_RECURRENT_LIMIT);
+        query->bindValue(":limit", *limit);
+
+        if (offset) {
+            query->bindValue(":offset", *offset);
+        } else {
+            query->bindValue(":offset", 0);
+        }
+    } else {
+        query->prepare(SELECT_CATEGORIES_RECURRENT);
+    }
+
+    auto cats = parseCategories(query);
+    return cats;
 }
 
 int
