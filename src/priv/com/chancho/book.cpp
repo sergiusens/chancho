@@ -159,6 +159,8 @@ namespace {
         "(SELECT category from RecurrentTransactions GROUP BY category)";
     const QString SELECT_CATEGORIES_RECURRENT_LIMIT = "SELECT uuid, parent, name, type, color FROM Categories WHERE uuid IN "\
         "(SELECT category from RecurrentTransactions GROUP BY category) LIMIT :limit OFFSET :offset";
+    const QString SELECT_CATEGORIES_RECURRENT_COUNT = "SELECT count(*) FROM (SELECT category FROM "\
+        "RecurrentTransactions GROUP BY category)";
     const QString SELECT_TRANSACTIONS_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
         "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
@@ -1879,6 +1881,32 @@ Book::numberOfRecurrentTransactions(CategoryPtr cat) {
     //     WHERE category=:category
     query->prepare(SELECT_RECURRENT_TRANSACTIONS_CATEGORY_COUNT);
     query->bindValue(":category", cat->_dbId.toString());
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the transactions count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
+}
+
+int
+Book::numberOfRecurrentCategories() {
+    int count = -1;
+
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return count;
+    }
+
+    auto query = _db->createQuery();
+    query->prepare(SELECT_CATEGORIES_RECURRENT_COUNT);
     auto success = query->exec();
 
     if (!success) {

@@ -342,6 +342,13 @@ class Book {
     virtual int numberOfRecurrentTransactions(CategoryPtr cat);
 
     /*!
+        \fn virtual int numberOfRecurrentCategories();
+
+        Returns the number of categories that have recurrent transactions.
+    */
+    virtual int numberOfRecurrentCategories();
+
+    /*!
         \fn static void generateRecurrentTransactions();
 
         Generates the recurrent transactions that have not been added since the last time the
