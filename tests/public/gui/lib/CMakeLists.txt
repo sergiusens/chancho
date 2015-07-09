@@ -6,6 +6,7 @@ set(PRIVATE_TESTS
     test_category
     test_day_model
     test_month_model
+    test_recurrent_categories_model
     test_recurrent_transaction
     test_recurrent_transactions_model
     test_transaction
