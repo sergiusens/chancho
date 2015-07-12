@@ -156,9 +156,9 @@ namespace {
     const QString SELECT_CATEGORIES_COUNT = "SELECT count(*) FROM Categories";
     const QString SELECT_CATEGORIES_COUNT_TYPE = "SELECT count(*) FROM Categories WHERE type=:type";
     const QString SELECT_CATEGORIES_RECURRENT = "SELECT uuid, parent, name, type, color FROM Categories WHERE uuid IN "\
-        "(SELECT category from RecurrentTransactions GROUP BY category)";
+        "(SELECT category from RecurrentTransactions GROUP BY category) ORDER BY name";
     const QString SELECT_CATEGORIES_RECURRENT_LIMIT = "SELECT uuid, parent, name, type, color FROM Categories WHERE uuid IN "\
-        "(SELECT category from RecurrentTransactions GROUP BY category) LIMIT :limit OFFSET :offset";
+        "(SELECT category from RecurrentTransactions GROUP BY category) ORDER BY name LIMIT :limit OFFSET :offset";
     const QString SELECT_CATEGORIES_RECURRENT_COUNT = "SELECT count(*) FROM (SELECT category FROM "\
         "RecurrentTransactions GROUP BY category)";
     const QString SELECT_TRANSACTIONS_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\

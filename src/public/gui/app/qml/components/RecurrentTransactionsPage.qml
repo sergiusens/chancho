@@ -61,12 +61,9 @@ PageStack {
                    spacing: units.gu(2)
                    clip: true
 
-                   model: Book.recurrentTransactionsModel()
-                   delegate: RecurrentTransactionComponent {
-                       account: model.display.account
-                       amount: model.display.amount
-                       category: model.display.category
-                       contents: model.display.contents
+                   model: Book.recurrentCategoriesModel()
+                   delegate: RecurrentTransactionsPerCategory {
+                       transactionsModel: Book.recurrentTransactionsModel(model.display)
 
                        MouseArea {
                            anchors.fill: parent

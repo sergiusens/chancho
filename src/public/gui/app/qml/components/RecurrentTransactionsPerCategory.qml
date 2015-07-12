@@ -24,52 +24,50 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.1
 
 import Ubuntu.Components 1.1
+import Ubuntu.Components.ListItems 1.0 as ListItems
 
-Item {
-    property var category
-    property var categoryColor
+UbuntuShape {
+    property var transactionsModel
+    anchors.margins: units.gu(1)
 
-    anchors.left: parent.left
-    anchors.right: parent.right
+    width: parent.width
+    height: childrenRect.height
 
-    height: categoryLabel.height + units.gu(1)
-
-    Item {
+    ColumnLayout {
+        anchors.margins: units.gu(1)
         anchors.left: parent.left
         anchors.right: parent.right
+        height: childrenRect.height
 
-        height: categoryLabel.height
+        CategoryHeaderComponent {
+            category: transactionsModel.category.name
+            categoryColor: transactionsModel.category.color
+        }
 
-        Row {
-            spacing: units.gu(1)
+        ListItems.Divider { }
 
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            anchors.topMargin: units.gu(1)
-            anchors.rightMargin: units.gu(1)
+        Repeater {
+            id: transactionsList
+            property var repeatCount: transactionsModel.numberOfTransactions()
 
-            width: parent.width - units.gu(20)
-            height: categoryLabel.height
+            model: transactionsModel
 
-            UbuntuShape {
-                id: categoryRect
+            TransactionComponent {
+                property var transaction: model.display
+                property var repeaterIndex: index
 
-                color: categoryColor
-                height: categoryLabel.height
-                width: height
+                numberOfTransactions: transactionsList.repeatCount
 
+                MouseArea {
+                    anchors.fill: parent
+
+                    onClicked: {
+                        parent.selected = !parent.selected;
+                        mainPageStack.push(editTransaction, {"transaction": transaction});
+                        parent.selected = !parent.selected;
+                    }
+                }
             }
-            Label {
-                id: categoryLabel
-                text: category
-
-                font.bold: true
-                horizontalAlignment: Text.AlignCenter
-                verticalAlignment: Text.AlignBottom
-            }
-
-        } // Row
-
-    }// Item
+        }
+    } // ColumnLayout
 }

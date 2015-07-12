@@ -26,6 +26,7 @@
 #include "models/categories.h"
 #include "models/day.h"
 #include "models/month.h"
+#include "models/recurrent_categories.h"
 #include "models/recurrent_transactions.h"
 
 #include "workers/accounts.h"
@@ -222,8 +223,21 @@ Book::updateTransaction(QObject* tranObj, QObject* accObj, QObject* catObj, QDat
 }
 
 QObject*
-Book::recurrentTransactionsModel() {
-    auto model = new models::RecurrentTransactions(_book);
+Book::recurrentTransactionsModel(QObject* category) {
+    CategoryPtr cat;
+
+    auto catModel = qobject_cast<qml::Category*>(category);
+    if (catModel == nullptr) {
+        LOG(ERROR) << "Method called with wrong object type as a category model";
+        return nullptr;
+    }
+    auto model = new models::RecurrentTransactions(catModel, _book);
+    return model;
+}
+
+QObject*
+Book::recurrentCategoriesModel() {
+    auto model = new models::RecurrentCategories(_book);
     return model;
 }
 
