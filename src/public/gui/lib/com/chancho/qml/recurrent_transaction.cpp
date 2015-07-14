@@ -166,13 +166,20 @@ RecurrentTransaction::getType() const {
 
 qml::Book::RecurrenceType
 RecurrentTransaction::getRecurrenceType() const {
-    switch (_transaction->recurrence->defaults().get()){
-        case com::chancho::RecurrentTransaction::Recurrence::Defaults::DAILY:
-            return qml::Book::DAILY;
-        case com::chancho::RecurrentTransaction::Recurrence::Defaults::WEEKLY:
-            return qml::Book::WEEKLY;
-        default:
-            return qml::Book::MONTHLY;
+    auto defaults = _transaction->recurrence->defaults();
+    if (defaults) {
+        switch (*defaults){
+            case com::chancho::RecurrentTransaction::Recurrence::Defaults::DAILY:
+                return qml::Book::DAILY;
+            case com::chancho::RecurrentTransaction::Recurrence::Defaults::WEEKLY:
+                return qml::Book::WEEKLY;
+            case com::chancho::RecurrentTransaction::Recurrence::Defaults::MONTHLY:
+                return qml::Book::MONTHLY;
+            default:
+                return qml::Book::OTHER;
+        }
+    } else {
+        return qml::Book::OTHER;
     }
 }
 

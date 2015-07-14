@@ -136,6 +136,15 @@ RecurrentTransactions::headerData(int section, Qt::Orientation orientation, int 
         return QString("Row %1").arg(section);
 }
 
+QObject*
+RecurrentTransactions::getCategory() const {
+    if (_cat) {
+        return new qml::Category(_cat);
+    } else {
+        return nullptr;
+    }
+}
+
 }
 
 }

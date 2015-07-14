@@ -110,6 +110,7 @@ set(QML_SOURCES
     qml/components/PageWithBottomEdge.qml
     qml/components/RecurrentTransactionComponent.qml
     qml/components/RecurrentTransactionsPage.qml
+    qml/components/RecurrentTransactionsPerCategory.qml
     qml/components/SplashScreen.qml
     qml/components/TransactionComponent.qml
     qml/components/TransactionForm.qml

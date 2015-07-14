@@ -41,6 +41,7 @@ namespace models {
 
 class RecurrentTransactions : public QAbstractListModel {
     Q_OBJECT
+    Q_PROPERTY(QObject* category READ getCategory NOTIFY categoryChanged)
 
     friend class com::chancho::qml::Book;
 
@@ -55,6 +56,11 @@ class RecurrentTransactions : public QAbstractListModel {
     QVariant data(int row, int role) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
+    Q_INVOKABLE QObject* getCategory() const;
+
+ signals:
+    void categoryChanged(QObject* day);
 
  protected:
     RecurrentTransactions(BookPtr book, QObject* parent = 0);

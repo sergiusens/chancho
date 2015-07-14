@@ -206,7 +206,7 @@ Dialog {
                 if (okCallback) {
                     // create the object to be passed to the cb
                     var recurrence = {
-                        "type": repeatModel.get(repeatSelector.selectedIndex)
+                        "type": repeatModel.get(repeatSelector.selectedIndex).enumType
                     };
                     if (repeatSelector.selectedIndex == 3) {
                         recurrence["days"] = parseInt(daysField.text);

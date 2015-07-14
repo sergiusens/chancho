@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-09 13:32+0200\n"
+"POT-Creation-Date: 2015-07-14 20:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -244,7 +244,7 @@ msgid "Add"
 msgstr ""
 
 #: ../qml/components/NewAccount.qml:53 ../qml/components/NewCategory.qml:49
-#: ../qml/components/NewTransaction.qml:62
+#: ../qml/components/NewTransaction.qml:69
 msgid "Internal Error"
 msgstr ""
 
@@ -264,8 +264,41 @@ msgstr ""
 msgid "Transactions must have an amount."
 msgstr ""
 
-#: ../qml/components/NewTransaction.qml:63
+#: ../qml/components/NewTransaction.qml:60
+msgid "Error: content is missing"
+msgstr ""
+
+#: ../qml/components/NewTransaction.qml:61
+msgid ""
+"Recurrent transactions must have a contents field so that they can be later "
+"identified."
+msgstr ""
+
+#: ../qml/components/NewTransaction.qml:70
 msgid "The transaction could not be stored."
+msgstr ""
+
+#: ../qml/components/RecurrentTransactionComponent.qml:48
+#: ../qml/components/dialogs/RecurrenceDialog.qml:53
+msgid "Daily"
+msgstr ""
+
+#: ../qml/components/RecurrentTransactionComponent.qml:51
+#: ../qml/components/dialogs/RecurrenceDialog.qml:57
+msgid "Weekly"
+msgstr ""
+
+#: ../qml/components/RecurrentTransactionComponent.qml:54
+#: ../qml/components/dialogs/RecurrenceDialog.qml:61
+msgid "Monthly"
+msgstr ""
+
+#: ../qml/components/RecurrentTransactionComponent.qml:57
+msgid "Every "
+msgstr ""
+
+#: ../qml/components/RecurrentTransactionComponent.qml:57
+msgid " days"
 msgstr ""
 
 #: ../qml/components/TransactionForm.qml:156
@@ -425,18 +458,6 @@ msgstr ""
 
 #: ../qml/components/dialogs/RecurrenceDialog.qml:37
 msgid "Choose the recurrency of the transaction"
-msgstr ""
-
-#: ../qml/components/dialogs/RecurrenceDialog.qml:53
-msgid "Daily"
-msgstr ""
-
-#: ../qml/components/dialogs/RecurrenceDialog.qml:57
-msgid "Weekly"
-msgstr ""
-
-#: ../qml/components/dialogs/RecurrenceDialog.qml:61
-msgid "Monthly"
 msgstr ""
 
 #: ../qml/components/dialogs/RecurrenceDialog.qml:73
