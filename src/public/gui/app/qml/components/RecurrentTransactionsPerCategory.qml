@@ -52,7 +52,7 @@ UbuntuShape {
 
             model: transactionsModel
 
-            TransactionComponent {
+            RecurrentTransactionComponent {
                 property var transaction: model.display
                 property var repeaterIndex: index
 

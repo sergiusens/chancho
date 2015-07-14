@@ -54,14 +54,22 @@ Page {
                     var contents = form.contents;
                     var memo = form.memo;
                     var recurrence = form.recurrence
-                    var success = Book.storeTransaction(account, category, date, parseFloat(amount), contents, memo,
-                                                        recurrence);
-                    if (success) {
-                        mainPageStack.pop();
-                    } else {
-                        var title = i18n.tr("Internal Error");
-                        var text = i18n.tr("The transaction could not be stored.");
+                    if (recurrence && contents == "") {
+                        // we want to make sure that we have a memo so that we can easily identify the reucurrent
+                        // transaction
+                        var title = i18n.tr("Error: content is missing");
+                        var text = i18n.tr("Recurrent transactions must have a contents field so that they can be later identified.");
                         PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
+                    } else {
+                        var success = Book.storeTransaction(account, category, date, parseFloat(amount), contents, memo,
+                                                            recurrence);
+                        if (success) {
+                            mainPageStack.pop();
+                        } else {
+                            var title = i18n.tr("Internal Error");
+                            var text = i18n.tr("The transaction could not be stored.");
+                            PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
+                        }
                     }
                 }
             }

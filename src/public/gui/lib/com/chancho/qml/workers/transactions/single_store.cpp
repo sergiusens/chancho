@@ -153,7 +153,7 @@ SingleStore::storeRecurrentTransaction() {
     }
 
     if (_recurrence.contains(RECURRENCE_TYPE_KEY)) {
-        auto qmlEnum = _recurrence[RECURRENCE_TYPE_KEY].value<qml::Book::RecurrenceType>();
+        auto qmlEnum = static_cast<qml::Book::RecurrenceType>(_recurrence[RECURRENCE_TYPE_KEY].toInt());
         com::chancho::RecurrentTransaction::Recurrence::Defaults defaults;
         switch (qmlEnum) {
             case qml::Book::DAILY:
@@ -162,8 +162,11 @@ SingleStore::storeRecurrentTransaction() {
             case qml::Book::WEEKLY:
                 defaults = com::chancho::RecurrentTransaction::Recurrence::Defaults::WEEKLY;
                 break;
-            default:
+            case qml::Book::MONTHLY:
                 defaults = com::chancho::RecurrentTransaction::Recurrence::Defaults::MONTHLY;
+                break;
+            default:
+                defaults = com::chancho::RecurrentTransaction::Recurrence::Defaults::OTHER;
                 break;
         }
         if (endDate.isValid()) {
