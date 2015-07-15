@@ -88,6 +88,12 @@ namespace {
         "occurrences INT, "\
         "FOREIGN KEY(account) REFERENCES Accounts(uuid), "\
         "FOREIGN KEY(category) REFERENCES Categories(uuid))";  // amounts are stored in text so that we can used the most precise number
+    const QString RECURRENT_TRANSACTIONS_RELATIONS_TABLE = "CREATE TABLE IF NOT EXISTS RecurrentTransactionRelations("\
+        "recurrent_transaction VARCHAR(40),"\
+        "generated_transaction VARCHAR(40),"\
+        "FOREIGN KEY(recurrent_transaction) REFERENCES RecurrentTransactions(uuid),"\
+        "FOREIGN KEY(generated_transaction) REFERENCES Transactions(uuid),"\
+        "PRIMARY KEY(recurrent_transaction, generated_transaction))";
     const QString TRANSACTION_INSERT_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionInsert AFTER INSERT ON Transactions "\
         "BEGIN "\
         "UPDATE Accounts SET amount=AddStringNumbers(amount, new.amount) WHERE uuid=new.account; "\
@@ -137,6 +143,8 @@ namespace {
         "endDay, endMonth, endYear, defaultType, numberDays, occurrences) "\
         "VALUES(:uuid, :amount, :account, :category, :contents, :memo, :startDay, :startMonth, :startYear, :lastDay, "\
         ":lastMonth, :lastYear, :endDay, :endMonth, :endYear, :defaultType, :numberDays, :occurrences)";
+    const QString INSERT_UPDATE_RECURRENT_TRANSACTION_RELATION = "INSERT OR REPLACE INTO RecurrentTransactionRelations("\
+        "recurrent_transaction, generated_transaction) VALUES(:recurrent_transaction, :generated_transaction)";
     const QString DELETE_ACCOUNT = "DELETE FROM Accounts WHERE uuid=:uuid";
     const QString DELETE_CHILD_CATEGORIES = "DELETE FROM Categories WHERE parent=:uuid";
     const QString DELETE_CATEGORY = "DELETE FROM Categories WHERE uuid=:uuid";
@@ -312,6 +320,7 @@ Book::initDatabse() {
 
     // all versions of the application do not have the recurrent transactions table
     bool needsRecurrenceUpdate = !tables.contains("recurrenttransactions", Qt::CaseInsensitive);
+    bool needsRecurrenceRelations = !tables.contains("recurrentTransactionrelations", Qt::CaseInsensitive);
 
     if (!hasToBeInit && needsRecurrenceUpdate) {
         db->transaction();
@@ -319,6 +328,22 @@ Book::initDatabse() {
         bool success = true;
         auto query = db->createQuery();
         success &= query->exec(RECURRENT_TRANSACTION_TABLE);
+        success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
+
+        if (success)
+            db->commit();
+        else
+            db->rollback();
+
+        if (!success)
+            LOG(ERROR) << "Could not update the chancho db " << db->lastError().text().toStdString();
+
+    } else if (!hasToBeInit && needsRecurrenceRelations) {
+        db->transaction();
+
+        bool success = true;
+        auto query = db->createQuery();
+        success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
 
         if (success)
             db->commit();
@@ -340,6 +365,7 @@ Book::initDatabse() {
         success &= query->exec(CATEGORIES_TABLE);
         success &= query->exec(TRANSACTION_TABLE);
         success &= query->exec(RECURRENT_TRANSACTION_TABLE);
+        success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
         success &= query->exec(TRANSACTION_INSERT_TRIGGER);
         success &= query->exec(TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER);
         success &= query->exec(TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER);
@@ -1920,14 +1946,61 @@ Book::numberOfRecurrentCategories() {
 }
 
 void
+Book::storeGeneratedTransactions(QMap<RecurrentTransactionPtr, QList<TransactionPtr>> transMap) {
+    DLOG(INFO) << __PRETTY_FUNCTION__;
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+
+    bool transaction = _db->transaction();
+    if (!transaction) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << "Error creating the transaction " << _lastError.toStdString();
+        return;
+    }
+
+    foreach(const RecurrentTransactionPtr& recurrentTransaction, transMap.keys()) {
+        auto trans = transMap[recurrentTransaction];
+        foreach(const TransactionPtr tran, trans) {
+            auto success = storeSingleTransactions(tran);
+            if (!success) {
+                _db->rollback();
+                return;;
+            }
+        }
+
+        // we need to store the relations between the recurrent transaction and the generated ones
+        auto query = _db->createQuery();
+        query->prepare(INSERT_UPDATE_RECURRENT_TRANSACTION_RELATION);
+
+        foreach(const TransactionPtr tran, trans) {
+            query->bindValue(":recurrent_transaction", recurrentTransaction->_dbId.toString());
+            query->bindValue(":generated_transaction", tran->_dbId.toString());
+            auto success = query->exec();
+            if (!success) {
+                _db->rollback();
+                return;
+            }
+        }
+    }
+
+    _db->commit();
+}
+
+void
 Book::generateRecurrentTransactions() {
     // get all the recurrent transactions so that we can calculate the missing recurrent transactiosn
     auto recurrent = recurrentTransactions();
-    QList<TransactionPtr> trans;
+    QMap<RecurrentTransactionPtr, QList<TransactionPtr>> transMap;
 
     foreach(const RecurrentTransactionPtr& recurrentTrans, recurrent) {
         auto missingDates = recurrentTrans->recurrence->generateMissingDates();
-        LOG(INFO) << "There are " << missingDates.count() << " transactions that have to be generated";
+        QList<TransactionPtr> trans;
+        DLOG(INFO) << "There are " << missingDates.count() << " transactions that have to be generated";
         foreach(const QDate& currentDate, missingDates) {
             auto currentTran = std::make_shared<Transaction>(recurrentTrans->transaction->account,
                 recurrentTrans->transaction->amount, recurrentTrans->transaction->category, currentDate,
@@ -1935,11 +2008,11 @@ Book::generateRecurrentTransactions() {
             recurrentTrans->recurrence->lastGenerated = currentDate;
             trans.append(currentTran);
         }
+        transMap[recurrentTrans] = trans;
     }
 
-    LOG(INFO) << "We need to add " << trans.count() << " transactions";
     // store the missing the transactions in the database
-    store(trans);
+    storeGeneratedTransactions(transMap);
     if (isError()) {
         LOG(INFO) << "Error generating recurrent transactions";
     }

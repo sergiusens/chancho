@@ -410,6 +410,8 @@ class Book {
     bool storeSingleCat(CategoryPtr ptr);
     bool storeSingleTransactions(TransactionPtr ptr);
     bool storeSingleRecurrentTransactions(RecurrentTransactionPtr tran);
+    void storeGeneratedTransactions(QMap<RecurrentTransactionPtr, QList<TransactionPtr>> trans);
+
 
  protected:
     system::DatabasePtr _db;
