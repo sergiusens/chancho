@@ -104,7 +104,7 @@ TestBookMocked::testInitDatbaseMissingTables() {
         .WillOnce(Return(query));
 
     EXPECT_CALL(*query.get(), exec(Matcher<const QString&>(_)))
-        .Times(19)
+        .Times(20)
         .WillRepeatedly(Return(true));
 
     EXPECT_CALL(*db.get(), commit())
@@ -154,7 +154,8 @@ TestBookMocked::testInitDatbaseMissingTablesError() {
         .WillOnce(Return(true));
 
     EXPECT_CALL(*query.get(), exec(Matcher<const QString&>(_)))
-        .Times(19)
+        .Times(20)
+        .WillOnce(Return(true))
         .WillOnce(Return(true))
         .WillOnce(Return(true))
         .WillOnce(Return(true))

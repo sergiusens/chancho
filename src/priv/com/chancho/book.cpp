@@ -110,6 +110,7 @@ namespace {
     const QString TRANSACTION_DELETE_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionDelete AFTER DELETE ON Transactions "\
         "BEGIN "\
         "UPDATE Accounts SET amount=SubtractStringNumbers(amount, old.amount) WHERE uuid=old.account; "\
+        "DELETE FROM RecurrentTransactionRelations WHERE generated_transaction=old.uuid; "\
         "END";
     const QString ACCOUNT_DELETE_TRIGGER = "CREATE TRIGGER DeleteTransactionsOnAccountDelete BEFORE DELETE ON Accounts "\
         "BEGIN "\
@@ -122,6 +123,10 @@ namespace {
     const QString CATEGORY_UPDATE_DIFF_TYPE_TRIGGER = "CREATE TRIGGER UpdateTransactionsOnCategoryTypeUpdate AFTER UPDATE ON Categories "\
         "WHEN old.type != new.type BEGIN "\
         "UPDATE Transactions SET amount=NegateStringNumber(amount) WHERE category=new.uuid;"
+        "END";
+    const QString RECURRENT_RELATIONS_DELETE_TRIGGER = "CREATE TRIGGER DeleteRecurrentRelationsOnDelete AFTER DELETE ON RecurrentTransactions "\
+        "BEGIN "\
+        "DELETE FROM RecurrentTransactionRelations WHERE recurrent_transaction=old.uuid; "\
         "END";
     const QString TRANSACTION_MONTH_INDEX = "CREATE INDEX transaction_month_index ON Transactions(year, month);";
     const QString TRANSACTION_DAY_INDEX = "CREATE INDEX transaction_day_index ON Transactions(day, year, month);";
@@ -329,6 +334,7 @@ Book::initDatabse() {
         auto query = db->createQuery();
         success &= query->exec(RECURRENT_TRANSACTION_TABLE);
         success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
+        success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
 
         if (success)
             db->commit();
@@ -344,6 +350,7 @@ Book::initDatabse() {
         bool success = true;
         auto query = db->createQuery();
         success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
+        success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
 
         if (success)
             db->commit();
@@ -370,6 +377,7 @@ Book::initDatabse() {
         success &= query->exec(TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER);
         success &= query->exec(TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER);
         success &= query->exec(TRANSACTION_DELETE_TRIGGER);
+        success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
         success &= query->exec(CATEGORY_DELETE_TRIGGER);
         success &= query->exec(ACCOUNT_DELETE_TRIGGER);
         success &= query->exec(CATEGORY_UPDATE_DIFF_TYPE_TRIGGER);
@@ -788,6 +796,19 @@ Book::store(RecurrentTransactionPtr tran) {
         _db->rollback();
         return;
     }
+
+    // store the relation between the two
+    auto query = _db->createQuery();
+    query->prepare(INSERT_UPDATE_RECURRENT_TRANSACTION_RELATION);
+    query->bindValue(":recurrent_transaction", tran->_dbId.toString());
+    query->bindValue(":generated_transaction", tran->transaction->_dbId.toString());
+
+    success = query->exec();
+    if (!success) {
+        _db->rollback();
+        return;
+    }
+
     _db->commit();
 }
 
