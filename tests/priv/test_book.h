@@ -44,4 +44,5 @@ class TestBook : public BaseTestCase {
     void testInitDatabasePresentTables();
 
     void testUpgradeNoRecurrence();
+    void testUpgradeNoRecurrenceRelations();
 };

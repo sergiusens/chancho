@@ -63,11 +63,12 @@ TestBook::testInitDatabase() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
-    QCOMPARE(tables.count(), 4);
+    QCOMPARE(tables.count(), 5);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Transactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactions", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("RecurrentTransactionRelations", Qt::CaseInsensitive));
     db->close();
 }
 
@@ -96,11 +97,12 @@ TestBook::testInitDatabaseNoPresentTables() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
-    QCOMPARE(tables.count(), 4);
+    QCOMPARE(tables.count(), 5);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Transactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactions", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("RecurrentTransactionRelations", Qt::CaseInsensitive));
     db->close();
 }
 
@@ -124,11 +126,12 @@ TestBook::testInitDatabasePresentTables() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
-    QCOMPARE(tables.count(), 4);
+    QCOMPARE(tables.count(), 5);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Transactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactions", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("RecurrentTransactionRelations", Qt::CaseInsensitive));
     db->close();
 }
 
@@ -165,11 +168,58 @@ TestBook::testUpgradeNoRecurrence() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
-    QCOMPARE(tables.count(), 4);
+    QCOMPARE(tables.count(), 5);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Transactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactions", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("RecurrentTransactionRelations", Qt::CaseInsensitive));
+    db->close();
+}
+
+void
+TestBook::testUpgradeNoRecurrenceRelations() {
+    // create a database with the basic tables (just the names, no need to add the exact fields)  and make sure it
+    // is added
+    auto dbPath = PublicBook::databasePath();
+
+    auto db = sys::DatabaseFactory::instance()->addDatabase("QSQLITE", QTest::currentTestFunction());
+    db->setDatabaseName(dbPath);
+
+    auto opened = db->open();
+    QVERIFY(opened);
+
+    // create the required tables and indexes
+    auto query = db->createQuery();
+
+    auto success = query->exec("CREATE TABLE IF NOT EXISTS Accounts(id INT)");
+    QVERIFY(success);
+
+    success &= query->exec("CREATE TABLE IF NOT EXISTS Categories(id INT)");
+    QVERIFY(success);
+
+    success &= query->exec("CREATE TABLE IF NOT EXISTS Transactions(id INT)");
+    QVERIFY(success);
+
+    success &= query->exec("CREATE TABLE IF NOT EXISTS RecurrentTransactions(id INT)");
+    QVERIFY(success);
+
+    db->close();
+
+    //init the db and test that the recurrence is added
+    PublicBook::initDatabse();
+
+    opened = db->open();
+    QVERIFY(opened);
+
+    // once the db has been created we need to check that it has the correct version and the required tables
+    auto tables = db->tables();
+    QCOMPARE(tables.count(), 5);
+    QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("Transactions", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("RecurrentTransactions", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("RecurrentTransactionRelations", Qt::CaseInsensitive));
     db->close();
 }
 
