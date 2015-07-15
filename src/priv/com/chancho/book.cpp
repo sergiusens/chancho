@@ -207,6 +207,11 @@ namespace {
         "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.account=:account ORDER BY t.year, t.month";
+    const QString SELECT_TRANSACTIONS_ACCOUNT_RECURRENT =  "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
+        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
+        "WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE "\
+        "recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month";
     const QString SELECT_RECURRENT_TRANSACTIONS_COUNT = "SELECT count(uuid) FROM RecurrentTransactions";
     const QString SELECT_RECURRENT_TRANSACTIONS_CATEGORY_COUNT = "SELECT count(uuid) FROM RecurrentTransactions "\
         "WHERE category=:category";
@@ -1350,7 +1355,32 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
     // executes the query and parses the result
     trans = parseTransactions(query);
     return trans;
+}
 
+QList<TransactionPtr>
+Book::transactions(RecurrentTransactionPtr recurrent) {
+    QList<TransactionPtr> trans;
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return trans;
+    }
+
+    auto query = _db->createQuery();
+
+    // SELECT_TRANSACTIONS_ACCOUNT_RECURRENT =  SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
+    //  t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+    //  INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
+    //  WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE
+    //  recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month
+    query->prepare(SELECT_TRANSACTIONS_ACCOUNT_RECURRENT);
+    query->bindValue(":recurrent_Transaction", recurrent->_dbId.toString());
+
+    // executes the query and parses the result
+    trans = parseTransactions(query);
+    return trans;
 }
 
 int
@@ -1767,8 +1797,8 @@ Book::parseRecurrentTransactions(std::shared_ptr<system::Query> query) {
 
         auto transaction = std::make_shared<Transaction>(
                 account, transAmount, category, startDate, transContents, transMemo);
-        transaction->_dbId = transUuid;
         auto recurrentTrans = std::make_shared<RecurrentTransaction>(transaction, recurrence);
+        recurrentTrans->_dbId = transUuid;
         result.append(recurrentTrans);
     }
 
