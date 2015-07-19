@@ -21,7 +21,7 @@
  */
 
 #include <QSignalSpy>
-#include "test_month_model.h"
+#include "test_month.h"
 
 using ::testing::_;
 using ::testing::Mock;

@@ -52,8 +52,10 @@ class MockBook: public com::chancho::Book {
     MOCK_METHOD4(transactions, QList<TransactionPtr>(int, int, int, int));
     MOCK_METHOD3(transactions, QList<TransactionPtr>(int, int, int));
     MOCK_METHOD5(transactions, QList<TransactionPtr>(int, int, int, int, int));
+    MOCK_METHOD3(transactions, QList<TransactionPtr>(com::chancho::RecurrentTransactionPtr, boost::optional<int>, boost::optional<int>));
     MOCK_METHOD2(numberOfTransactions, int(int, int));
     MOCK_METHOD3(numberOfTransactions, int(int, int, int));
+    MOCK_METHOD1(numberOfTransactions, int(com::chancho::RecurrentTransactionPtr));
     MOCK_METHOD3(transactions, QList<TransactionPtr>(CategoryPtr, boost::optional<int>, boost::optional<int>));
     MOCK_METHOD1(transactions, QList<TransactionPtr>(AccountPtr));
     MOCK_METHOD3(monthsWithTransactions, QList<int>(int, boost::optional<int>, boost::optional<int>));

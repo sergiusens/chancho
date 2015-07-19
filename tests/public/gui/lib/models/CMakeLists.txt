@@ -1,9 +1,11 @@
 set(PRIVATE_TESTS
-    test_account
-    test_book
-    test_category
-    test_recurrent_transaction
-    test_transaction
+    test_accounts
+    test_categories
+    test_day
+    test_generated_transactions
+    test_month
+    test_recurrent_categories
+    test_recurrent_transactions
 )
 
 foreach(test ${PRIVATE_TESTS})
@@ -43,18 +45,16 @@ set(PRIVATE_TESTS_LIBS
 
 foreach(test ${PRIVATE_TESTS})
     # set targets, linked libs and test
-    add_executable(app_lib_${test}
+    add_executable(app_lib_ui_models_${test}
         ${${test}_PRIVATE_SOURCES}
         ${${test}_PRIVATE_HEADERS}
     )
 
-    target_link_libraries(app_lib_${test}
+    target_link_libraries(app_lib_ui_models_${test}
         ${PRIVATE_TESTS_LIBS}
     )
 
-    ADD_TEST(NAME app_lib_${test} COMMAND dbus-test-runner -m 180 --task=${CMAKE_CURRENT_BINARY_DIR}/app_lib_${test})
+    ADD_TEST(NAME app_lib_ui_models_${test} COMMAND dbus-test-runner -m 180 --task=${CMAKE_CURRENT_BINARY_DIR}/app_lib_ui_models_${test})
 
 endforeach(test)
 
-add_subdirectory(workers)
-add_subdirectory(models)

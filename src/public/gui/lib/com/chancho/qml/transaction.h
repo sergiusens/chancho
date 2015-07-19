@@ -39,6 +39,7 @@ class Category;
 namespace models {
 
 class Day;
+class GeneratedTransactions;
 
 }
 
@@ -55,6 +56,7 @@ class Transaction : public QObject {
     Q_PROPERTY(com::chancho::qml::Book::TransactionType type READ getType)
 
     friend class models::Day;
+    friend class models::GeneratedTransactions;
     friend class qml::Book;
 
  public:

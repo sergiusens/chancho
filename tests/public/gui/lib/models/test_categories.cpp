@@ -26,7 +26,7 @@
 
 #include "public_category.h"
 #include "public_qml_category.h"
-#include "test_categories_model.h"
+#include "test_categories.h"
 
 using ::testing::_;
 using ::testing::Mock;
