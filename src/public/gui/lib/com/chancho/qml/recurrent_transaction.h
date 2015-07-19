@@ -38,6 +38,7 @@ class Category;
 
 namespace models {
 
+class GeneratedTransactions;
 class RecurrentTransactions;
 
 }
@@ -58,6 +59,7 @@ class RecurrentTransaction : public QObject {
     Q_PROPERTY(com::chancho::qml::Book::TransactionType type READ getType)
     Q_PROPERTY(com::chancho::qml::Book::RecurrenceType recurrence READ getRecurrenceType)
 
+    friend class models::GeneratedTransactions;
     friend class models::RecurrentTransactions;
 
  public:

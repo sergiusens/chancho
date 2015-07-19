@@ -207,11 +207,16 @@ namespace {
         "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.account=:account ORDER BY t.year, t.month";
-    const QString SELECT_TRANSACTIONS_ACCOUNT_RECURRENT =  "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
+    const QString SELECT_TRANSACTIONS_RECURRENT =  "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
         "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE "\
         "recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month";
+    const QString SELECT_TRANSACTIONS_RECURRENT_LIMIT =  "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
+        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
+        "WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE "\
+        "recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month LIMIT :limit OFFSET :offset";
     const QString SELECT_RECURRENT_TRANSACTIONS_COUNT = "SELECT count(uuid) FROM RecurrentTransactions";
     const QString SELECT_RECURRENT_TRANSACTIONS_CATEGORY_COUNT = "SELECT count(uuid) FROM RecurrentTransactions "\
         "WHERE category=:category";
@@ -235,6 +240,8 @@ namespace {
         "t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount "\
         "FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON "\
         "t.account = a.uuid WHERE t.category=:category LIMIT :limit OFFSET :offset";
+    const QString SELECT_GENERATED_TRANSACTIONS_RECURRENT_COUNT = "SELECT count(*) FROM RecurrentTransactionRelations WHERE "\
+        "recurrent_transaction=:recurrent_Transaction";
     const QString SELECT_MONTHS_WITH_TRANSACTIONS = "SELECT DISTINCT month FROM Transactions WHERE year=:year "\
         "ORDER BY month DESC";
     const QString SELECT_MONTHS_WITH_TRANSACTIONS_LIMIT = "SELECT DISTINCT month FROM Transactions WHERE year=:year "\
@@ -1358,7 +1365,7 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
 }
 
 QList<TransactionPtr>
-Book::transactions(RecurrentTransactionPtr recurrent) {
+Book::transactions(RecurrentTransactionPtr recurrent, boost::optional<int> limit, boost::optional<int> offset) {
     QList<TransactionPtr> trans;
     BookLock dbLock(this);
 
@@ -1370,12 +1377,27 @@ Book::transactions(RecurrentTransactionPtr recurrent) {
 
     auto query = _db->createQuery();
 
-    // SELECT_TRANSACTIONS_ACCOUNT_RECURRENT =  SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-    //  t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
-    //  INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
-    //  WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE
-    //  recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month
-    query->prepare(SELECT_TRANSACTIONS_ACCOUNT_RECURRENT);
+    if (limit) {
+        // SELECT_TRANSACTIONS_RECURRENT_LIMIT =  SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
+        //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+        //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
+        //     WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE
+        //     recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month LIMIT :limit OFFSET :offset
+        query->prepare(SELECT_TRANSACTIONS_RECURRENT_LIMIT);
+        query->bindValue(":limit", *limit);
+        if (offset) {
+            query->bindValue(":offset", *offset);
+        } else {
+            query->bindValue(":offset", 0);
+        }
+    } else {
+        // SELECT_TRANSACTIONS_RECURRENT =  SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
+        //  t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+        //  INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
+        //  WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE
+        //  recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month
+        query->prepare(SELECT_TRANSACTIONS_RECURRENT);
+    }
     query->bindValue(":recurrent_Transaction", recurrent->_dbId.toString());
 
     // executes the query and parses the result
@@ -1455,6 +1477,37 @@ Book::numberOfTransactions(int day, int month, int year) {
     query->bindValue(":month", month);
     query->bindValue(":year", year);
     auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the transactions count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
+}
+
+int
+Book::numberOfTransactions(RecurrentTransactionPtr recurrent) {
+    int count = -1;
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << "Error opening database " << _lastError.toStdString();
+        LOG(ERROR) << QSqlDatabase::drivers().join(" ").toStdString();
+        return count;
+    }
+
+    auto query = _db->createQuery();
+
+    // SELECT_GENERATED_TRANSACTIONS_RECURRENT_COUNT = SELECT count(*) FROM RecurrentTransactionRelations WHERE
+    //     recurrent_transaction=:recurrent_Transaction
+    query->prepare(SELECT_GENERATED_TRANSACTIONS_RECURRENT_COUNT);
+    query->bindValue(":recurrent_Transaction", recurrent->_dbId.toString());
+    auto success = query->exec();
+    LOG(INFO) << "Recurrent id is "  << recurrent->_dbId.toString().toStdString();
 
     if (!success) {
         _lastError = _db->lastError().text();

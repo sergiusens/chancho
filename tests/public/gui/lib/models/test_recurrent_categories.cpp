@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-#include "test_recurrent_categories_model.h"
+#include "test_recurrent_categories.h"
 
 using ::testing::_;
 using ::testing::Mock;

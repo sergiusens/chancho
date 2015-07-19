@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-#include "test_recurrent_transactions_model.h"
+#include "test_recurrent_transactions.h"
 
 using ::testing::_;
 using ::testing::Mock;

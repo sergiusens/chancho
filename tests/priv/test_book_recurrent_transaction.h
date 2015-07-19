@@ -82,6 +82,7 @@ class TestBookRecurrentTransaction : public BaseTestCase {
     void testNumberOfRecurrentCategories_data();
     void testNumberOfRecurrentCategories();
     void testTransactionsFromRecurrent();
+    void testTransactionsFromRecurrentCount();
 };
 
 Q_DECLARE_METATYPE(QList<com::chancho::RecurrentTransactionPtr>)

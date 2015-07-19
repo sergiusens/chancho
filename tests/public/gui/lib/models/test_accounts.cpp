@@ -27,7 +27,7 @@
 
 #include "public_account.h"
 #include "public_qml_account.h"
-#include "test_accounts_model.h"
+#include "test_accounts.h"
 
 using ::testing::_;
 using ::testing::Mock;
