@@ -31,6 +31,7 @@ import Ubuntu.Components.ListItems 0.1 as ListItems
 import jbQuick.Charts 1.0
 
 import com.chancho 1.0
+import "../../components"
 
 UbuntuShape {
     id: topShape

@@ -90,7 +90,7 @@ Page {
         }
     ]
 
-    AccountForm {
+    Form {
         id: form
         anchors.fill: parent
         anchors.margins: units.gu(1)

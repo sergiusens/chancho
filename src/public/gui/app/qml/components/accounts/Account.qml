@@ -27,23 +27,9 @@ import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0 as ListItems
 
 Item {
-    // get and set the name of the account
-    property alias name: nameLabel.text
-
-    // get and set the memo of the account
-    property alias memo: memoLabel.text
-
-    // get and set the amount present in the account
-    property alias amount: amountLabel.text
-
-    // color used to identify the account
-    property alias color: accountColor.color
-
+    id: rootItem
     // if the component is selected
     property bool selected: false
-
-    // the total number of accounts, used to decide if the last separator is used
-    property var numberOfAccounts
 
     anchors {
         left: parent.left
@@ -98,7 +84,7 @@ Item {
                     height: units.gu(2)
                     width: units.gu(2)
 
-                    color: "orange"
+                    color: modelColor
                 }
 
                 Label {
@@ -115,6 +101,7 @@ Item {
                     elide: Text.ElideRight
                     font.bold: true
                     horizontalAlignment: Text.AlignLeft
+                    text: modelName
                 }
 
                 Label {
@@ -129,6 +116,7 @@ Item {
 
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignLeft
+                    text: modelMemo
                 }
 
                 Label {
@@ -141,14 +129,25 @@ Item {
 
                     width: units.gu(10)
 
-                    color: (parseFloat(amount) > 0)? "green" : "red"
+                    color: (parseFloat(modelAmount) > 0)? "green" : "red"
                     horizontalAlignment: Text.AlignRight
+                    text: modelAmount
                 }
             }
             ListItems.ThinDivider {
                 width: parent.width
                 visible: (index + 1 != numberOfAccounts)?true:false;
             }
+        }
+    }
+
+    MouseArea {
+        id: accountMouseArea
+        anchors.fill: parent
+        onClicked: {
+            console.log("Clicked");
+            onClickCallback(rootItem);
+            console.log("Was done");
         }
     }
 }
