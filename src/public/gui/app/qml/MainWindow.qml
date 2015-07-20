@@ -146,7 +146,7 @@ MainView {
                 page: Loader {
                     parent: accountsTab
                     anchors.fill: parent
-                    source: (tabs.selectedTab === accountsTab) ? Qt.resolvedUrl("components/AccountsPage.qml") : ""
+                    source: (tabs.selectedTab === accountsTab) ? Qt.resolvedUrl("components/accounts/Page.qml") : ""
                 }
             }
 

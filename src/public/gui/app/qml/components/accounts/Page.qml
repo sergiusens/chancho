@@ -31,6 +31,7 @@ import Ubuntu.Components.ListItems 1.0 as ListItems
 import jbQuick.Charts 1.0
 
 import com.chancho 1.0
+import "../../components"
 import "js/accounts.js" as AccountsJs
 
 PageStack {
@@ -56,7 +57,7 @@ PageStack {
         AccountsJs.redrawGraph(Book, chart, accounts, date);
     }
 
-    EditAccount {
+    Edit {
         id: editAccount
 
         visible: false
@@ -67,7 +68,6 @@ PageStack {
        title: i18n.tr("Accounts")
 
        property var accountsModel: Book.accountsModel()
-
 
        ColumnLayout {
            anchors.fill: parent
@@ -88,22 +88,26 @@ PageStack {
                    spacing: units.gu(1)
                    model: mainPage.accountsModel
                    property var numberOfAccounts: mainPage.accountsModel.numberOfAccounts()
-                   delegate: AccountComponent {
-                       anchors.left: parent.left
-                       anchors.right: parent.right
-                       anchors.margins: units.gu(1)
-                       color: model.display.color
-                       name: model.display.name
-                       memo: model.display.memo
-                       amount: model.display.amount
-                       numberOfAccounts: parent.numberOfAccounts
-                       MouseArea {
-                           anchors.fill: parent
-                           onClicked: {
-                               parent.selected = !parent.selected;
-                               accountsPageStack.push(editAccount, {"account": model.display});
-                               parent.selected = !parent.selected;
+                   delegate: Component {
+                       Loader {
+                           anchors {
+                               left: parent.left
+                               right: parent.right
+                               margins: units.gu(1)
                            }
+
+                           property int numberOfAccounts: parent.numberOfAccounts
+                           property string modelColor: model.display.color
+                           property string modelName: model.display.name
+                           property string modelMemo: model.display.memo
+                           property double modelAmount: model.display.amount
+                           property var onClickCallback: function (rootItem) {
+                               rootItem.selected = !rootItem.selected;
+                               accountsPageStack.push(editAccount, {"account": model.display});
+                               rootItem.selected = !rootItem.selected;
+                           }
+
+                           source: "Account.qml"
                        }
                    }
                } // List View
@@ -139,7 +143,7 @@ PageStack {
        } // ColumnLayout
 
 
-       bottomEdgePageComponent: NewAccount {}
+       bottomEdgePageComponent: New {}
        bottomEdgeTitle: i18n.tr("Add new account")
     }
 } // page stack

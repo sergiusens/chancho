@@ -67,15 +67,24 @@ Component {
                 clip: true
                 model: accountsModel
                 spacing: units.gu(1)
-                delegate: AccountComponent {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.margins: units.gu(1)
-                    color: model.color
-                    name: model.name
-                    memo: model.memo
-                    amount: model.amount
-                    numberOfAccounts: model.count
+
+                delegate: Component {
+                    Loader {
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            margins: units.gu(1)
+                        }
+
+                        property int numberOfAccounts: model.count
+                        property string modelColor: model.color
+                        property string modelName: model.name
+                        property string modelMemo: model.memo
+                        property double modelAmount: model.amount
+                        property var onClickCallback: function () {}
+
+                        source: "./accounts/Account.qml"
+                    }
                 }
             } // List View
         } // UbuntuShape for list

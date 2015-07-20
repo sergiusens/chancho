@@ -89,9 +89,12 @@ set(QML_SOURCES
     qml/components/images/chancho_logo.png
     qml/components/images/chancho_wordmark.png
     qml/MainWindow.qml
-    qml/components/AccountComponent.qml
-    qml/components/AccountForm.qml
-    qml/components/AccountsPage.qml
+    qml/components/accounts/Account.qml
+    qml/components/accounts/Edit.qml
+    qml/components/accounts/Form.qml
+    qml/components/accounts/New.qml
+    qml/components/accounts/Page.qml
+    qml/components/accounts/js/accounts.js
     qml/components/BillingPerDay.qml
     qml/components/CategoriesPage.qml
     qml/components/CategoryComponent.qml
@@ -100,11 +103,9 @@ set(QML_SOURCES
     qml/components/CategoryStatsPage.qml
     qml/components/ColorChooser.qml
     qml/components/DateHeaderComponent.qml
-    qml/components/EditAccount.qml
     qml/components/EditCategory.qml
     qml/components/EditTransaction.qml
     qml/components/MainPage.qml
-    qml/components/NewAccount.qml
     qml/components/NewCategory.qml
     qml/components/NewTransaction.qml
     qml/components/PageWithBottomEdge.qml
@@ -129,7 +130,6 @@ set(QML_SOURCES
     qml/components/jbQuick/Chart/qmldir
     qml/components/jbQuick/Chart/QChart.js
     qml/components/jbQuick/Chart/QChart.qml
-    qml/components/js/accounts.js
     qml/components/js/accounts_wizard.js
     qml/components/js/categories.js
     qml/components/js/categories_wizard.js
