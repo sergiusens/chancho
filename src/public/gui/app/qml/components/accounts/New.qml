@@ -52,7 +52,7 @@ Page {
                 } else {
                     var title = i18n.tr("Internal Error");
                     var text = i18n.tr("The account could not be stored.");
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
+                    PopupUtils.open(Qt.resolvedUrl("../dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
                 }
             }
         }

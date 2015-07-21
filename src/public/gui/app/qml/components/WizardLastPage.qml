@@ -111,10 +111,23 @@ Component {
                 clip: true
                 spacing: units.gu(1)
                 model: incomeModel
-                delegate: CategoryComponent {
-                    name: model.name
-                    color: model.color
-                    numberOfCategories: incomeModel.count
+
+                delegate: Component {
+                    Loader {
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            margins: units.gu(1)
+                        }
+
+                        property string modelName: model.name
+                        property string modelColor: model.color
+                        property int numberOfCategories: incomeModel.count
+
+                        property var onClickCallback: function (rootItem) {}
+
+                        source: "./categories/Category.qml"
+                    }
                 }
             } // List View
         } // UbuntuShape for list
@@ -141,10 +154,23 @@ Component {
                 clip: true
                 spacing: units.gu(1)
                 model: expenseModel
-                delegate: CategoryComponent {
-                    name: model.name
-                    color: model.color
-                    numberOfCategories: expenseModel.count
+
+                delegate: Component {
+                    Loader {
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            margins: units.gu(1)
+                        }
+
+                        property string modelName: model.name
+                        property string modelColor: model.color
+                        property int numberOfCategories: expenseModel.count
+
+                        property var onClickCallback: function (rootItem) {}
+
+                        source: "./categories/Category.qml"
+                    }
                 }
             } // List View
         } // Ubuntu shape list view

@@ -7,18 +7,19 @@
         <file>qml/components/accounts/New.qml</file>
         <file>qml/components/accounts/Page.qml</file>
         <file>qml/components/accounts/js/accounts.js</file>
+        <file>qml/components/categories/Category.qml</file>
+        <file>qml/components/categories/Edit.qml</file>
+        <file>qml/components/categories/Form.qml</file>
+        <file>qml/components/categories/New.qml</file>
+        <file>qml/components/categories/Page.qml</file>
+        <file>qml/components/categories/StatsPage.qml</file>
+        <file>qml/components/categories/js/categories.js</file>
         <file>qml/components/BillingPerDay.qml</file>
-        <file>qml/components/CategoriesPage.qml</file>
-        <file>qml/components/CategoryComponent.qml</file>
-        <file>qml/components/CategoryForm.qml</file>
         <file>qml/components/CategoryHeaderComponent.qml</file>
-        <file>qml/components/CategoryStatsPage.qml</file>
         <file>qml/components/ColorChooser.qml</file>
         <file>qml/components/DateHeaderComponent.qml</file>
-        <file>qml/components/EditCategory.qml</file>
         <file>qml/components/EditTransaction.qml</file>
         <file>qml/components/MainPage.qml</file>
-        <file>qml/components/NewCategory.qml</file>
         <file>qml/components/NewTransaction.qml</file>
         <file>qml/components/PageWithBottomEdge.qml</file>
         <file>qml/components/RecurrentTransactionComponent.qml</file>
@@ -42,7 +43,6 @@
         <file>qml/components/images/chancho_logo.png</file>
         <file>qml/components/images/chancho_wordmark.png</file>
         <file>qml/components/js/accounts_wizard.js</file>
-        <file>qml/components/js/categories.js</file>
         <file>qml/components/js/categories_wizard.js</file>
         <file>qml/components/js/last_page_wizard.js</file>
         <file>qml/components/models/CategoryTypeModel.qml</file>

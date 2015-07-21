@@ -29,12 +29,13 @@ import Ubuntu.Components.Popups 1.0
 import Ubuntu.Components.ListItems 1.0 as ListItems
 
 import com.chancho 1.0
+import "../../components"
 
 PageStack {
     id: categoriesPageStack
     Component.onCompleted: push(mainPage)
 
-    EditCategory {
+    Edit {
         id: editCategory
 
         visible: false
@@ -77,20 +78,28 @@ PageStack {
 
                    property var numberOfCategories: Book.numberOfCategories(Book.INCOME)
 
-                   delegate: CategoryComponent {
-                       name: model.display.name
-                       color: model.display.color
-                       numberOfCategories: parent.numberOfCategories
-
-                       MouseArea {
-                           anchors.fill: parent
-                           onClicked: {
-                               parent.selected = !parent.selected;
-                               categoriesPageStack.push(editCategory, {"category": model.display});
-                               parent.selected = !parent.selected;
+                   delegate: Component {
+                       Loader {
+                           anchors {
+                               left: parent.left
+                               right: parent.right
+                               margins: units.gu(1)
                            }
+
+                           property string modelName: model.display.name
+                           property string modelColor: model.display.color
+                           property int numberOfCategories : parent.numberOfCategories
+
+                           property var onClickCallback: function (rootItem) {
+                               rootItem.selected = !rootItem.selected;
+                               categoriesPageStack.push(editCategory, {"category": model.display});
+                               rootItem.selected = !rootItem.selected;
+                           }
+
+                           source: "Category.qml"
                        }
                    }
+
                } // List View
            } // UbuntuShape for list
 
@@ -119,18 +128,25 @@ PageStack {
 
                    property var numberOfCategories: Book.numberOfCategories(Book.EXPENSE)
 
-                   delegate: CategoryComponent {
-                       name: model.display.name
-                       color: model.display.color
-                       numberOfCategories: parent.numberOfCategories
-
-                       MouseArea {
-                           anchors.fill: parent
-                           onClicked: {
-                               parent.selected = !parent.selected;
-                               categoriesPageStack.push(editCategory, {"category": model.display});
-                               parent.selected = !parent.selected;
+                   delegate: Component {
+                       Loader {
+                           anchors {
+                               left: parent.left
+                               right: parent.right
+                               margins: units.gu(1)
                            }
+
+                           property string modelName: model.display.name
+                           property string modelColor: model.display.color
+                           property int numberOfCategories : parent.numberOfCategories
+
+                           property var onClickCallback: function (rootItem) {
+                               rootItem.selected = !rootItem.selected;
+                               categoriesPageStack.push(editCategory, {"category": model.display});
+                               rootItem.selected = !rootItem.selected;
+                           }
+
+                           source: "Category.qml"
                        }
                    }
                } // List View
@@ -138,7 +154,7 @@ PageStack {
        } // ColumnLayout
 
 
-       bottomEdgePageComponent: NewCategory {}
+       bottomEdgePageComponent: New {}
        bottomEdgeTitle: i18n.tr("Add new category")
     }
 } // page stack

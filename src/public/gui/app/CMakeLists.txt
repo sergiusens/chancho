@@ -95,18 +95,19 @@ set(QML_SOURCES
     qml/components/accounts/New.qml
     qml/components/accounts/Page.qml
     qml/components/accounts/js/accounts.js
+    qml/components/categories/Category.qml
+    qml/components/categories/Edit.qml
+    qml/components/categories/Form.qml
+    qml/components/categories/New.qml
+    qml/components/categories/Page.qml
+    qml/components/categories/StatsPage.qml
+    qml/components/categories/js/categories.js
     qml/components/BillingPerDay.qml
-    qml/components/CategoriesPage.qml
-    qml/components/CategoryComponent.qml
-    qml/components/CategoryForm.qml
     qml/components/CategoryHeaderComponent.qml
-    qml/components/CategoryStatsPage.qml
     qml/components/ColorChooser.qml
     qml/components/DateHeaderComponent.qml
-    qml/components/EditCategory.qml
     qml/components/EditTransaction.qml
     qml/components/MainPage.qml
-    qml/components/NewCategory.qml
     qml/components/NewTransaction.qml
     qml/components/PageWithBottomEdge.qml
     qml/components/RecurrentTransactionComponent.qml
@@ -131,7 +132,6 @@ set(QML_SOURCES
     qml/components/jbQuick/Chart/QChart.js
     qml/components/jbQuick/Chart/QChart.qml
     qml/components/js/accounts_wizard.js
-    qml/components/js/categories.js
     qml/components/js/categories_wizard.js
     qml/components/js/last_page_wizard.js
     qml/components/models/CategoryTypeModel.qml

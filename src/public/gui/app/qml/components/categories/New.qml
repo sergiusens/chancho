@@ -48,13 +48,13 @@ Page {
                 } else {
                     var title = i18n.tr("Internal Error");
                     var text = i18n.tr("The category could not be stored.");
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
+                    PopupUtils.open(Qt.resolvedUrl("../dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
                 }
             }
         }
     ]
 
-    CategoryForm {
+    Form {
         id: form
         anchors.fill: parent
         anchors.margins: units.gu(1)

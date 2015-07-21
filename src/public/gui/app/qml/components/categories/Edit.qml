@@ -89,7 +89,7 @@ Page {
                     "text": i18n.tr("Do you want to update this category?"),
                     "okCallback": editCategoriesCb
                 };
-                PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+                PopupUtils.open(Qt.resolvedUrl("../dialogs/ConfirmationDialog.qml"), page, properties);
             }
         },
         Action {
@@ -105,7 +105,7 @@ Page {
                         "title": i18n.tr("Removal Error"),
                         "text": i18n.tr("You cannot delete all categories in the system. You must have at least one of each type")
                     };
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, properties);
+                    PopupUtils.open(Qt.resolvedUrl("../dialogs/ErrorDialog.qml"), page, properties);
                 } else {
                     var deleteCategoriesCb = function() {
                         Book.removeCategory(category);
@@ -116,13 +116,13 @@ Page {
                         "text": i18n.tr("Do you want to remove this category?"),
                         "okCallback": deleteCategoriesCb
                     };
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+                    PopupUtils.open(Qt.resolvedUrl("../dialogs/ConfirmationDialog.qml"), page, properties);
                 }
             }
         }
     ]
 
-    CategoryForm {
+    Form {
         id: form
         anchors.fill: parent
         anchors.margins: units.gu(1)
