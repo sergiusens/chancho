@@ -145,9 +145,7 @@ Item {
         id: accountMouseArea
         anchors.fill: parent
         onClicked: {
-            console.log("Clicked");
             onClickCallback(rootItem);
-            console.log("Was done");
         }
     }
 }

@@ -137,7 +137,7 @@ MainView {
                 page: Loader {
                     parent: statsTab
                     anchors.fill: parent
-                    source: (tabs.selectedTab === statsTab) ? Qt.resolvedUrl("components/CategoryStatsPage.qml") : ""
+                    source: (tabs.selectedTab === statsTab) ? Qt.resolvedUrl("components/categories/StatsPage.qml") : ""
                 }
             }
             Tab {
@@ -156,7 +156,7 @@ MainView {
                 page: Loader {
                     parent: categoriesTab
                     anchors.fill: parent
-                    source: (tabs.selectedTab === categoriesTab) ? Qt.resolvedUrl("components/CategoriesPage.qml") : ""
+                    source: (tabs.selectedTab === categoriesTab) ? Qt.resolvedUrl("components/categories/Page.qml") : ""
                 }
             }
         }// tabs

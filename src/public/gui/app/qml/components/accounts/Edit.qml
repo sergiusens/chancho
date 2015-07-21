@@ -61,7 +61,7 @@ Page {
                     "okCallback": updateEntryCb
                 };
 
-                PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+                PopupUtils.open(Qt.resolvedUrl("../dialogs/ConfirmationDialog.qml"), page, properties);
             }
         },
         Action {
@@ -80,11 +80,11 @@ Page {
                         "okCallback": deleteEntryCb
                     };
 
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+                    PopupUtils.open(Qt.resolvedUrl("../dialogs/ConfirmationDialog.qml"), page, properties);
                 } else {
                     var title = i18n.tr("Error");
                     var text = i18n.tr("You must have at least one account in the system.");
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
+                    PopupUtils.open(Qt.resolvedUrl("../dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
                 }
             }
         }

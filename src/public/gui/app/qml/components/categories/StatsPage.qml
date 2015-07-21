@@ -187,10 +187,23 @@ PageStack {
                    clip: true
                    spacing: units.gu(1)
                    model: legendModel
-                   delegate: CategoryComponent{
-                       name: model.name
-                       color: model.color
-                       numberOfCategories: model.count
+
+                   delegate: Component {
+                       Loader {
+                           anchors {
+                               left: parent.left
+                               right: parent.right
+                               margins: units.gu(1)
+                           }
+
+                           property string modelName: model.name
+                           property string modelColor: model.color
+                           property int numberOfCategories : model.count
+
+                           property var onClickCallback: function (rootItem) {}
+
+                           source: "Category.qml"
+                       }
                    }
                } // List View
 

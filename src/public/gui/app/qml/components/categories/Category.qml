@@ -27,10 +27,8 @@ import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 1.0 as ListItems
 
 Item {
-    property alias name: nameLabel.text
-    property alias color: categoryColor.color
+    id: rootItem
     property bool selected: false
-    property var numberOfCategories
 
     anchors.left: parent.left
     anchors.right: parent.right
@@ -67,9 +65,9 @@ Item {
                     anchors.top: parent.top
                     anchors.left: parent.left
 
-                    color: "orange"
                     height: units.gu(2)
                     width: units.gu(2)
+                    color: modelColor
                 }
 
                 Label {
@@ -82,12 +80,23 @@ Item {
                     elide: Text.ElideRight
                     font.bold: true
                     horizontalAlignment: Text.AlignLeft
+                    text: modelName
                 }
             }
             ListItems.ThinDivider {
                 width: parent.width
                 visible: (index + 1 != numberOfCategories)?true:false;
             }
+        }
+    }
+
+    MouseArea {
+        id: categoryMouseArea
+        anchors.fill: parent
+        onClicked: {
+            console.log("Clicked");
+            onClickCallback(rootItem);
+            console.log("Was done");
         }
     }
 }
