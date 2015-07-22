@@ -77,7 +77,7 @@ Page {
                     "text": i18n.tr("Do you want to update this entry?"),
                     "okCallback": editTransactionsCb
                 };
-                PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+                PopupUtils.open(Qt.resolvedUrl("../dialogs/ConfirmationDialog.qml"), page, properties);
             }
         },
         Action {
@@ -93,12 +93,12 @@ Page {
                     "text": i18n.tr("Do you want to remove this transaction?"),
                     "okCallback": deleteTransactionsCb
                 };
-                PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+                PopupUtils.open(Qt.resolvedUrl("../dialogs/ConfirmationDialog.qml"), page, properties);
             }
         }
     ]
 
-    TransactionForm {
+    Form {
         id: form
         showRecurrence: false
         anchors.fill: parent

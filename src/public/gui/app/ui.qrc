@@ -14,20 +14,20 @@
         <file>qml/components/categories/Page.qml</file>
         <file>qml/components/categories/StatsPage.qml</file>
         <file>qml/components/categories/js/categories.js</file>
-        <file>qml/components/BillingPerDay.qml</file>
+        <file>qml/components/transactions/BillingPerDay.qml</file>
+        <file>qml/components/transactions/DateHeader.qml</file>
+        <file>qml/components/transactions/Edit.qml</file>
+        <file>qml/components/transactions/Form.qml</file>
+        <file>qml/components/transactions/New.qml</file>
+        <file>qml/components/transactions/Page.qml</file>
+        <file>qml/components/transactions/Transaction.qml</file>
         <file>qml/components/CategoryHeaderComponent.qml</file>
         <file>qml/components/ColorChooser.qml</file>
-        <file>qml/components/DateHeaderComponent.qml</file>
-        <file>qml/components/EditTransaction.qml</file>
-        <file>qml/components/MainPage.qml</file>
-        <file>qml/components/NewTransaction.qml</file>
         <file>qml/components/PageWithBottomEdge.qml</file>
         <file>qml/components/RecurrentTransactionComponent.qml</file>
         <file>qml/components/RecurrentTransactionsPage.qml</file>
         <file>qml/components/RecurrentTransactionsPerCategory.qml</file>
         <file>qml/components/SplashScreen.qml</file>
-        <file>qml/components/TransactionComponent.qml</file>
-        <file>qml/components/TransactionForm.qml</file>
         <file>qml/components/Walkthrough.qml</file>
         <file>qml/components/WelcomeWizard.qml</file>
         <file>qml/components/WizardAccountsPage.qml</file>

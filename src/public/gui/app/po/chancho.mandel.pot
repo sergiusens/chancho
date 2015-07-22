@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-21 23:21+0200\n"
+"POT-Creation-Date: 2015-07-22 10:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 msgid "Updating database"
 msgstr ""
 
-#: ../qml/MainWindow.qml:118 ../qml/components/MainPage.qml:45
+#: ../qml/MainWindow.qml:118 ../qml/components/transactions/Page.qml:47
 msgid "Bills"
 msgstr ""
 
@@ -30,7 +30,7 @@ msgstr ""
 msgid "Recurrent Transactions"
 msgstr ""
 
-#: ../qml/MainWindow.qml:136 ../qml/components/categories/StatsPage.qml:50
+#: ../qml/MainWindow.qml:136 ../qml/components/categories/StatsPage.qml:44
 msgid "Stats"
 msgstr ""
 
@@ -60,82 +60,6 @@ msgstr ""
 msgid "Ok"
 msgstr ""
 
-#: ../qml/components/EditTransaction.qml:60
-#: ../qml/components/accounts/Edit.qml:51
-#: ../qml/components/categories/Edit.qml:78
-msgid "Edit"
-msgstr ""
-
-#: ../qml/components/EditTransaction.qml:76
-#: ../qml/components/accounts/Edit.qml:59
-#: ../qml/components/categories/Edit.qml:88
-msgid "Edit entry"
-msgstr ""
-
-#: ../qml/components/EditTransaction.qml:77
-#: ../qml/components/accounts/Edit.qml:60
-msgid "Do you want to update this entry?"
-msgstr ""
-
-#: ../qml/components/EditTransaction.qml:85
-#: ../qml/components/accounts/Edit.qml:69
-#: ../qml/components/categories/Edit.qml:97
-msgid "Delete"
-msgstr ""
-
-#: ../qml/components/EditTransaction.qml:92
-msgid "Delete transaction"
-msgstr ""
-
-#: ../qml/components/EditTransaction.qml:93
-msgid "Do you want to remove this transaction?"
-msgstr ""
-
-#: ../qml/components/MainPage.qml:137
-#: ../qml/components/categories/StatsPage.qml:132
-msgid "No entries were found!"
-msgstr ""
-
-#: ../qml/components/MainPage.qml:150 ../qml/components/NewTransaction.qml:35
-msgid "Add new entry"
-msgstr ""
-
-#: ../qml/components/NewTransaction.qml:40
-#: ../qml/components/WizardAccountsPage.qml:110
-#: ../qml/components/WizardCategoriesPage.qml:176
-#: ../qml/components/accounts/New.qml:40
-#: ../qml/components/categories/New.qml:40
-msgid "Add"
-msgstr ""
-
-#: ../qml/components/NewTransaction.qml:46
-msgid "Error: amount is missing"
-msgstr ""
-
-#: ../qml/components/NewTransaction.qml:47
-msgid "Transactions must have an amount."
-msgstr ""
-
-#: ../qml/components/NewTransaction.qml:60
-msgid "Error: content is missing"
-msgstr ""
-
-#: ../qml/components/NewTransaction.qml:61
-msgid ""
-"Recurrent transactions must have a contents field so that they can be later "
-"identified."
-msgstr ""
-
-#: ../qml/components/NewTransaction.qml:69
-#: ../qml/components/accounts/New.qml:53
-#: ../qml/components/categories/New.qml:49
-msgid "Internal Error"
-msgstr ""
-
-#: ../qml/components/NewTransaction.qml:70
-msgid "The transaction could not be stored."
-msgstr ""
-
 #: ../qml/components/RecurrentTransactionComponent.qml:48
 #: ../qml/components/dialogs/RecurrenceDialog.qml:53
 msgid "Daily"
@@ -157,42 +81,6 @@ msgstr ""
 
 #: ../qml/components/RecurrentTransactionComponent.qml:57
 msgid " days"
-msgstr ""
-
-#: ../qml/components/TransactionForm.qml:91
-#: ../qml/components/categories/Form.qml:187
-#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:55
-msgid "Expense"
-msgstr ""
-
-#: ../qml/components/TransactionForm.qml:95
-#: ../qml/components/categories/Form.qml:191
-#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:59
-msgid "Income"
-msgstr ""
-
-#: ../qml/components/TransactionForm.qml:156
-#: ../qml/components/dialogs/RecurrenceDialog.qml:123
-#: ../qml/components/dialogs/RecurrenceDialog.qml:148
-msgid "Date"
-msgstr ""
-
-#: ../qml/components/TransactionForm.qml:173
-msgid "Repeat:"
-msgstr ""
-
-#: ../qml/components/TransactionForm.qml:213
-msgid "Amount"
-msgstr ""
-
-#: ../qml/components/TransactionForm.qml:222
-msgid "Contents"
-msgstr ""
-
-#: ../qml/components/TransactionForm.qml:235
-#: ../qml/components/accounts/Form.qml:212
-#: ../qml/components/dialogs/WizardNewAccountDialog.qml:65
-msgid "Memo"
 msgstr ""
 
 #: ../qml/components/WelcomeWizard.qml:49
@@ -281,6 +169,14 @@ msgstr ""
 msgid "Do you want to delete the selected accounts?"
 msgstr ""
 
+#: ../qml/components/WizardAccountsPage.qml:110
+#: ../qml/components/WizardCategoriesPage.qml:176
+#: ../qml/components/accounts/New.qml:40
+#: ../qml/components/categories/New.qml:40
+#: ../qml/components/transactions/New.qml:40
+msgid "Add"
+msgstr ""
+
 #: ../qml/components/WizardAccountsPage.qml:113
 msgid "New account"
 msgstr ""
@@ -350,6 +246,29 @@ msgstr ""
 msgid ""
 "Make sure that you have added at least one account and a category of each "
 "type."
+msgstr ""
+
+#: ../qml/components/accounts/Edit.qml:51
+#: ../qml/components/categories/Edit.qml:78
+#: ../qml/components/transactions/Edit.qml:60
+msgid "Edit"
+msgstr ""
+
+#: ../qml/components/accounts/Edit.qml:59
+#: ../qml/components/categories/Edit.qml:88
+#: ../qml/components/transactions/Edit.qml:76
+msgid "Edit entry"
+msgstr ""
+
+#: ../qml/components/accounts/Edit.qml:60
+#: ../qml/components/transactions/Edit.qml:77
+msgid "Do you want to update this entry?"
+msgstr ""
+
+#: ../qml/components/accounts/Edit.qml:69
+#: ../qml/components/categories/Edit.qml:97
+#: ../qml/components/transactions/Edit.qml:85
+msgid "Delete"
 msgstr ""
 
 #: ../qml/components/accounts/Edit.qml:78
@@ -440,9 +359,21 @@ msgstr ""
 msgid "Initial amount"
 msgstr ""
 
+#: ../qml/components/accounts/Form.qml:212
+#: ../qml/components/dialogs/WizardNewAccountDialog.qml:65
+#: ../qml/components/transactions/Form.qml:235
+msgid "Memo"
+msgstr ""
+
 #: ../qml/components/accounts/New.qml:35
 #: ../qml/components/accounts/Page.qml:147
 msgid "Add new account"
+msgstr ""
+
+#: ../qml/components/accounts/New.qml:53
+#: ../qml/components/categories/New.qml:49
+#: ../qml/components/transactions/New.qml:69
+msgid "Internal Error"
 msgstr ""
 
 #: ../qml/components/accounts/New.qml:54
@@ -461,6 +392,18 @@ msgstr ""
 msgid "Do you want to remove this category?"
 msgstr ""
 
+#: ../qml/components/categories/Form.qml:187
+#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:55
+#: ../qml/components/transactions/Form.qml:91
+msgid "Expense"
+msgstr ""
+
+#: ../qml/components/categories/Form.qml:191
+#: ../qml/components/dialogs/WizardNewCategoryDialog.qml:59
+#: ../qml/components/transactions/Form.qml:95
+msgid "Income"
+msgstr ""
+
 #: ../qml/components/categories/New.qml:35
 #: ../qml/components/categories/Page.qml:158
 msgid "Add new category"
@@ -468,6 +411,11 @@ msgstr ""
 
 #: ../qml/components/categories/New.qml:50
 msgid "The category could not be stored."
+msgstr ""
+
+#: ../qml/components/categories/StatsPage.qml:126
+#: ../qml/components/transactions/Page.qml:139
+msgid "No entries were found!"
 msgstr ""
 
 #: ../qml/components/dialogs/RecurrenceDialog.qml:36
@@ -490,6 +438,12 @@ msgstr ""
 msgid "Never"
 msgstr ""
 
+#: ../qml/components/dialogs/RecurrenceDialog.qml:123
+#: ../qml/components/dialogs/RecurrenceDialog.qml:148
+#: ../qml/components/transactions/Form.qml:156
+msgid "Date"
+msgstr ""
+
 #: ../qml/components/dialogs/RecurrenceDialog.qml:126
 #: ../qml/components/dialogs/RecurrenceDialog.qml:154
 msgid "Occurrences"
@@ -497,4 +451,51 @@ msgstr ""
 
 #: ../qml/components/dialogs/RecurrenceDialog.qml:133
 msgid "Termination:"
+msgstr ""
+
+#: ../qml/components/transactions/Edit.qml:92
+msgid "Delete transaction"
+msgstr ""
+
+#: ../qml/components/transactions/Edit.qml:93
+msgid "Do you want to remove this transaction?"
+msgstr ""
+
+#: ../qml/components/transactions/Form.qml:173
+msgid "Repeat:"
+msgstr ""
+
+#: ../qml/components/transactions/Form.qml:213
+msgid "Amount"
+msgstr ""
+
+#: ../qml/components/transactions/Form.qml:222
+msgid "Contents"
+msgstr ""
+
+#: ../qml/components/transactions/New.qml:35
+#: ../qml/components/transactions/Page.qml:152
+msgid "Add new entry"
+msgstr ""
+
+#: ../qml/components/transactions/New.qml:46
+msgid "Error: amount is missing"
+msgstr ""
+
+#: ../qml/components/transactions/New.qml:47
+msgid "Transactions must have an amount."
+msgstr ""
+
+#: ../qml/components/transactions/New.qml:60
+msgid "Error: content is missing"
+msgstr ""
+
+#: ../qml/components/transactions/New.qml:61
+msgid ""
+"Recurrent transactions must have a contents field so that they can be later "
+"identified."
+msgstr ""
+
+#: ../qml/components/transactions/New.qml:70
+msgid "The transaction could not be stored."
 msgstr ""
