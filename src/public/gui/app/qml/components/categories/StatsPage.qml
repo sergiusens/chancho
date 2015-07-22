@@ -39,12 +39,6 @@ PageStack {
     Component.onCompleted: push(mainPage)
     property var percentages
 
-    EditTransaction {
-        id: editTransaction
-
-        visible: false
-    }
-
     Page {
        id: mainPage
        title: i18n.tr("Stats")

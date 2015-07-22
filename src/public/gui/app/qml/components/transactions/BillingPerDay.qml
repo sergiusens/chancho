@@ -39,7 +39,7 @@ UbuntuShape {
         anchors.right: parent.right
         height: childrenRect.height
 
-        DateHeaderComponent {
+        DateHeader {
             dayName: dayModel.dayName
             day: dayModel.day
             month: dayModel.month
@@ -56,7 +56,7 @@ UbuntuShape {
 
             model: dayModel
 
-            TransactionComponent {
+            Transaction {
                 property var transaction: model.display
                 property var repeaterIndex: index
 

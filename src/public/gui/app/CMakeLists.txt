@@ -102,20 +102,20 @@ set(QML_SOURCES
     qml/components/categories/Page.qml
     qml/components/categories/StatsPage.qml
     qml/components/categories/js/categories.js
-    qml/components/BillingPerDay.qml
+    qml/components/transactions/BillingPerDay.qml
+    qml/components/transactions/DateHeader.qml
+    qml/components/transactions/Edit.qml
+    qml/components/transactions/Form.qml
+    qml/components/transactions/New.qml
+    qml/components/transactions/Page.qml
+    qml/components/transactions/Transaction.qml
     qml/components/CategoryHeaderComponent.qml
     qml/components/ColorChooser.qml
-    qml/components/DateHeaderComponent.qml
-    qml/components/EditTransaction.qml
-    qml/components/MainPage.qml
-    qml/components/NewTransaction.qml
     qml/components/PageWithBottomEdge.qml
     qml/components/RecurrentTransactionComponent.qml
     qml/components/RecurrentTransactionsPage.qml
     qml/components/RecurrentTransactionsPerCategory.qml
     qml/components/SplashScreen.qml
-    qml/components/TransactionComponent.qml
-    qml/components/TransactionForm.qml
     qml/components/Walkthrough.qml
     qml/components/WelcomeWizard.qml
     qml/components/WizardAccountsPage.qml

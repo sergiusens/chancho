@@ -28,7 +28,7 @@ import Ubuntu.Components.Pickers 0.1
 import Ubuntu.Components.Popups 1.0
 
 import com.chancho 1.0
-import "models"
+import "../models"
 
 UbuntuShape {
     id: form
@@ -189,7 +189,7 @@ UbuntuShape {
                                 "okCallback": recurrenceOkCb
                             }
 
-                            PopupUtils.open(Qt.resolvedUrl("dialogs/RecurrenceDialog.qml"), repeatSwitch, properties);
+                            PopupUtils.open(Qt.resolvedUrl("../dialogs/RecurrenceDialog.qml"), repeatSwitch, properties);
                         } else {
                             console.log("Forget recurrence settings.");
                             recurrence = {}

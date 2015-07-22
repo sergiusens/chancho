@@ -45,7 +45,7 @@ Page {
                     // we must have the amount
                     var title = i18n.tr("Error: amount is missing");
                     var text = i18n.tr("Transactions must have an amount.");
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
+                    PopupUtils.open(Qt.resolvedUrl("../dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
                 } else {
                     var account = form.accountModel.get(form.accountIndex);
                     amount = amount.replace(",", ".");
@@ -59,7 +59,7 @@ Page {
                         // transaction
                         var title = i18n.tr("Error: content is missing");
                         var text = i18n.tr("Recurrent transactions must have a contents field so that they can be later identified.");
-                        PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
+                        PopupUtils.open(Qt.resolvedUrl("../dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
                     } else {
                         var success = Book.storeTransaction(account, category, date, parseFloat(amount), contents, memo,
                                                             recurrence);
@@ -68,7 +68,7 @@ Page {
                         } else {
                             var title = i18n.tr("Internal Error");
                             var text = i18n.tr("The transaction could not be stored.");
-                            PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
+                            PopupUtils.open(Qt.resolvedUrl("../dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
                         }
                     }
                 }
@@ -76,7 +76,7 @@ Page {
         }
     ]
 
-    TransactionForm {
+    Form {
         id: form
         showRecurrence: true
         anchors.fill: parent

@@ -119,7 +119,7 @@ MainView {
                 page: Loader {
                     parent: mainTab
                     anchors.fill: parent
-                    source: (tabs.selectedTab === mainTab) ? Qt.resolvedUrl("components/MainPage.qml") : ""
+                    source: (tabs.selectedTab === mainTab) ? Qt.resolvedUrl("components/transactions/Page.qml") : ""
                 }
             }
             Tab {

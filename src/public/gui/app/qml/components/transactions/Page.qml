@@ -29,12 +29,14 @@ import Ubuntu.Components.Popups 1.0
 import Ubuntu.Components.ListItems 1.0 as ListItems
 
 import com.chancho 1.0
+import "../../components"
+import "../models"
 
 PageStack {
     id: mainPageStack
     Component.onCompleted: push(mainPage)
 
-    EditTransaction {
+    Edit {
         id: editTransaction
 
         visible: false
@@ -146,7 +148,7 @@ PageStack {
 
        }
 
-       bottomEdgePageComponent: NewTransaction {}
+       bottomEdgePageComponent: New {}
        bottomEdgeTitle: i18n.tr("Add new entry")
     }
 } // page stack
