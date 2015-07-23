@@ -27,7 +27,8 @@ import Ubuntu.Components 1.1
 import Ubuntu.Components.Pickers 0.1
 import Ubuntu.Components.Popups 1.0
 
-import "models"
+import "../../components"
+import "../models"
 
 Walkthrough {
     id: walkthrough
@@ -145,8 +146,8 @@ Walkthrough {
     }
 
     model: [
-        WizardAccountsPage {},
-        WizardCategoriesPage {},
-        WizardLastPage {}
+        AccountsPage {},
+        CategoriesPage {},
+        LastPage {}
     ]
 }

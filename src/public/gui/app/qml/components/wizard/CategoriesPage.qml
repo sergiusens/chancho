@@ -86,7 +86,7 @@ Component {
                             incomeModel.setProperty(index, "selected", rootItem.selected);
                         }
 
-                        source: "./categories/Category.qml"
+                        source: "../categories/Category.qml"
                     }
                 }
             } // List View
@@ -132,7 +132,7 @@ Component {
                             expenseModel.setProperty(index, "selected", rootItem.selected);
                         }
 
-                        source: "./categories/Category.qml"
+                        source: "../categories/Category.qml"
                     }
                 }
             } // List View
@@ -152,7 +152,7 @@ Component {
                             "title": i18n.tr("Removal Error"),
                             "text": i18n.tr("You cannot delete all categories in the system. You must have at least one of each type")
                         };
-                        PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, properties);
+                        PopupUtils.open(Qt.resolvedUrl("../dialogs/ErrorDialog.qml"), page, properties);
                         return;
                     }
                     var showConfirmationDialog = CategoriesWizardJs.areCategoriesSelected(incomeModel, expenseModel);
@@ -167,7 +167,7 @@ Component {
                             "text": i18n.tr("Do you want to delete the selected categories?"),
                             "okCallback": deleteCategoriesCb
                         };
-                        PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+                        PopupUtils.open(Qt.resolvedUrl("../dialogs/ConfirmationDialog.qml"), page, properties);
                     }
                 }
             }
@@ -180,7 +180,7 @@ Component {
                         "incomeModel": incomeModel,
                         "expenseModel": expenseModel
                     };
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/WizardNewCategoryDialog.qml"), page, properties);
+                    PopupUtils.open(Qt.resolvedUrl("../dialogs/WizardNewCategoryDialog.qml"), page, properties);
                 }
             }
         }

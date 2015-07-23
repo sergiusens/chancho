@@ -83,7 +83,7 @@ Component {
                         property double modelAmount: model.amount
                         property var onClickCallback: function () {}
 
-                        source: "./accounts/Account.qml"
+                        source: "../accounts/Account.qml"
                     }
                 }
             } // List View
@@ -126,7 +126,7 @@ Component {
 
                         property var onClickCallback: function (rootItem) {}
 
-                        source: "./categories/Category.qml"
+                        source: "../categories/Category.qml"
                     }
                 }
             } // List View
@@ -169,7 +169,7 @@ Component {
 
                         property var onClickCallback: function (rootItem) {}
 
-                        source: "./categories/Category.qml"
+                        source: "../categories/Category.qml"
                     }
                 }
             } // List View
@@ -192,7 +192,7 @@ Component {
                         "title": i18n.tr("Init Error"),
                         "text": i18n.tr("Make sure that you have added at least one account and a category of each type.")
                     };
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/ErrorDialog.qml"), page, properties);
+                    PopupUtils.open(Qt.resolvedUrl("../dialogs/ErrorDialog.qml"), page, properties);
                 }
             }
         }

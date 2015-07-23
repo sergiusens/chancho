@@ -49,7 +49,7 @@ MainView {
         var accounts = Book.accounts()
         if (accounts.length == 0) {
             pagestack.push(tabsComponent);
-            pagestack.push(Qt.resolvedUrl("components/WelcomeWizard.qml"));
+            pagestack.push(Qt.resolvedUrl("components/wizard/WelcomeWizard.qml"));
         } else {
             splashComponent.operationText = i18n.tr("Updating database");
             pagestack.push(tabsComponent);

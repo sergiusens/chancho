@@ -21,6 +21,13 @@
         <file>qml/components/transactions/New.qml</file>
         <file>qml/components/transactions/Page.qml</file>
         <file>qml/components/transactions/Transaction.qml</file>
+        <file>qml/components/wizard/WelcomeWizard.qml</file>
+        <file>qml/components/wizard/AccountsPage.qml</file>
+        <file>qml/components/wizard/CategoriesPage.qml</file>
+        <file>qml/components/wizard/LastPage.qml</file>
+        <file>qml/components/wizard/js/accounts_wizard.js</file>
+        <file>qml/components/wizard/js/categories_wizard.js</file>
+        <file>qml/components/wizard/js/last_page_wizard.js</file>
         <file>qml/components/CategoryHeaderComponent.qml</file>
         <file>qml/components/ColorChooser.qml</file>
         <file>qml/components/PageWithBottomEdge.qml</file>
@@ -29,10 +36,6 @@
         <file>qml/components/RecurrentTransactionsPerCategory.qml</file>
         <file>qml/components/SplashScreen.qml</file>
         <file>qml/components/Walkthrough.qml</file>
-        <file>qml/components/WelcomeWizard.qml</file>
-        <file>qml/components/WizardAccountsPage.qml</file>
-        <file>qml/components/WizardCategoriesPage.qml</file>
-        <file>qml/components/WizardLastPage.qml</file>
         <file>qml/components/dialogs/ErrorDialog.qml</file>
         <file>qml/components/dialogs/RecurrenceDialog.qml</file>
         <file>qml/components/dialogs/ConfirmationDialog.qml</file>
@@ -42,9 +45,6 @@
         <file>qml/components/dialogs/js/categories_wizard.js</file>
         <file>qml/components/images/chancho_logo.png</file>
         <file>qml/components/images/chancho_wordmark.png</file>
-        <file>qml/components/js/accounts_wizard.js</file>
-        <file>qml/components/js/categories_wizard.js</file>
-        <file>qml/components/js/last_page_wizard.js</file>
         <file>qml/components/models/CategoryTypeModel.qml</file>
         <file>qml/components/models/DefaultColors.qml</file>
         <file>qml/components/models/DefaultExpenseModel.qml</file>

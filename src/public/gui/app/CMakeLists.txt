@@ -109,6 +109,13 @@ set(QML_SOURCES
     qml/components/transactions/New.qml
     qml/components/transactions/Page.qml
     qml/components/transactions/Transaction.qml
+    qml/components/wizard/WelcomeWizard.qml
+    qml/components/wizard/AccountsPage.qml
+    qml/components/wizard/CategoriesPage.qml
+    qml/components/wizard/LastPage.qml
+    qml/components/wizard/js/accounts_wizard.js
+    qml/components/wizard/js/categories_wizard.js
+    qml/components/wizard/js/last_page_wizard.js
     qml/components/CategoryHeaderComponent.qml
     qml/components/ColorChooser.qml
     qml/components/PageWithBottomEdge.qml
@@ -117,10 +124,6 @@ set(QML_SOURCES
     qml/components/RecurrentTransactionsPerCategory.qml
     qml/components/SplashScreen.qml
     qml/components/Walkthrough.qml
-    qml/components/WelcomeWizard.qml
-    qml/components/WizardAccountsPage.qml
-    qml/components/WizardCategoriesPage.qml
-    qml/components/WizardLastPage.qml
     qml/components/dialogs/ConfirmationDialog.qml
     qml/components/dialogs/ErrorDialog.qml
     qml/components/dialogs/RecurrenceDialog.qml
@@ -131,9 +134,6 @@ set(QML_SOURCES
     qml/components/jbQuick/Chart/qmldir
     qml/components/jbQuick/Chart/QChart.js
     qml/components/jbQuick/Chart/QChart.qml
-    qml/components/js/accounts_wizard.js
-    qml/components/js/categories_wizard.js
-    qml/components/js/last_page_wizard.js
     qml/components/models/CategoryTypeModel.qml
     qml/components/models/DefaultColors.qml
     qml/components/models/DefaultExpenseModel.qml
