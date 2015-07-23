@@ -79,7 +79,7 @@ Component {
                             accountsModel.setProperty(index, "selected", rootItem.selected);
                         }
 
-                        source: "./accounts/Account.qml"
+                        source: "../accounts/Account.qml"
                     }
                 }
 
@@ -101,7 +101,7 @@ Component {
                             "text": i18n.tr("Do you want to delete the selected accounts?"),
                             "okCallback": deleteAccountsCb
                         };
-                        PopupUtils.open(Qt.resolvedUrl("dialogs/ConfirmationDialog.qml"), page, properties);
+                        PopupUtils.open(Qt.resolvedUrl("../dialogs/ConfirmationDialog.qml"), page, properties);
                     }
                 }
             }
@@ -117,7 +117,7 @@ Component {
                         "text": addAccountText,
                         "accountsModel": accountsModel
                     };
-                    PopupUtils.open(Qt.resolvedUrl("dialogs/WizardNewAccountDialog.qml"), page, properties);
+                    PopupUtils.open(Qt.resolvedUrl("../dialogs/WizardNewAccountDialog.qml"), page, properties);
                 }
             }
         }

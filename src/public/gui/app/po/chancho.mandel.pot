@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-22 10:52+0200\n"
+"POT-Creation-Date: 2015-07-23 22:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,13 +34,13 @@ msgstr ""
 msgid "Stats"
 msgstr ""
 
-#: ../qml/MainWindow.qml:145 ../qml/components/WelcomeWizard.qml:138
-#: ../qml/components/accounts/Page.qml:68
+#: ../qml/MainWindow.qml:145 ../qml/components/accounts/Page.qml:68
+#: ../qml/components/wizard/WelcomeWizard.qml:139
 msgid "Accounts"
 msgstr ""
 
-#: ../qml/MainWindow.qml:155 ../qml/components/WelcomeWizard.qml:138
-#: ../qml/components/categories/Page.qml:46
+#: ../qml/MainWindow.qml:155 ../qml/components/categories/Page.qml:46
+#: ../qml/components/wizard/WelcomeWizard.qml:139
 msgid "Categories"
 msgstr ""
 
@@ -81,171 +81,6 @@ msgstr ""
 
 #: ../qml/components/RecurrentTransactionComponent.qml:57
 msgid " days"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:49
-msgid "Allowance"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:54
-msgid "Salary"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:59
-msgid "Bonus"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:64
-#: ../qml/components/WelcomeWizard.qml:132
-#: ../qml/components/dialogs/RecurrenceDialog.qml:65
-msgid "Other"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:77
-msgid "Food"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:82
-msgid "Social Life"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:87
-msgid "Self-development"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:92
-msgid "Transportation"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:97
-msgid "Culture"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:102
-msgid "Household"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:107
-msgid "Apparel"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:112
-msgid "Beauty"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:117
-msgid "Health"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:122
-msgid "Education"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:127
-msgid "Gift"
-msgstr ""
-
-#: ../qml/components/WelcomeWizard.qml:138
-msgid "Confirmation"
-msgstr ""
-
-#: ../qml/components/WizardAccountsPage.qml:45
-msgid ""
-"Chancho allows you to track the expenses and incomes in several accounts. "
-"Here you can add the accounts you want to work with. Don't worry you can add "
-"more accounts later."
-msgstr ""
-
-#: ../qml/components/WizardAccountsPage.qml:92
-#: ../qml/components/WizardCategoriesPage.qml:144
-msgid "Remove"
-msgstr ""
-
-#: ../qml/components/WizardAccountsPage.qml:100
-msgid "Delete accounts"
-msgstr ""
-
-#: ../qml/components/WizardAccountsPage.qml:101
-msgid "Do you want to delete the selected accounts?"
-msgstr ""
-
-#: ../qml/components/WizardAccountsPage.qml:110
-#: ../qml/components/WizardCategoriesPage.qml:176
-#: ../qml/components/accounts/New.qml:40
-#: ../qml/components/categories/New.qml:40
-#: ../qml/components/transactions/New.qml:40
-msgid "Add"
-msgstr ""
-
-#: ../qml/components/WizardAccountsPage.qml:113
-msgid "New account"
-msgstr ""
-
-#: ../qml/components/WizardAccountsPage.qml:114
-msgid "Please add the details of the new account."
-msgstr ""
-
-#: ../qml/components/WizardCategoriesPage.qml:45
-msgid ""
-"Categories allow you to indentify the different transactions. There are two "
-"different types: income and expense categories. The following are some of "
-"the predefined ones but you can add as many as you want."
-msgstr ""
-
-#: ../qml/components/WizardCategoriesPage.qml:52
-#: ../qml/components/WizardLastPage.qml:96
-#: ../qml/components/categories/Page.qml:60
-msgid "Income categories:"
-msgstr ""
-
-#: ../qml/components/WizardCategoriesPage.qml:99
-#: ../qml/components/WizardLastPage.qml:139
-#: ../qml/components/categories/Page.qml:110
-msgid "Expense categories:"
-msgstr ""
-
-#: ../qml/components/WizardCategoriesPage.qml:152
-#: ../qml/components/categories/Edit.qml:105
-msgid "Removal Error"
-msgstr ""
-
-#: ../qml/components/WizardCategoriesPage.qml:153
-#: ../qml/components/categories/Edit.qml:106
-msgid ""
-"You cannot delete all categories in the system. You must have at least one "
-"of each type"
-msgstr ""
-
-#: ../qml/components/WizardCategoriesPage.qml:166
-msgid "Delete categories"
-msgstr ""
-
-#: ../qml/components/WizardCategoriesPage.qml:167
-msgid "Do you want to delete the selected categories?"
-msgstr ""
-
-#: ../qml/components/WizardLastPage.qml:46
-msgid ""
-"You are nearly done! Bellow you can find the accounts and categories you "
-"will have. Are you happy with them?"
-msgstr ""
-
-#: ../qml/components/WizardLastPage.qml:53
-msgid "Accounts:"
-msgstr ""
-
-#: ../qml/components/WizardLastPage.qml:182
-msgid "I'm ready"
-msgstr ""
-
-#: ../qml/components/WizardLastPage.qml:192
-msgid "Init Error"
-msgstr ""
-
-#: ../qml/components/WizardLastPage.qml:193
-msgid ""
-"Make sure that you have added at least one account and a category of each "
-"type."
 msgstr ""
 
 #: ../qml/components/accounts/Edit.qml:51
@@ -370,6 +205,14 @@ msgstr ""
 msgid "Add new account"
 msgstr ""
 
+#: ../qml/components/accounts/New.qml:40
+#: ../qml/components/categories/New.qml:40
+#: ../qml/components/transactions/New.qml:40
+#: ../qml/components/wizard/AccountsPage.qml:110
+#: ../qml/components/wizard/CategoriesPage.qml:176
+msgid "Add"
+msgstr ""
+
 #: ../qml/components/accounts/New.qml:53
 #: ../qml/components/categories/New.qml:49
 #: ../qml/components/transactions/New.qml:69
@@ -382,6 +225,18 @@ msgstr ""
 
 #: ../qml/components/categories/Edit.qml:89
 msgid "Do you want to update this category?"
+msgstr ""
+
+#: ../qml/components/categories/Edit.qml:105
+#: ../qml/components/wizard/CategoriesPage.qml:152
+msgid "Removal Error"
+msgstr ""
+
+#: ../qml/components/categories/Edit.qml:106
+#: ../qml/components/wizard/CategoriesPage.qml:153
+msgid ""
+"You cannot delete all categories in the system. You must have at least one "
+"of each type"
 msgstr ""
 
 #: ../qml/components/categories/Edit.qml:115
@@ -413,6 +268,18 @@ msgstr ""
 msgid "The category could not be stored."
 msgstr ""
 
+#: ../qml/components/categories/Page.qml:60
+#: ../qml/components/wizard/CategoriesPage.qml:52
+#: ../qml/components/wizard/LastPage.qml:96
+msgid "Income categories:"
+msgstr ""
+
+#: ../qml/components/categories/Page.qml:110
+#: ../qml/components/wizard/CategoriesPage.qml:99
+#: ../qml/components/wizard/LastPage.qml:139
+msgid "Expense categories:"
+msgstr ""
+
 #: ../qml/components/categories/StatsPage.qml:126
 #: ../qml/components/transactions/Page.qml:139
 msgid "No entries were found!"
@@ -424,6 +291,12 @@ msgstr ""
 
 #: ../qml/components/dialogs/RecurrenceDialog.qml:37
 msgid "Choose the recurrency of the transaction"
+msgstr ""
+
+#: ../qml/components/dialogs/RecurrenceDialog.qml:65
+#: ../qml/components/wizard/WelcomeWizard.qml:65
+#: ../qml/components/wizard/WelcomeWizard.qml:133
+msgid "Other"
 msgstr ""
 
 #: ../qml/components/dialogs/RecurrenceDialog.qml:73
@@ -498,4 +371,131 @@ msgstr ""
 
 #: ../qml/components/transactions/New.qml:70
 msgid "The transaction could not be stored."
+msgstr ""
+
+#: ../qml/components/wizard/AccountsPage.qml:45
+msgid ""
+"Chancho allows you to track the expenses and incomes in several accounts. "
+"Here you can add the accounts you want to work with. Don't worry you can add "
+"more accounts later."
+msgstr ""
+
+#: ../qml/components/wizard/AccountsPage.qml:92
+#: ../qml/components/wizard/CategoriesPage.qml:144
+msgid "Remove"
+msgstr ""
+
+#: ../qml/components/wizard/AccountsPage.qml:100
+msgid "Delete accounts"
+msgstr ""
+
+#: ../qml/components/wizard/AccountsPage.qml:101
+msgid "Do you want to delete the selected accounts?"
+msgstr ""
+
+#: ../qml/components/wizard/AccountsPage.qml:113
+msgid "New account"
+msgstr ""
+
+#: ../qml/components/wizard/AccountsPage.qml:114
+msgid "Please add the details of the new account."
+msgstr ""
+
+#: ../qml/components/wizard/CategoriesPage.qml:45
+msgid ""
+"Categories allow you to indentify the different transactions. There are two "
+"different types: income and expense categories. The following are some of "
+"the predefined ones but you can add as many as you want."
+msgstr ""
+
+#: ../qml/components/wizard/CategoriesPage.qml:166
+msgid "Delete categories"
+msgstr ""
+
+#: ../qml/components/wizard/CategoriesPage.qml:167
+msgid "Do you want to delete the selected categories?"
+msgstr ""
+
+#: ../qml/components/wizard/LastPage.qml:46
+msgid ""
+"You are nearly done! Bellow you can find the accounts and categories you "
+"will have. Are you happy with them?"
+msgstr ""
+
+#: ../qml/components/wizard/LastPage.qml:53
+msgid "Accounts:"
+msgstr ""
+
+#: ../qml/components/wizard/LastPage.qml:182
+msgid "I'm ready"
+msgstr ""
+
+#: ../qml/components/wizard/LastPage.qml:192
+msgid "Init Error"
+msgstr ""
+
+#: ../qml/components/wizard/LastPage.qml:193
+msgid ""
+"Make sure that you have added at least one account and a category of each "
+"type."
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:50
+msgid "Allowance"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:55
+msgid "Salary"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:60
+msgid "Bonus"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:78
+msgid "Food"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:83
+msgid "Social Life"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:88
+msgid "Self-development"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:93
+msgid "Transportation"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:98
+msgid "Culture"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:103
+msgid "Household"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:108
+msgid "Apparel"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:113
+msgid "Beauty"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:118
+msgid "Health"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:123
+msgid "Education"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:128
+msgid "Gift"
+msgstr ""
+
+#: ../qml/components/wizard/WelcomeWizard.qml:139
+msgid "Confirmation"
 msgstr ""
