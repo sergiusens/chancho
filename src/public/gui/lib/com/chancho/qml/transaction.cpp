@@ -150,6 +150,19 @@ Transaction::setCategoryModel(QObject* category) {
     }
 }
 
+bool
+Transaction::getIsRecurrent() {
+    return _transaction->is_recurrent;
+}
+
+void
+Transaction::setIsRecurrent(bool recurrent) {
+    if (recurrent != _transaction->is_recurrent) {
+        _transaction->is_recurrent = recurrent;
+        emit isRecurrentChanged(recurrent);
+    }
+}
+
 }
 
 }

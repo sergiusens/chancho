@@ -38,6 +38,7 @@ namespace chancho {
 class Transaction {
 
  friend class Book;
+ friend class RecurrentTransaction;
 
  public:
     Transaction() = default;
@@ -64,13 +65,13 @@ class Transaction {
     QDate date = QDate();
     QString contents = QString::null;
     QString memo = QString::null;
+    bool is_recurrent = false;
 
     virtual bool wasStoredInDb() const;
 
  protected:
     // optional so that we know if a category was added to the db or not
     QUuid _dbId;
-
 };
 
 typedef std::shared_ptr<Transaction> TransactionPtr;

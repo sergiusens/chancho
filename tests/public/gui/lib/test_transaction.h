@@ -59,5 +59,10 @@ class TestTransaction : public BaseTestCase {
 
     void testGetType_data();
     void testGetType();
+
+    void testSetIsRecurrentNoSignal();
+    void testSetIsRecurrent();
+    void testGetIsRecurrent_data();
+    void testGetIsRecurrent();
 };
 

@@ -189,6 +189,11 @@ RecurrentTransaction::wasStoredInDb() const {
     return !_dbId.isNull();
 }
 
+QUuid
+RecurrentTransaction::initTransactionId() {
+    return transaction->_dbId;
+}
+
 }
 
 }
