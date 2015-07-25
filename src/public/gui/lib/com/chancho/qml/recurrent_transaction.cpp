@@ -43,7 +43,6 @@ RecurrentTransaction::~RecurrentTransaction() {
 RecurrentTransaction::RecurrentTransaction(RecurrentTransactionPtr transactionPtr, QObject* parent)
         : QObject(parent),
           _transaction(transactionPtr) {
-
 }
 
 QString

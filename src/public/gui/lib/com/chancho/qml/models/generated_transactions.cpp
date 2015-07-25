@@ -61,11 +61,16 @@ GeneratedTransactions::~GeneratedTransactions() {
 
 int
 GeneratedTransactions::numberOfTransactions() const {
-    int count = _book->numberOfTransactions(_tran);
-    if (_book->isError()) {
-        return 0;
+    if (_tran) {
+        int count = _book->numberOfTransactions(_tran);
+        if (_book->isError()) {
+            return 0;
+        }
+        LOG(INFO) << "Number of transactions " << count;
+        return count;
     }
-    return count;
+    LOG(INFO) << "0 transactions";
+    return 0;
 }
 
 int
@@ -75,28 +80,32 @@ GeneratedTransactions::rowCount(const QModelIndex&) const {
 
 QVariant
 GeneratedTransactions::data(int row, int role) const {
-    int count = _book->numberOfTransactions(_tran);
+    if (_tran) {
+        int count = _book->numberOfTransactions(_tran);
 
-    if (_book->isError()) {
-        return QVariant();
-    }
-
-    if (row >= count) {
-        DLOG(INFO) << "Querying data for to large index";
-        return QVariant();
-    }
-
-    if (role == Qt::DisplayRole) {
-        auto transactions = _book->transactions(_tran, 1, row);
         if (_book->isError()) {
-            LOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
             return QVariant();
         }
-        if (transactions.count() > 0) {
-            auto model = new com::chancho::qml::Transaction(transactions.at(0));
-            return QVariant::fromValue(model);
+
+        if (row >= count) {
+            DLOG(INFO) << "Querying data for to large index";
+            return QVariant();
+        }
+
+        if (role == Qt::DisplayRole) {
+            auto transactions = _book->transactions(_tran, 1, row);
+            if (_book->isError()) {
+                LOG(INFO) << "Error when getting data from the db" << _book->lastError().toStdString();
+                return QVariant();
+            }
+            if (transactions.count() > 0) {
+                auto model = new com::chancho::qml::Transaction(transactions.at(0));
+                return QVariant::fromValue(model);
+            } else {
+                DLOG(INFO) << "No transaction was found.";
+                return QVariant();
+            }
         } else {
-            DLOG(INFO) << "No transaction was found.";
             return QVariant();
         }
     } else {

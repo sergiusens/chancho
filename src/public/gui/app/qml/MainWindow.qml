@@ -128,7 +128,7 @@ MainView {
                 page: Loader {
                     parent: recurrentTab
                     anchors.fill: parent
-                    source: (tabs.selectedTab === recurrentTab) ? Qt.resolvedUrl("components/RecurrentTransactionsPage.qml") : ""
+                    source: (tabs.selectedTab === recurrentTab) ? Qt.resolvedUrl("components/recurrent_transactions/Page.qml") : ""
                 }
             }
             Tab {

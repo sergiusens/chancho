@@ -25,6 +25,7 @@
 #include "models/accounts.h"
 #include "models/categories.h"
 #include "models/day.h"
+#include "models/generated_transactions.h"
 #include "models/month.h"
 #include "models/recurrent_categories.h"
 #include "models/recurrent_transactions.h"
@@ -35,6 +36,7 @@
 
 #include "account.h"
 #include "transaction.h"
+#include "recurrent_transaction.h"
 
 #include "book.h"
 
@@ -239,6 +241,19 @@ QObject*
 Book::recurrentCategoriesModel() {
     auto model = new models::RecurrentCategories(_book);
     return model;
+}
+
+QObject*
+Book::generatedTransactions(QObject* recurrentTransactionObj) {
+    if (recurrentTransactionObj != nullptr) {
+        auto reccurrentModel = qobject_cast<qml::RecurrentTransaction *>(recurrentTransactionObj);
+        if (reccurrentModel == nullptr) {
+            auto model = new models::GeneratedTransactions(reccurrentModel, _book);
+            return model;
+        }
+    }
+    LOG(INFO) << "Recurrent tran is null";
+    return nullptr;
 }
 
 int

@@ -102,6 +102,11 @@ set(QML_SOURCES
     qml/components/categories/Page.qml
     qml/components/categories/StatsPage.qml
     qml/components/categories/js/categories.js
+    qml/components/recurrent_transactions/CategoryHeader.qml
+    qml/components/recurrent_transactions/GeneratedTransactionsPage.qml
+    qml/components/recurrent_transactions/RecurrentTransaction.qml
+    qml/components/recurrent_transactions/Page.qml
+    qml/components/recurrent_transactions/RecurrentTransactionsPerCategory.qml
     qml/components/transactions/BillingPerDay.qml
     qml/components/transactions/DateHeader.qml
     qml/components/transactions/Edit.qml
@@ -116,12 +121,8 @@ set(QML_SOURCES
     qml/components/wizard/js/accounts_wizard.js
     qml/components/wizard/js/categories_wizard.js
     qml/components/wizard/js/last_page_wizard.js
-    qml/components/CategoryHeaderComponent.qml
     qml/components/ColorChooser.qml
     qml/components/PageWithBottomEdge.qml
-    qml/components/RecurrentTransactionComponent.qml
-    qml/components/RecurrentTransactionsPage.qml
-    qml/components/RecurrentTransactionsPerCategory.qml
     qml/components/SplashScreen.qml
     qml/components/Walkthrough.qml
     qml/components/dialogs/ConfirmationDialog.qml

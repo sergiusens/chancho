@@ -39,7 +39,7 @@ UbuntuShape {
         anchors.right: parent.right
         height: childrenRect.height
 
-        CategoryHeaderComponent {
+        CategoryHeader {
             category: transactionsModel.category.name
             categoryColor: transactionsModel.category.color
         }
@@ -52,7 +52,7 @@ UbuntuShape {
 
             model: transactionsModel
 
-            RecurrentTransactionComponent {
+            RecurrentTransaction {
                 property var transaction: model.display
                 property var repeaterIndex: index
 
@@ -62,9 +62,8 @@ UbuntuShape {
                     anchors.fill: parent
 
                     onClicked: {
-                        parent.selected = !parent.selected;
-                        mainPageStack.push(editTransaction, {"transaction": transaction});
-                        parent.selected = !parent.selected;
+                        console.log("This is a unique recurrent transaction " + transaction.category)
+                        transactionsPageStack.push(Qt.resolvedUrl("GeneratedTransactionsPage.qml"), {"recurrentTransaction": transaction});
                     }
                 }
             }

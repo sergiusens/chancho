@@ -32,48 +32,35 @@ import jbQuick.Charts 1.0
 
 import com.chancho 1.0
 
-PageStack {
-    id: transactionsPageStack
+Page {
+   id: mainPage
+   property var recurrentTransaction
 
-    Component.onCompleted: {
-        push(mainPage);
-    }
+   title: i18n.tr("Generated Transactions")
 
-    Page {
-       id: mainPage
-       title: i18n.tr("Recurrent Transactions")
+   ColumnLayout {
+       anchors.fill: parent
+       anchors.margins: units.gu(2) /* two unit so that we have the same as the main page. */
+       spacing: units.gu(2)
+       UbuntuShape {
+           id: transactionsShape
+           color: "white"
+           Layout.fillHeight: true
+           anchors.left: parent.left
+           anchors.right: parent.right
 
-       ColumnLayout {
-           anchors.fill: parent
-           anchors.margins: units.gu(2) /* two unit so that we have the same as the main page. */
-           spacing: units.gu(2)
-           UbuntuShape {
-               id: transactionsShape
-               color: "white"
-               Layout.fillHeight: true
-               anchors.left: parent.left
-               anchors.right: parent.right
+           UbuntuListView {
+               id: generatedList
+               anchors.fill: parent
+               anchors.margins: units.gu(1)
+               spacing: units.gu(2)
+               clip: true
 
-               UbuntuListView {
-                   id: incomeList
-                   anchors.fill: parent
-                   anchors.margins: units.gu(1)
-                   spacing: units.gu(2)
-                   clip: true
-
-                   model: Book.recurrentCategoriesModel()
-                   delegate: RecurrentTransactionsPerCategory {
-                       transactionsModel: Book.recurrentTransactionsModel(model.display)
-
-                       MouseArea {
-                           anchors.fill: parent
-                           onClicked: {
-                               console.log("Recurrent transactions!");
-                           }
-                       }
-                   }
+               model: Book.generatedTransactions(recurrentTransaction)
+               delegate: Label {
+                   text: model.display.category
                }
-           } // Sahpe
-       } // Column
-    }
-} // page stack
+           }
+       } // Sahpe
+   } // Column
+}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-25 20:17+0200\n"
+"POT-Creation-Date: 2015-07-28 23:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgid "Bills"
 msgstr ""
 
 #: ../qml/MainWindow.qml:127
-#: ../qml/components/RecurrentTransactionsPage.qml:44
+#: ../qml/components/recurrent_transactions/Page.qml:44
 msgid "Recurrent Transactions"
 msgstr ""
 
@@ -58,29 +58,6 @@ msgstr ""
 #: ../qml/components/dialogs/RecurrenceDialog.qml:203
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:125
 msgid "Ok"
-msgstr ""
-
-#: ../qml/components/RecurrentTransactionComponent.qml:48
-#: ../qml/components/dialogs/RecurrenceDialog.qml:53
-msgid "Daily"
-msgstr ""
-
-#: ../qml/components/RecurrentTransactionComponent.qml:51
-#: ../qml/components/dialogs/RecurrenceDialog.qml:57
-msgid "Weekly"
-msgstr ""
-
-#: ../qml/components/RecurrentTransactionComponent.qml:54
-#: ../qml/components/dialogs/RecurrenceDialog.qml:61
-msgid "Monthly"
-msgstr ""
-
-#: ../qml/components/RecurrentTransactionComponent.qml:57
-msgid "Every "
-msgstr ""
-
-#: ../qml/components/RecurrentTransactionComponent.qml:57
-msgid " days"
 msgstr ""
 
 #: ../qml/components/accounts/Edit.qml:51
@@ -293,6 +270,21 @@ msgstr ""
 msgid "Choose the recurrency of the transaction"
 msgstr ""
 
+#: ../qml/components/dialogs/RecurrenceDialog.qml:53
+#: ../qml/components/recurrent_transactions/RecurrentTransaction.qml:48
+msgid "Daily"
+msgstr ""
+
+#: ../qml/components/dialogs/RecurrenceDialog.qml:57
+#: ../qml/components/recurrent_transactions/RecurrentTransaction.qml:51
+msgid "Weekly"
+msgstr ""
+
+#: ../qml/components/dialogs/RecurrenceDialog.qml:61
+#: ../qml/components/recurrent_transactions/RecurrentTransaction.qml:54
+msgid "Monthly"
+msgstr ""
+
 #: ../qml/components/dialogs/RecurrenceDialog.qml:65
 #: ../qml/components/wizard/WelcomeWizard.qml:65
 #: ../qml/components/wizard/WelcomeWizard.qml:133
@@ -324,6 +316,18 @@ msgstr ""
 
 #: ../qml/components/dialogs/RecurrenceDialog.qml:133
 msgid "Termination:"
+msgstr ""
+
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:39
+msgid "Generated Transactions"
+msgstr ""
+
+#: ../qml/components/recurrent_transactions/RecurrentTransaction.qml:57
+msgid "Every "
+msgstr ""
+
+#: ../qml/components/recurrent_transactions/RecurrentTransaction.qml:57
+msgid " days"
 msgstr ""
 
 #: ../qml/components/transactions/Edit.qml:92

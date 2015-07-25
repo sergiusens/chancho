@@ -108,6 +108,7 @@ class Book : public QObject {
                                        QString contents, QString memo, double amount);
     Q_INVOKABLE QObject* recurrentTransactionsModel(QObject* category);
     Q_INVOKABLE QObject* recurrentCategoriesModel();
+    Q_INVOKABLE QObject* generatedTransactions(QObject* recurrentTransaction);
 
     Q_INVOKABLE int numberOfCategories(TransactionType type);
     Q_INVOKABLE QObject* categoriesModel();
