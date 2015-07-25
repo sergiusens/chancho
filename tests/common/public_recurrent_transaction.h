@@ -33,4 +33,5 @@ class PublicRecurrentTransaction : public chancho::RecurrentTransaction {
     }
 
     using chancho::RecurrentTransaction::_dbId;
+    using chancho::RecurrentTransaction::initTransactionId;
 };

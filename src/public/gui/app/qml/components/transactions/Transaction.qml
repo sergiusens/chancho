@@ -67,15 +67,26 @@ Item {
                     anchors.left: parent.left
                     anchors.top: parent.top
 
-                    Label {
-                        id: categoryLabel
-                        Layout.maximumWidth: units.gu(10)
-                        Layout.minimumWidth: units.gu(10)
-                        text: model.display.category
-                        elide: Text.ElideRight
-                        font.bold: true
-                        fontSize: "small"
-                        horizontalAlignment: Text.AlignLeft
+                    Row {
+                        spacing: units.gu(1)
+
+                        Icon {
+                            height: categoryLabel.height
+                            width: height
+                            name: "retweet"
+                            visible: model.display.isRecurrent
+                        }
+
+                        Label {
+                            id: categoryLabel
+                            Layout.maximumWidth: units.gu(10)
+                            Layout.minimumWidth: units.gu(10)
+                            text: model.display.category
+                            elide: Text.ElideRight
+                            font.bold: true
+                            fontSize: "small"
+                            horizontalAlignment: Text.AlignLeft
+                        }
                     }
 
                     Label {

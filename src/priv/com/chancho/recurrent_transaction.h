@@ -89,6 +89,9 @@ class RecurrentTransaction {
    // optional so that we know if a category was added to the db or not
    QUuid _dbId;
 
+   // allow a way to get the init transaction id, mainly for tests
+   QUuid initTransactionId();
+
 };
 
 typedef std::shared_ptr<RecurrentTransaction> RecurrentTransactionPtr;

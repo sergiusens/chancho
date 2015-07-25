@@ -248,5 +248,57 @@ TestTransaction::testGetType() {
     QCOMPARE(qmlTransaction->getType(), qmlType);
 }
 
+void
+TestTransaction::testSetIsRecurrentNoSignal() {
+    auto amount = .45;
+    auto account = std::make_shared<PublicAccount>("Test account", .0, "");
+    auto category = std::make_shared<com::chancho::Category>("Sushi", com::chancho::Category::Type::EXPENSE);
+    auto transactionPtr = std::make_shared<com::chancho::Transaction>(account, amount, category);
+    transactionPtr->is_recurrent = true;
+
+
+    auto qmlTransaction = std::make_shared<com::chancho::tests::PublicTransaction>(transactionPtr);
+    QSignalSpy spy(qmlTransaction.get(), SIGNAL(isRecurrentChanged(bool)));
+    qmlTransaction->setIsRecurrent(true);
+    QCOMPARE(spy.count(), 0);
+}
+
+void
+TestTransaction::testSetIsRecurrent() {
+    auto amount = .45;
+    auto account = std::make_shared<PublicAccount>("Test account", .0, "");
+    auto category = std::make_shared<com::chancho::Category>("Sushi", com::chancho::Category::Type::EXPENSE);
+    auto transactionPtr = std::make_shared<com::chancho::Transaction>(account, amount, category);
+    transactionPtr->is_recurrent = false;
+
+
+    auto qmlTransaction = std::make_shared<com::chancho::tests::PublicTransaction>(transactionPtr);
+    QSignalSpy spy(qmlTransaction.get(), SIGNAL(isRecurrentChanged(bool)));
+    qmlTransaction->setIsRecurrent(true);
+    QCOMPARE(spy.count(), 1);
+}
+
+void
+TestTransaction::testGetIsRecurrent_data() {
+    QTest::addColumn<bool>("isRecurrent");
+
+    QTest::newRow("true") << true;
+    QTest::newRow("false") << false;
+}
+
+void
+TestTransaction::testGetIsRecurrent() {
+    QFETCH(bool, isRecurrent);
+
+    auto amount = .45;
+    auto account = std::make_shared<PublicAccount>("Test account", .0, "");
+    auto category = std::make_shared<com::chancho::Category>("Sushi", com::chancho::Category::Type::EXPENSE);
+    auto transactionPtr = std::make_shared<com::chancho::Transaction>(account, amount, category);
+    transactionPtr->is_recurrent = isRecurrent;
+
+    auto qmlTransaction = std::make_shared<com::chancho::tests::PublicTransaction>(transactionPtr);
+    QCOMPARE(qmlTransaction->getIsRecurrent(), isRecurrent);
+}
+
 QTEST_MAIN(TestTransaction)
 

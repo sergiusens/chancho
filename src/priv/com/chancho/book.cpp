@@ -65,8 +65,10 @@ namespace {
         "year INT, "\
         "contents TEXT, "\
         "memo TEXT, "\
+        "is_recurrent INT, "\
         "FOREIGN KEY(account) REFERENCES Accounts(uuid), "\
         "FOREIGN KEY(category) REFERENCES Categories(uuid))";  // amounts are stored in text so that we can used the most precise number
+    const QString ALTER_TRANSACTION_TABLE = "ALTER TABLE Transactions ADD COLUMN is_recurrent int";
     const QString RECURRENT_TRANSACTION_TABLE = "CREATE TABLE IF NOT EXISTS RecurrentTransactions("\
         "uuid VARCHAR(40) PRIMARY KEY, "\
         "amount TEXT,"\
@@ -128,6 +130,10 @@ namespace {
         "BEGIN "\
         "DELETE FROM RecurrentTransactionRelations WHERE recurrent_transaction=old.uuid; "\
         "END";
+    const QString RECURRENT_RELATIONS_INSERT_TRIGGER = "CREATE TRIGGER UpdateRecurrentRelationsOnInsert AFTER INSERT ON RecurrentTransactionRelations "\
+        "BEGIN "\
+        "UPDATE Transactions SET is_recurrent=1 WHERE uuid=new.generated_transaction; "\
+        "END";
     const QString TRANSACTION_MONTH_INDEX = "CREATE INDEX transaction_month_index ON Transactions(year, month);";
     const QString TRANSACTION_DAY_INDEX = "CREATE INDEX transaction_day_index ON Transactions(day, year, month);";
     const QString TRANSACTION_CATEGORY_INDEX = "CREATE INDEX transaction_category_index ON Transactions(category);";
@@ -175,45 +181,45 @@ namespace {
     const QString SELECT_CATEGORIES_RECURRENT_COUNT = "SELECT count(*) FROM (SELECT category FROM "\
         "RecurrentTransactions GROUP BY category)";
     const QString SELECT_TRANSACTIONS_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.month=:month AND t.year=:year ORDER BY t.year, t.month";
     const QString SELECT_TRANSACTIONS_MONTH_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset" ;
     const QString SELECT_TRANSACTIONS_COUNT = "SELECT count(uuid) FROM Transactions";
     const QString SELECT_TRANSACTIONS_MONTH_COUNT = "SELECT count(uuid) FROM Transactions "\
         "WHERE month=:month AND year=:year";
     const QString SELECT_TRANSACTIONS_DAY = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.day=:day AND t.month=:month AND t.year=:year ORDER BY t.day, t.year, t.month";
     const QString SELECT_TRANSACTIONS_DAY_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.day=:day AND t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset" ;
     const QString SELECT_TRANSACTIONS_DAY_COUNT = "SELECT count(uuid) FROM Transactions "\
         "WHERE day=:day AND month=:month AND year=:year";
     const QString SELECT_TRANSACTIONS_CATEGORY = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.category=:category ORDER BY t.year, t.month";
     const QString SELECT_TRANSACTIONS_CATEGORY_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.category=:category AND t.month=:month AND t.year=:year ORDER BY t.year, t.month";
     const QString SELECT_TRANSACTIONS_ACCOUNT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.account=:account ORDER BY t.year, t.month";
     const QString SELECT_TRANSACTIONS_RECURRENT =  "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE "\
         "recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month";
     const QString SELECT_TRANSACTIONS_RECURRENT_LIMIT =  "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE "\
         "recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month LIMIT :limit OFFSET :offset";
@@ -344,9 +350,11 @@ Book::initDatabse() {
 
         bool success = true;
         auto query = db->createQuery();
+        success &= query->exec(ALTER_TRANSACTION_TABLE);
         success &= query->exec(RECURRENT_TRANSACTION_TABLE);
         success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
         success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
+        success &= query->exec(RECURRENT_RELATIONS_INSERT_TRIGGER);
 
         if (success)
             db->commit();
@@ -361,8 +369,10 @@ Book::initDatabse() {
 
         bool success = true;
         auto query = db->createQuery();
+        success &= query->exec(ALTER_TRANSACTION_TABLE);
         success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
         success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
+        success &= query->exec(RECURRENT_RELATIONS_INSERT_TRIGGER);
 
         if (success)
             db->commit();
@@ -390,6 +400,7 @@ Book::initDatabse() {
         success &= query->exec(TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER);
         success &= query->exec(TRANSACTION_DELETE_TRIGGER);
         success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
+        success &= query->exec(RECURRENT_RELATIONS_INSERT_TRIGGER);
         success &= query->exec(CATEGORY_DELETE_TRIGGER);
         success &= query->exec(ACCOUNT_DELETE_TRIGGER);
         success &= query->exec(CATEGORY_UPDATE_DIFF_TYPE_TRIGGER);
@@ -1259,6 +1270,7 @@ Book::parseTransactions(std::shared_ptr<system::Query> query) {
         auto transYear = query->value(6).toInt();
         auto transContents = query->value(7).toString();
         auto transMemo = query->value(8).toString();
+        auto transRecurrent = (query->value(9).toInt() == 0)?false:true;
 
         CategoryPtr category;
         if (categories.contains(catUuid)) {
@@ -1266,8 +1278,8 @@ Book::parseTransactions(std::shared_ptr<system::Query> query) {
         } else {
             // ignore the parent
             // auto catParent = query->value(9).toString();
-            auto catName = query->value(10).toString();
-            auto catType = static_cast<Category::Type>(query->value(11).toInt());
+            auto catName = query->value(11).toString();
+            auto catType = static_cast<Category::Type>(query->value(12).toInt());
             category = std::make_shared<Category>(catName, catType);
             category->_dbId = catUuid;
             // add it to be faster with other transactions with the same category
@@ -1278,9 +1290,9 @@ Book::parseTransactions(std::shared_ptr<system::Query> query) {
         if (accounts.contains(accUuid)) {
             account = accounts[accUuid];
         } else {
-            auto accName = query->value(12).toString();
-            auto accMemo = query->value(13).toString();
-            auto accAmount = query->value(14).toString().toDouble();
+            auto accName = query->value(13).toString();
+            auto accMemo = query->value(14).toString();
+            auto accAmount = query->value(15).toString().toDouble();
             account = std::make_shared<Account>(accName, accAmount, accMemo);
             account->_dbId = accUuid;
             accounts[accUuid] = account;
@@ -1289,6 +1301,7 @@ Book::parseTransactions(std::shared_ptr<system::Query> query) {
         auto transaction = std::make_shared<Transaction>(
                 account, transAmount, category, QDate(transYear, transMonth, transDay), transContents, transMemo);
         transaction->_dbId = transUuid;
+        transaction->is_recurrent = transRecurrent;
         trans.append(transaction);
     }
     return trans;
@@ -1310,7 +1323,7 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
     if (day) {
         if (limit) {
             // SELECT_TRANSACTIONS_DAY_LIMIT = SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-            //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+            //     t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
             //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
             //     WHERE t.day=:day AND t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset
             query->prepare(SELECT_TRANSACTIONS_DAY_LIMIT);
@@ -1325,7 +1338,7 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
             }
         } else {
             // SELECT_TRANSACTIONS_DAY = SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-            //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+            //     t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
             //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
             //     WHERE t.day=:day AND t.month=:month AND t.year=:year ORDER BY t.day, t.year, t.month
             query->prepare(SELECT_TRANSACTIONS_DAY);
@@ -1336,7 +1349,7 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
     } else {
         if (limit) {
             // SELECT_TRANSACTIONS_MONTH_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-            //    t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+            //    t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
             //    INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
             //    WHERE t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset
             query->prepare(SELECT_TRANSACTIONS_MONTH_LIMIT);
@@ -1350,7 +1363,7 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
             }
 
         } else {
-            // SELECT_TRANSACTIONS_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, t.year, t.contents, t.memo,
+            // SELECT_TRANSACTIONS_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, t.year, t.contents, t.memo, t.is_recurrent,
             //         c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
             //         INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
             //         WHERE t.month=:month AND t.year=:year";
@@ -1379,7 +1392,7 @@ Book::transactions(RecurrentTransactionPtr recurrent, boost::optional<int> limit
 
     if (limit) {
         // SELECT_TRANSACTIONS_RECURRENT_LIMIT =  SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-        //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+        //     t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
         //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
         //     WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE
         //     recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month LIMIT :limit OFFSET :offset
@@ -1392,7 +1405,7 @@ Book::transactions(RecurrentTransactionPtr recurrent, boost::optional<int> limit
         }
     } else {
         // SELECT_TRANSACTIONS_RECURRENT =  SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-        //  t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+        //  t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
         //  INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
         //  WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE
         //  recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month
@@ -1539,7 +1552,7 @@ Book::transactions(CategoryPtr cat, boost::optional<int> month, boost::optional<
 
     if (month && year) {
         // SELECT_TRANSACTIONS_CATEGORY_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-        //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+        //     t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
         //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
         //     WHERE t.category=:category AND t.month=:month AND t.year=:year
         query->prepare(SELECT_TRANSACTIONS_CATEGORY_MONTH);
@@ -1548,7 +1561,7 @@ Book::transactions(CategoryPtr cat, boost::optional<int> month, boost::optional<
         query->bindValue(":year", *year);
     } else {
         // SELECT_TRANSACTIONS_CATEGORY = SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-        //    t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+        //    t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
         //    INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
         //    WHERE t.category=:category;
         query->prepare(SELECT_TRANSACTIONS_CATEGORY);
@@ -1579,7 +1592,7 @@ Book::transactions(AccountPtr acc) {
 
 
     // SELECT_TRANSACTIONS_ACCOUNT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-    //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+    //     t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
     //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
     //     WHERE t.account=:account;
     auto query = _db->createQuery();

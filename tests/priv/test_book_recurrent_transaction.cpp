@@ -36,9 +36,13 @@
 namespace sys = com::chancho::system;
 
 namespace {
-    const QString SELECT_TRANSACTION_QUERY = "SELECT amount, account, category, contents, memo, startDay, startMonth, "\
+    const QString SELECT_TRANSACTION_QUERY =
+            "SELECT amount, account, category, day, month, year, contents, memo, is_recurrent FROM Transactions WHERE uuid=:uuid";
+    const QString SELECT_RECURRENT_TRANSACTION_QUERY = "SELECT amount, account, category, contents, memo, startDay, startMonth, "\
         "startYear, lastDay, lastMonth, lastYear, endDay, endMonth, endYear, defaultType, numberDays, occurrences "\
         "FROM RecurrentTransactions WHERE uuid=:uuid";
+    const QString SELECT_RECURRENT_TRANSACTION_RELATION = "SELECT generated_transaction FROM "\
+        "RecurrentTransactionRelations WHERE recurrent_transaction=:recurrent_transaction";
 }
 
 void
@@ -162,7 +166,7 @@ TestBookRecurrentTransaction::testStoreLastGeneratedPresent() {
     QVERIFY(opened);
 
     auto query = db->createQuery();
-    query->prepare(SELECT_TRANSACTION_QUERY);
+    query->prepare(SELECT_RECURRENT_TRANSACTION_QUERY);
     query->bindValue(":uuid", recurrent->_dbId.toString());
     auto success = query->exec();
 
@@ -189,6 +193,39 @@ TestBookRecurrentTransaction::testStoreLastGeneratedPresent() {
     QCOMPARE(query->value("defaultType").toInt(), static_cast<int>(defaults));
     QVERIFY(query->value("numberDays").isNull());
     QVERIFY(query->value("occurrences").isNull());
+
+    // assert that the first transaction is present
+    QVERIFY(recurrent->transaction->wasStoredInDb());
+
+    // assert that the correct transaction wsa added
+    query->prepare(SELECT_TRANSACTION_QUERY);
+    query->bindValue(":uuid", recurrent->initTransactionId().toString());
+    success = query->exec();
+
+    QVERIFY(success);
+    QVERIFY(query->next());
+
+    if (transaction->category->type == com::chancho::Category::Type::EXPENSE && transaction->amount > 0) {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount * -1));
+    } else {
+        QCOMPARE(query->value("amount").toString(), QString::number(transaction->amount));
+    }
+
+    QCOMPARE(query->value("account").toString(), account->_dbId.toString());
+    QCOMPARE(query->value("category").toString(), category->_dbId.toString());
+    QCOMPARE(query->value("contents").toString(), transaction->contents);
+    QCOMPARE(query->value("memo").toString(), transaction->memo);
+    QCOMPARE(query->value("is_recurrent").toInt(), 1);
+
+    // ensure that the relation was added
+    query->prepare(SELECT_RECURRENT_TRANSACTION_RELATION);
+    query->bindValue(":recurrent_transaction", recurrent->_dbId);
+
+    success = query->exec();
+
+    QVERIFY(success);
+    QVERIFY(query->next());
+    QCOMPARE(query->value("generated_transaction").toString(), recurrent->initTransactionId().toString());
 
     db->close();
 }
@@ -252,7 +289,7 @@ TestBookRecurrentTransaction::testStoreLasteGeneratedMissing() {
     QVERIFY(opened);
 
     auto query = db->createQuery();
-    query->prepare(SELECT_TRANSACTION_QUERY);
+    query->prepare(SELECT_RECURRENT_TRANSACTION_QUERY);
     query->bindValue(":uuid", recurrent->_dbId.toString());
     auto success = query->exec();
 
@@ -346,7 +383,7 @@ TestBookRecurrentTransaction::testStoreEndDatePresent() {
     QVERIFY(opened);
 
     auto query = db->createQuery();
-    query->prepare(SELECT_TRANSACTION_QUERY);
+    query->prepare(SELECT_RECURRENT_TRANSACTION_QUERY);
     query->bindValue(":uuid", recurrent->_dbId.toString());
     auto success = query->exec();
 
@@ -436,7 +473,7 @@ TestBookRecurrentTransaction::testStoreEndDateMissing() {
     QVERIFY(opened);
 
     auto query = db->createQuery();
-    query->prepare(SELECT_TRANSACTION_QUERY);
+    query->prepare(SELECT_RECURRENT_TRANSACTION_QUERY);
     query->bindValue(":uuid", recurrent->_dbId.toString());
     auto success = query->exec();
 
@@ -526,7 +563,7 @@ TestBookRecurrentTransaction::testStoreDefaultsUsed() {
     QVERIFY(opened);
 
     auto query = db->createQuery();
-    query->prepare(SELECT_TRANSACTION_QUERY);
+    query->prepare(SELECT_RECURRENT_TRANSACTION_QUERY);
     query->bindValue(":uuid", recurrent->_dbId.toString());
     auto success = query->exec();
 
@@ -613,7 +650,7 @@ TestBookRecurrentTransaction::testStoreNonDefaultsUsed() {
     QVERIFY(opened);
 
     auto query = db->createQuery();
-    query->prepare(SELECT_TRANSACTION_QUERY);
+    query->prepare(SELECT_RECURRENT_TRANSACTION_QUERY);
     query->bindValue(":uuid", recurrent->_dbId.toString());
     auto success = query->exec();
 
@@ -706,7 +743,7 @@ TestBookRecurrentTransaction::testStoreOcurrencesPresent() {
     QVERIFY(opened);
 
     auto query = db->createQuery();
-    query->prepare(SELECT_TRANSACTION_QUERY);
+    query->prepare(SELECT_RECURRENT_TRANSACTION_QUERY);
     query->bindValue(":uuid", recurrent->_dbId.toString());
     auto success = query->exec();
 
@@ -796,7 +833,7 @@ TestBookRecurrentTransaction::testStoreOcurrencesMissing() {
     QVERIFY(opened);
 
     auto query = db->createQuery();
-    query->prepare(SELECT_TRANSACTION_QUERY);
+    query->prepare(SELECT_RECURRENT_TRANSACTION_QUERY);
     query->bindValue(":uuid", recurrent->_dbId.toString());
     auto success = query->exec();
 
@@ -1063,7 +1100,7 @@ TestBookRecurrentTransaction::testRemoveStoredTransaction() {
     QVERIFY(opened);
 
     auto query = db->createQuery();
-    query->prepare(SELECT_TRANSACTION_QUERY);
+    query->prepare(SELECT_RECURRENT_TRANSACTION_QUERY);
     query->bindValue(":uuid", id);
     auto success = query->exec();
     QVERIFY(success);
