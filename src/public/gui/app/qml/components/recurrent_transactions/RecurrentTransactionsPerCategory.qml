@@ -39,7 +39,7 @@ UbuntuShape {
         anchors.right: parent.right
         height: childrenRect.height
 
-        CategoryHeaderComponent {
+        CategoryHeader {
             category: transactionsModel.category.name
             categoryColor: transactionsModel.category.color
         }
@@ -52,7 +52,7 @@ UbuntuShape {
 
             model: transactionsModel
 
-            RecurrentTransactionComponent {
+            RecurrentTransaction {
                 property var transaction: model.display
                 property var repeaterIndex: index
 

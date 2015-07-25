@@ -14,6 +14,10 @@
         <file>qml/components/categories/Page.qml</file>
         <file>qml/components/categories/StatsPage.qml</file>
         <file>qml/components/categories/js/categories.js</file>
+        <file>qml/components/recurrent_transactions/CategoryHeader.qml</file>
+        <file>qml/components/recurrent_transactions/RecurrentTransaction.qml</file>
+        <file>qml/components/recurrent_transactions/Page.qml</file>
+        <file>qml/components/recurrent_transactions/RecurrentTransactionsPerCategory.qml</file>
         <file>qml/components/transactions/BillingPerDay.qml</file>
         <file>qml/components/transactions/DateHeader.qml</file>
         <file>qml/components/transactions/Edit.qml</file>
@@ -28,12 +32,8 @@
         <file>qml/components/wizard/js/accounts_wizard.js</file>
         <file>qml/components/wizard/js/categories_wizard.js</file>
         <file>qml/components/wizard/js/last_page_wizard.js</file>
-        <file>qml/components/CategoryHeaderComponent.qml</file>
         <file>qml/components/ColorChooser.qml</file>
         <file>qml/components/PageWithBottomEdge.qml</file>
-        <file>qml/components/RecurrentTransactionComponent.qml</file>
-        <file>qml/components/RecurrentTransactionsPage.qml</file>
-        <file>qml/components/RecurrentTransactionsPerCategory.qml</file>
         <file>qml/components/SplashScreen.qml</file>
         <file>qml/components/Walkthrough.qml</file>
         <file>qml/components/dialogs/ErrorDialog.qml</file>
