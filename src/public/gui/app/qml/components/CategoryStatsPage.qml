@@ -157,7 +157,8 @@ PageStack {
                         legendModel.clear();
                         for(var index=0; index < categories.length; index++) {
                             var category = categories[index];
-                            legendModel.append({"name":category.name, "color":category.color});
+                            var name = category.name + ' (' + percentages.data[index].value.toString() + ')';
+                            legendModel.append({"name":name, "color":category.color});
                         }
                         repaint();
                     }
