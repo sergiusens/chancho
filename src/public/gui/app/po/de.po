@@ -203,8 +203,9 @@ msgid ""
 "You cannot delete all categories in the system. You must have at least one "
 "of each type"
 msgstr ""
-"Sie können nicht alle Kategorien löschen Sie benötigen mindestens eine " #a little better, no duplication of "Kategorie"
+"Sie können nicht alle Kategorien löschen Sie benötigen mindestens eine "
 "von jeder Art."
+#a little better, no duplication of "Kategorie"
 
 #: ../qml/components/EditCategory.qml:114
 msgid "Delete category"
