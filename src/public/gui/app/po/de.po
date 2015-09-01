@@ -46,7 +46,7 @@ msgstr "Feburar"
 
 #: ../qml/components/AccountForm.qml:67 ../qml/components/CategoryForm.qml:67
 msgid "March"
-msgstr "Märtz"
+msgstr "März"
 
 #: ../qml/components/AccountForm.qml:68 ../qml/components/CategoryForm.qml:68
 msgid "April"
@@ -94,7 +94,7 @@ msgstr "Name"
 #: ../qml/components/AccountForm.qml:196
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:56
 msgid "Initial amount"
-msgstr "Anfangs Betrag"
+msgstr "Anfangsbetrag"
 
 #: ../qml/components/AccountForm.qml:208
 #: ../qml/components/TransactionForm.qml:199
@@ -104,19 +104,19 @@ msgstr "Notiz"
 
 #: ../qml/components/AccountsPage.qml:143 ../qml/components/NewAccount.qml:35
 msgid "Add new account"
-msgstr "Neuen Konto hinzufügen"
+msgstr "Neues Konto hinzufügen"
 
 #: ../qml/components/CategoriesPage.qml:59
 #: ../qml/components/WizardCategoriesPage.qml:52
 #: ../qml/components/WizardLastPage.qml:87
 msgid "Income categories:"
-msgstr "Einkommen Kategorien:"
+msgstr "Einkommen-Kategorien:" //not sure if this is truly a better translation
 
 #: ../qml/components/CategoriesPage.qml:101
 #: ../qml/components/WizardCategoriesPage.qml:91
 #: ../qml/components/WizardLastPage.qml:117
 msgid "Expense categories:"
-msgstr "Ausgaben Kategorien:"
+msgstr "Ausgaben-Kategorien:" //not sure if this is truly a better translation
 
 #: ../qml/components/CategoriesPage.qml:142
 #: ../qml/components/NewCategory.qml:35
@@ -138,7 +138,7 @@ msgstr "Einkommen"
 #: ../qml/components/CategoryStatsPage.qml:132
 #: ../qml/components/MainPage.qml:137
 msgid "No entries were found!"
-msgstr "Keine Einträge gfunden!"
+msgstr "Keine Einträge gefunden!"
 
 #: ../qml/components/ColorChooser.qml:127
 #: ../qml/components/dialogs/ConfirmationDialog.qml:38
@@ -157,17 +157,17 @@ msgstr "Abbrechen"
 #: ../qml/components/EditAccount.qml:51 ../qml/components/EditCategory.qml:78
 #: ../qml/components/EditTransaction.qml:60
 msgid "Edit"
-msgstr "Editieren"
+msgstr "Bearbeiten" //more widely used than "Editieren"
 
 #: ../qml/components/EditAccount.qml:58 ../qml/components/EditCategory.qml:87
 #: ../qml/components/EditTransaction.qml:75
 msgid "Edit entry"
-msgstr "Eintrag editieren"
+msgstr "Eintrag bearbeiten" //more widely used than "editieren"
 
 #: ../qml/components/EditAccount.qml:59
 #: ../qml/components/EditTransaction.qml:76
 msgid "Do you want to update this entry?"
-msgstr "Möchtest du diesen Eintag aktualsieren?"
+msgstr "Möchtest du diesen Eintrag aktualsieren?"
 
 #: ../qml/components/EditAccount.qml:68 ../qml/components/EditCategory.qml:96
 #: ../qml/components/EditTransaction.qml:84
@@ -176,11 +176,11 @@ msgstr "Löschen"
 
 #: ../qml/components/EditAccount.qml:77
 msgid "Delete entry"
-msgstr "Lösche Eintrag"
+msgstr "Eintrag löschen" //wasn't really wrong, but I think this sounds better
 
 #: ../qml/components/EditAccount.qml:78
 msgid "Do you want to remove this account?"
-msgstr "Möchtest du diesen Konto entfernen?"
+msgstr "Möchtest du dieses Konto entfernen?"
 
 #: ../qml/components/EditAccount.qml:84
 msgid "Error"
@@ -203,8 +203,8 @@ msgid ""
 "You cannot delete all categories in the system. You must have at least one "
 "of each type"
 msgstr ""
-"Sie können nicht alle Kategorien löschen Sie benötigen"
-"von jeder Art eine Kategorie"
+"Sie können nicht alle Kategorien löschen Sie benötigen mindestens eine " //a little better, no duplication of "Kategorie"
+"von jeder Art."
 
 #: ../qml/components/EditCategory.qml:114
 msgid "Delete category"
@@ -216,7 +216,7 @@ msgstr "Möchtest du diese Kategorie entfernen?"
 
 #: ../qml/components/EditTransaction.qml:91
 msgid "Delete transaction"
-msgstr "Überweisung löschen"
+msgstr "Überweisung löschen" // might use "Transaktion", but I'm not sure if that would be better...
 
 #: ../qml/components/EditTransaction.qml:92
 msgid "Do you want to remove this transaction?"
@@ -276,7 +276,7 @@ msgstr "Taschengeld"
 
 #: ../qml/components/WelcomeWizard.qml:54
 msgid "Salary"
-msgstr "Vergütung"
+msgstr "Gehalt" // This isn't exactly wrong, but most of the time germans would use "Lohn" or "Gehalt" instead of "Vergütung"
 
 #: ../qml/components/WelcomeWizard.qml:59
 msgid "Bonus"
@@ -301,7 +301,7 @@ msgstr "Selbstentfaltung"
 
 #: ../qml/components/WelcomeWizard.qml:92
 msgid "Transportation"
-msgstr "Transport"
+msgstr "Transport" // This doesn't seem to be the best translation, but I can't think of a better one at the moment.
 
 #: ../qml/components/WelcomeWizard.qml:97
 msgid "Culture"
@@ -317,7 +317,7 @@ msgstr "Kleidung"
 
 #: ../qml/components/WelcomeWizard.qml:112
 msgid "Beauty"
-msgstr "Schönes"
+msgstr "Schönes" // I think it would be better to use "Schönheit" or "Aussehen"
 
 #: ../qml/components/WelcomeWizard.qml:117
 msgid "Health"
@@ -333,7 +333,7 @@ msgstr "Geschenke"
 
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Confirmation"
-msgstr "Firmung"
+msgstr "Bestätigung"
 
 #: ../qml/components/WizardAccountsPage.qml:45
 msgid ""
@@ -342,7 +342,7 @@ msgid ""
 "more accounts later."
 msgstr ""
 "Mit Chancho können Sie ihr Einkommen und ihre Ausgaben mit verschiedenen Konten verfolgen. "
-"Hier können Sie ein Konto erstellen. Keine Sorge Sie können nachher"
+"Hier können Sie ein Konto erstellen. Keine Sorge Sie können nachher "
 "noch mehrere Konten erstellen."
 
 #: ../qml/components/WizardAccountsPage.qml:90
@@ -382,15 +382,15 @@ msgstr "Kategorien löschen"
 
 #: ../qml/components/WizardCategoriesPage.qml:148
 msgid "Do you want to delete the selected categories?"
-msgstr "Möchten Sie das ausgewählte Konto löschen?"
+msgstr "Möchten Sie die ausgewählten Kategorien löschen?"
 
 #: ../qml/components/WizardLastPage.qml:46
 msgid ""
 "You are nearly done! Bellow you can find the accounts and categories you "
 "will have. Are you happy with them?"
 msgstr ""
-"You are nearly done! Bellow you can find the accounts and categories you "
-"will have. Are you happy with them?"
+"Sie sind fast fertig! Unten finden Sie die Konten und Kategorien, "
+"die Sie haben werden. Sind sie zufrieden?"
 
 #: ../qml/components/WizardLastPage.qml:53
 msgid "Accounts:"
