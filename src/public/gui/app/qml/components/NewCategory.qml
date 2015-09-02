@@ -36,7 +36,7 @@ Page {
 
     head.actions: [
         Action {
-            iconName: "add"
+            iconName: "ok"
             text: i18n.tr("Add")
             onTriggered: {
                 Qt.inputMethod.commit()
