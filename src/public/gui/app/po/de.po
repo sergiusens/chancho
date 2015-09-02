@@ -20,33 +20,33 @@ msgstr ""
 #: ../qml/MainWindow.qml:78 ../qml/components/CategoryStatsPage.qml:50
 #: ../qml/components/MainPage.qml:45
 msgid "Bills"
-msgstr "Bills"
+msgstr "Rechnungen"
 
 #: ../qml/MainWindow.qml:88
 msgid "Stats"
-msgstr "Stats"
+msgstr "Statistik"
 
 #: ../qml/MainWindow.qml:97 ../qml/components/AccountsPage.qml:67
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Accounts"
-msgstr "Accounts"
+msgstr "Konten"
 
 #: ../qml/MainWindow.qml:107 ../qml/components/CategoriesPage.qml:45
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Categories"
-msgstr "Categories"
+msgstr "Kategorien"
 
 #: ../qml/components/AccountForm.qml:65 ../qml/components/CategoryForm.qml:65
 msgid "January"
-msgstr "January"
+msgstr "Januar"
 
 #: ../qml/components/AccountForm.qml:66 ../qml/components/CategoryForm.qml:66
 msgid "February"
-msgstr "February"
+msgstr "Feburar"
 
 #: ../qml/components/AccountForm.qml:67 ../qml/components/CategoryForm.qml:67
 msgid "March"
-msgstr "March"
+msgstr "März"
 
 #: ../qml/components/AccountForm.qml:68 ../qml/components/CategoryForm.qml:68
 msgid "April"
@@ -54,15 +54,15 @@ msgstr "April"
 
 #: ../qml/components/AccountForm.qml:69 ../qml/components/CategoryForm.qml:69
 msgid "May"
-msgstr "May"
+msgstr "Mai"
 
 #: ../qml/components/AccountForm.qml:70 ../qml/components/CategoryForm.qml:70
 msgid "June"
-msgstr "June"
+msgstr "Juni"
 
 #: ../qml/components/AccountForm.qml:71 ../qml/components/CategoryForm.qml:71
 msgid "July"
-msgstr "July"
+msgstr "Juli"
 
 #: ../qml/components/AccountForm.qml:72 ../qml/components/CategoryForm.qml:72
 msgid "August"
@@ -74,7 +74,7 @@ msgstr "September"
 
 #: ../qml/components/AccountForm.qml:74 ../qml/components/CategoryForm.qml:74
 msgid "October"
-msgstr "October"
+msgstr "Oktober"
 
 #: ../qml/components/AccountForm.qml:75 ../qml/components/CategoryForm.qml:75
 msgid "November"
@@ -82,7 +82,7 @@ msgstr "November"
 
 #: ../qml/components/AccountForm.qml:76 ../qml/components/CategoryForm.qml:76
 msgid "December"
-msgstr "December"
+msgstr "Dezember"
 
 #: ../qml/components/AccountForm.qml:174
 #: ../qml/components/CategoryForm.qml:163
@@ -94,51 +94,51 @@ msgstr "Name"
 #: ../qml/components/AccountForm.qml:196
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:56
 msgid "Initial amount"
-msgstr "Initial amount"
+msgstr "Anfangsbetrag"
 
 #: ../qml/components/AccountForm.qml:208
 #: ../qml/components/TransactionForm.qml:199
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:61
 msgid "Memo"
-msgstr "Memo"
+msgstr "Notiz"
 
 #: ../qml/components/AccountsPage.qml:143 ../qml/components/NewAccount.qml:35
 msgid "Add new account"
-msgstr "Add new account"
+msgstr "Neues Konto hinzufügen"
 
 #: ../qml/components/CategoriesPage.qml:59
 #: ../qml/components/WizardCategoriesPage.qml:52
 #: ../qml/components/WizardLastPage.qml:87
 msgid "Income categories:"
-msgstr "Income categories:"
+msgstr "Einkommen-Kategorien:" #not sure if this is truly a better translation
 
 #: ../qml/components/CategoriesPage.qml:101
 #: ../qml/components/WizardCategoriesPage.qml:91
 #: ../qml/components/WizardLastPage.qml:117
 msgid "Expense categories:"
-msgstr "Expense categories:"
+msgstr "Ausgaben-Kategorien:" #not sure if this is truly a better translation
 
 #: ../qml/components/CategoriesPage.qml:142
 #: ../qml/components/NewCategory.qml:35
 msgid "Add new category"
-msgstr "Add new category"
+msgstr "Neue Kategorie hinzufügen"
 
 #: ../qml/components/CategoryForm.qml:186
 #: ../qml/components/TransactionForm.qml:87
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:53
 msgid "Expense"
-msgstr "Expense"
+msgstr "Ausgaben"
 
 #: ../qml/components/CategoryForm.qml:190
 #: ../qml/components/TransactionForm.qml:91
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:57
 msgid "Income"
-msgstr "Income"
+msgstr "Einkommen"
 
 #: ../qml/components/CategoryStatsPage.qml:132
 #: ../qml/components/MainPage.qml:137
 msgid "No entries were found!"
-msgstr "No entries were found!"
+msgstr "Keine Einträge gefunden!"
 
 #: ../qml/components/ColorChooser.qml:127
 #: ../qml/components/dialogs/ConfirmationDialog.qml:38
@@ -152,131 +152,132 @@ msgstr "Ok"
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:101
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:126
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Abbrechen"
 
 #: ../qml/components/EditAccount.qml:51 ../qml/components/EditCategory.qml:78
 #: ../qml/components/EditTransaction.qml:60
 msgid "Edit"
-msgstr "Edit"
+msgstr "Bearbeiten" #more widely used than "Editieren"
 
 #: ../qml/components/EditAccount.qml:58 ../qml/components/EditCategory.qml:87
 #: ../qml/components/EditTransaction.qml:75
 msgid "Edit entry"
-msgstr "Edit entry"
+msgstr "Eintrag bearbeiten" #more widely used than "editieren"
 
 #: ../qml/components/EditAccount.qml:59
 #: ../qml/components/EditTransaction.qml:76
 msgid "Do you want to update this entry?"
-msgstr "Do you want to update this entry?"
+msgstr "Möchtest du diesen Eintrag aktualsieren?"
 
 #: ../qml/components/EditAccount.qml:68 ../qml/components/EditCategory.qml:96
 #: ../qml/components/EditTransaction.qml:84
 msgid "Delete"
-msgstr "Delete"
+msgstr "Löschen"
 
 #: ../qml/components/EditAccount.qml:77
 msgid "Delete entry"
-msgstr "Delete entry"
+msgstr "Eintrag löschen" #wasn't really wrong, but I think this sounds better
 
 #: ../qml/components/EditAccount.qml:78
 msgid "Do you want to remove this account?"
-msgstr "Do you want to remove this account?"
+msgstr "Möchtest du dieses Konto entfernen?"
 
 #: ../qml/components/EditAccount.qml:84
 msgid "Error"
-msgstr "Error"
+msgstr "Fehler"
 
 #: ../qml/components/EditAccount.qml:85
 msgid "You must have at least one account in the system."
-msgstr "You must have at least one account in the system."
+msgstr "Sie müssen mindestens ein Konto in dem System haben."
 
 #: ../qml/components/EditCategory.qml:88
 msgid "Do you want to update this category?"
-msgstr "Do you want to update this category?"
+msgstr "Möchtest du diese Kategorie aktualsieren?"
 
 #: ../qml/components/EditCategory.qml:104
 msgid "Removal Error"
-msgstr "Removal Error"
+msgstr "Fehler entfernen"
 
 #: ../qml/components/EditCategory.qml:105
 msgid ""
 "You cannot delete all categories in the system. You must have at least one "
 "of each type"
 msgstr ""
-"You cannot delete all categories in the system. You must have at least one "
-"of each type"
+"Sie können nicht alle Kategorien löschen Sie benötigen mindestens eine "
+"von jeder Art."
+#a little better, no duplication of "Kategorie"
 
 #: ../qml/components/EditCategory.qml:114
 msgid "Delete category"
-msgstr "Delete category"
+msgstr "Kategorie löschen"
 
 #: ../qml/components/EditCategory.qml:115
 msgid "Do you want to remove this category?"
-msgstr "Do you want to remove this category?"
+msgstr "Möchtest du diese Kategorie entfernen?"
 
 #: ../qml/components/EditTransaction.qml:91
 msgid "Delete transaction"
-msgstr "Delete transaction"
+msgstr "Überweisung löschen" #might use "Transaktion", but I'm not sure if that would be better...
 
 #: ../qml/components/EditTransaction.qml:92
 msgid "Do you want to remove this transaction?"
-msgstr "Do you want to remove this transaction?"
+msgstr "Möchtest du diese Überweisung löschen?"
 
 #: ../qml/components/MainPage.qml:148 ../qml/components/NewTransaction.qml:35
 msgid "Add new entry"
-msgstr "Add new entry"
+msgstr "Neuen Eintrag hinzufügen"
 
 #: ../qml/components/NewAccount.qml:40 ../qml/components/NewCategory.qml:40
 #: ../qml/components/NewTransaction.qml:40
 #: ../qml/components/WizardAccountsPage.qml:87
 #: ../qml/components/WizardCategoriesPage.qml:128
 msgid "Add"
-msgstr "Add"
+msgstr "Hinzufügen"
 
 #: ../qml/components/NewAccount.qml:52 ../qml/components/NewCategory.qml:48
 #: ../qml/components/NewTransaction.qml:59
 msgid "Internal Error"
-msgstr "Internal Error"
+msgstr "Interner Fehler"
 
 #: ../qml/components/NewAccount.qml:53
 msgid "The account could not be stored."
-msgstr "The account could not be stored."
+msgstr "Das Konto konnte nicht gespeichert werden."
 
 #: ../qml/components/NewCategory.qml:49
 msgid "The category could not be stored."
-msgstr "The category could not be stored."
+msgstr "Die Kategorie konnte nicht gespeichert werden."
 
 #: ../qml/components/NewTransaction.qml:45
 msgid "Error: amount is missing"
-msgstr "Error: amount is missing"
+msgstr "Fehler: Der Betrag fehlt"
 
 #: ../qml/components/NewTransaction.qml:46
 msgid "Transactions must have an amount."
-msgstr "Transactions must have an amount."
+msgstr "Die Überweisung benötigt einen Betrag."
 
 #: ../qml/components/NewTransaction.qml:60
 msgid "The transaction could not be stored."
-msgstr "The transaction could not be stored."
+msgstr "Die Überweisung konnte nicht gespeichert werden."
 
 #: ../qml/components/TransactionForm.qml:152
 msgid "Date"
-msgstr "Date"
+msgstr "Datum"
 
 #: ../qml/components/TransactionForm.qml:177
 msgid "Amount"
-msgstr "Amount"
+msgstr "Betrag"
 
 #: ../qml/components/TransactionForm.qml:186
 msgid "Contents"
-msgstr "Contents"
+msgstr "Inhalt"
 
 #: ../qml/components/WelcomeWizard.qml:49
 msgid "Allowance"
-msgstr "Allowance"
+msgstr "Taschengeld"
 
 #: ../qml/components/WelcomeWizard.qml:54
 msgid "Salary"
-msgstr "Salary"
+msgstr "Gehalt" #This isn't exactly wrong, but most of the time germans would use "Lohn" or "Gehalt" instead of "Vergütung"
 
 #: ../qml/components/WelcomeWizard.qml:59
 msgid "Bonus"
@@ -285,55 +286,55 @@ msgstr "Bonus"
 #: ../qml/components/WelcomeWizard.qml:64
 #: ../qml/components/WelcomeWizard.qml:132
 msgid "Other"
-msgstr "Other"
+msgstr "Sonstiges"
 
 #: ../qml/components/WelcomeWizard.qml:77
 msgid "Food"
-msgstr "Food"
+msgstr "Essen"
 
 #: ../qml/components/WelcomeWizard.qml:82
 msgid "Social Life"
-msgstr "Social Life"
+msgstr "Sozialleben"
 
 #: ../qml/components/WelcomeWizard.qml:87
 msgid "Self-development"
-msgstr "Self-development"
+msgstr "Selbstentfaltung"
 
 #: ../qml/components/WelcomeWizard.qml:92
 msgid "Transportation"
-msgstr "Transportation"
+msgstr "Transport" #This doesn't seem to be the best translation, but I can't think of a better one at the moment.
 
 #: ../qml/components/WelcomeWizard.qml:97
 msgid "Culture"
-msgstr "Culture"
+msgstr "Kultur"
 
 #: ../qml/components/WelcomeWizard.qml:102
 msgid "Household"
-msgstr "Household"
+msgstr "Haushalt"
 
 #: ../qml/components/WelcomeWizard.qml:107
 msgid "Apparel"
-msgstr "Apparel"
+msgstr "Kleidung"
 
 #: ../qml/components/WelcomeWizard.qml:112
 msgid "Beauty"
-msgstr "Beauty"
+msgstr "Schönes" #I think it would be better to use "Schönheit" or "Aussehen"
 
 #: ../qml/components/WelcomeWizard.qml:117
 msgid "Health"
-msgstr "Health"
+msgstr "Gesundheit"
 
 #: ../qml/components/WelcomeWizard.qml:122
 msgid "Education"
-msgstr "Education"
+msgstr "Bildung"
 
 #: ../qml/components/WelcomeWizard.qml:127
 msgid "Gift"
-msgstr "Gift"
+msgstr "Geschenke"
 
 #: ../qml/components/WelcomeWizard.qml:138
 msgid "Confirmation"
-msgstr "Confirmation"
+msgstr "Bestätigung"
 
 #: ../qml/components/WizardAccountsPage.qml:45
 msgid ""
@@ -341,30 +342,30 @@ msgid ""
 "Here you can add the accounts you want to work with. Don't worry you can add "
 "more accounts later."
 msgstr ""
-"Chancho allows you to track the expenses and incomes in several accounts. "
-"Here you can add the accounts you want to work with. Don't worry you can add "
-"more accounts later."
+"Mit Chancho können Sie ihr Einkommen und ihre Ausgaben mit verschiedenen Konten verfolgen. "
+"Hier können Sie ein Konto erstellen. Keine Sorge Sie können nachher "
+"noch mehrere Konten erstellen."
 
 #: ../qml/components/WizardAccountsPage.qml:90
 msgid "New account"
-msgstr "New account"
+msgstr "Neuen Account"
 
 #: ../qml/components/WizardAccountsPage.qml:91
 msgid "Please add the details of the new account."
-msgstr "Please add the details of the new account."
+msgstr "Bitte fügen Sie dem Konto Informationen hinzu."
 
 #: ../qml/components/WizardAccountsPage.qml:101
 #: ../qml/components/WizardCategoriesPage.qml:139
 msgid "Remove"
-msgstr "Remove"
+msgstr "Entfernen"
 
 #: ../qml/components/WizardAccountsPage.qml:109
 msgid "Delete accounts"
-msgstr "Delete accounts"
+msgstr "Konto löschen"
 
 #: ../qml/components/WizardAccountsPage.qml:110
 msgid "Do you want to delete the selected accounts?"
-msgstr "Do you want to delete the selected accounts?"
+msgstr "Möchtest du das ausgewählte Konto löschen ?"
 
 #: ../qml/components/WizardCategoriesPage.qml:45
 msgid ""
@@ -372,42 +373,41 @@ msgid ""
 "different types income an expense categories. The following are some of the "
 "predefined ones but you can add as many as you want."
 msgstr ""
-"Categories allow you to indentify the different transactions. There are two "
-"different types income an expense categories. The following are some of the "
-"predefined ones but you can add as many as you want."
+"Mit Kategorien können Sie die verschiedenen Überweisungen eingliedern. "
+"Es gibt zwei verschiedene Arten von Überweisungen Einkommen und Ausgaben, "
+"im folgenden sehen Sie einige vordefiniert Beispiele."
 
 #: ../qml/components/WizardCategoriesPage.qml:147
 msgid "Delete categories"
-msgstr "Delete categories"
+msgstr "Kategorien löschen"
 
 #: ../qml/components/WizardCategoriesPage.qml:148
 msgid "Do you want to delete the selected categories?"
-msgstr "Do you want to delete the selected categories?"
+msgstr "Möchten Sie die ausgewählten Kategorien löschen?"
 
 #: ../qml/components/WizardLastPage.qml:46
 msgid ""
 "You are nearly done! Bellow you can find the accounts and categories you "
 "will have. Are you happy with them?"
 msgstr ""
-"You are nearly done! Bellow you can find the accounts and categories you "
-"will have. Are you happy with them?"
+"Sie sind fast fertig! Unten finden Sie die Konten und Kategorien, "
+"die Sie haben werden. Sind sie zufrieden?"
 
 #: ../qml/components/WizardLastPage.qml:53
 msgid "Accounts:"
-msgstr "Accounts:"
+msgstr "Konten:"
 
 #: ../qml/components/WizardLastPage.qml:147
 msgid "I'm ready"
-msgstr "I'm ready"
+msgstr "Ich bin fertig"
 
 #: ../qml/components/WizardLastPage.qml:157
 msgid "Init Error"
-msgstr "Init Error"
+msgstr "Anfangs Fehler"
 
 #: ../qml/components/WizardLastPage.qml:158
 msgid ""
 "Make sure that you have added at least one account and a category of each "
 "type."
 msgstr ""
-"Make sure that you have added at least one account and a category of each "
-"type."
+"Stellen Sie sicher, dass Sie mindestens ein Konto und eine Kategorie von jeder Art hinzugefügt haben."
