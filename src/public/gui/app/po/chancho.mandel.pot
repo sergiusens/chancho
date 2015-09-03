@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-03 12:44+0200\n"
+"POT-Creation-Date: 2015-09-03 17:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgid "Bills"
 msgstr ""
 
 #: ../qml/MainWindow.qml:127
-#: ../qml/components/recurrent_transactions/Page.qml:44
+#: ../qml/components/recurrent_transactions/Page.qml:48
 msgid "Recurrent Transactions"
 msgstr ""
 
@@ -258,6 +258,7 @@ msgid "Expense categories:"
 msgstr ""
 
 #: ../qml/components/categories/StatsPage.qml:126
+#: ../qml/components/recurrent_transactions/Page.qml:80
 #: ../qml/components/transactions/Page.qml:139
 msgid "No entries were found!"
 msgstr ""
