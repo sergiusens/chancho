@@ -253,7 +253,7 @@ Book::generatedTransactions(QObject* recurrentTransactionObj) {
         }
     }
     LOG(INFO) << "Recurrent tran is null";
-    return nullptr;
+    return new models::GeneratedTransactions(new qml::RecurrentTransaction(), _book);
 }
 
 int

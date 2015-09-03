@@ -38,6 +38,12 @@ Page {
 
    title: i18n.tr("Generated Transactions")
 
+   onRecurrentTransactionChanged: {
+       console.log("New recurrent transaction was set.");
+       generatedList.model.recurrentTransaction = recurrentTransaction;
+       console.log("Transactions must have been updated.");
+   }
+
    ColumnLayout {
        anchors.fill: parent
        anchors.margins: units.gu(2) /* two unit so that we have the same as the main page. */

@@ -133,6 +133,20 @@ GeneratedTransactions::headerData(int section, Qt::Orientation orientation, int 
         return QString("Row %1").arg(section);
 }
 
+QObject*
+GeneratedTransactions::getRecurrentTransaction() {
+    return new qml::RecurrentTransaction(_tran);
+}
+
+void
+GeneratedTransactions::setRecurrentTransaction(QObject* recurrent) {
+    auto reccurrentModel = qobject_cast<qml::RecurrentTransaction *>(recurrent);
+    _tran = reccurrentModel->getTransaction();
+    // let the system know we need to recalculate the transactions
+    beginResetModel();
+    endResetModel();
+}
+
 }
 
 }

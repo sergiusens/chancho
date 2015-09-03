@@ -40,6 +40,7 @@ namespace models {
 
 class GeneratedTransactions : public QAbstractListModel {
     Q_OBJECT
+    Q_PROPERTY(QObject* recurrentTransaction READ getRecurrentTransaction WRITE setRecurrentTransaction NOTIFY recurrentTransactionChanged)
 
     friend class com::chancho::qml::Book;
 
@@ -54,6 +55,11 @@ class GeneratedTransactions : public QAbstractListModel {
     QVariant data(int row, int role) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    QObject* getRecurrentTransaction();
+    void setRecurrentTransaction(QObject* recurrent);
+
+ signals:
+    void recurrentTransactionChanged(QObject*);
 
  protected:
     GeneratedTransactions(BookPtr book, QObject* parent = 0);
