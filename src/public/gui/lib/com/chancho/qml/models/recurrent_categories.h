@@ -41,6 +41,7 @@ namespace models {
 
 class RecurrentCategories : public QAbstractListModel {
     Q_OBJECT
+    Q_PROPERTY(int count READ getCount NOTIFY countChanged)
 
     friend class com::chancho::qml::Book;
 
@@ -54,6 +55,11 @@ class RecurrentCategories : public QAbstractListModel {
     QVariant data(int row, int role) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
+    int getCount() const;
+
+ signals:
+    void countChanged(int);
 
  protected:
     RecurrentCategories(BookPtr book, QObject* parent = 0);
