@@ -45,8 +45,8 @@ class RecurrentTransaction {
      public:
         enum class Defaults {
            DAILY,
-           MONTHLY,
            WEEKLY,
+           MONTHLY,
            OTHER
         };
 
@@ -60,16 +60,18 @@ class RecurrentTransaction {
         QDate startDate = QDate();  // the date when we started repeating
         QDate lastGenerated = QDate();  // last time we added a transaction in the db, needed to not recreate
         QDate endDate = QDate();  // shall we stop at some date
-        boost::optional<int> occurrences;  // shall we stop afater a number of times
+        boost::optional<int> occurrences;  // shall we stop after a number of times
+
+        virtual boost::optional<int> numberOfDays() const;
+        virtual boost::optional<Recurrence::Defaults> defaults() const;
 
      protected:
         virtual int ocurrencesPassed();
         virtual QList<QDate> generateMissingDates();
 
-
      private:
-        boost::optional<int> _numberOfDays;
-        boost::optional<Recurrence::Defaults> _defaults;
+        boost::optional<int> _numberOfDays = boost::none;
+        boost::optional<Recurrence::Defaults> _defaults = boost::none;
     };
 
     typedef std::shared_ptr<Recurrence> RecurrencePtr;
@@ -87,6 +89,9 @@ class RecurrentTransaction {
    // optional so that we know if a category was added to the db or not
    QUuid _dbId;
 
+   // allow a way to get the init transaction id, mainly for tests
+   QUuid initTransactionId();
+
 };
 
 typedef std::shared_ptr<RecurrentTransaction> RecurrentTransactionPtr;
@@ -95,4 +100,5 @@ typedef std::shared_ptr<RecurrentTransaction> RecurrentTransactionPtr;
 
 }
 
+Q_DECLARE_METATYPE(com::chancho::RecurrentTransaction::RecurrencePtr)
 Q_DECLARE_METATYPE(com::chancho::RecurrentTransaction::Recurrence::Defaults)

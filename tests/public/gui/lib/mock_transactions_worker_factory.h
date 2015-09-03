@@ -81,8 +81,8 @@ class WorkerFactory : public ta::WorkerFactory {
  public:
     WorkerFactory() : ta::WorkerFactory() {}
 
-    MOCK_METHOD7(storeTransaction, w::WorkerThread<ta::SingleStore>*(qml::Book*, chancho::AccountPtr, chancho::CategoryPtr, QDate,
-            double, QString, QString));
+    MOCK_METHOD8(storeTransaction, w::WorkerThread<ta::SingleStore>*(qml::Book*, chancho::AccountPtr, chancho::CategoryPtr, QDate,
+            double, QString, QString, QVariantMap));
     MOCK_METHOD2(removeTransaction, w::WorkerThread<ta::SingleRemove>*(qml::Book*, chancho::TransactionPtr));
     MOCK_METHOD8(updateTransaction, w::WorkerThread<ta::SingleUpdate>*(qml::Book*, chancho::TransactionPtr, chancho::AccountPtr,
             chancho::CategoryPtr, QDate, QString, QString, double));

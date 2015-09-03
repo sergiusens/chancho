@@ -89,34 +89,46 @@ set(QML_SOURCES
     qml/components/images/chancho_logo.png
     qml/components/images/chancho_wordmark.png
     qml/MainWindow.qml
-    qml/components/AccountComponent.qml
-    qml/components/AccountForm.qml
-    qml/components/AccountsPage.qml
-    qml/components/BillingPerDay.qml
-    qml/components/CategoriesPage.qml
-    qml/components/CategoryComponent.qml
-    qml/components/CategoryForm.qml
-    qml/components/CategoryStatsPage.qml
+    qml/components/accounts/Account.qml
+    qml/components/accounts/Edit.qml
+    qml/components/accounts/Form.qml
+    qml/components/accounts/New.qml
+    qml/components/accounts/Page.qml
+    qml/components/accounts/js/accounts.js
+    qml/components/categories/Category.qml
+    qml/components/categories/Edit.qml
+    qml/components/categories/Form.qml
+    qml/components/categories/New.qml
+    qml/components/categories/Page.qml
+    qml/components/categories/StatsPage.qml
+    qml/components/categories/js/categories.js
+    qml/components/recurrent_transactions/CategoryHeader.qml
+    qml/components/recurrent_transactions/GeneratedTransaction.qml
+    qml/components/recurrent_transactions/GeneratedTransactionsPage.qml
+    qml/components/recurrent_transactions/RecurrentTransaction.qml
+    qml/components/recurrent_transactions/Page.qml
+    qml/components/recurrent_transactions/RecurrentTransactionsPerCategory.qml
+    qml/components/transactions/BillingPerDay.qml
+    qml/components/transactions/DateHeader.qml
+    qml/components/transactions/Edit.qml
+    qml/components/transactions/Form.qml
+    qml/components/transactions/New.qml
+    qml/components/transactions/Page.qml
+    qml/components/transactions/Transaction.qml
+    qml/components/wizard/WelcomeWizard.qml
+    qml/components/wizard/AccountsPage.qml
+    qml/components/wizard/CategoriesPage.qml
+    qml/components/wizard/LastPage.qml
+    qml/components/wizard/js/accounts_wizard.js
+    qml/components/wizard/js/categories_wizard.js
+    qml/components/wizard/js/last_page_wizard.js
     qml/components/ColorChooser.qml
-    qml/components/DateHeaderComponent.qml
-    qml/components/EditAccount.qml
-    qml/components/EditCategory.qml
-    qml/components/EditTransaction.qml
-    qml/components/MainPage.qml
-    qml/components/NewAccount.qml
-    qml/components/NewCategory.qml
-    qml/components/NewTransaction.qml
     qml/components/PageWithBottomEdge.qml
     qml/components/SplashScreen.qml
-    qml/components/TransactionComponent.qml
-    qml/components/TransactionForm.qml
     qml/components/Walkthrough.qml
-    qml/components/WelcomeWizard.qml
-    qml/components/WizardAccountsPage.qml
-    qml/components/WizardCategoriesPage.qml
-    qml/components/WizardLastPage.qml
     qml/components/dialogs/ConfirmationDialog.qml
     qml/components/dialogs/ErrorDialog.qml
+    qml/components/dialogs/RecurrenceDialog.qml
     qml/components/dialogs/WizardNewAccountDialog.qml
     qml/components/dialogs/WizardNewCategoryDialog.qml
     qml/components/dialogs/js/accounts_wizard.js
@@ -124,11 +136,6 @@ set(QML_SOURCES
     qml/components/jbQuick/Chart/qmldir
     qml/components/jbQuick/Chart/QChart.js
     qml/components/jbQuick/Chart/QChart.qml
-    qml/components/js/accounts.js
-    qml/components/js/accounts_wizard.js
-    qml/components/js/categories.js
-    qml/components/js/categories_wizard.js
-    qml/components/js/last_page_wizard.js
     qml/components/models/CategoryTypeModel.qml
     qml/components/models/DefaultColors.qml
     qml/components/models/DefaultExpenseModel.qml

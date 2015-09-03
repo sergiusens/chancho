@@ -39,6 +39,7 @@ class Category;
 namespace models {
 
 class Day;
+class GeneratedTransactions;
 
 }
 
@@ -53,8 +54,10 @@ class Transaction : public QObject {
     Q_PROPERTY(QString contents READ getContents WRITE setContents NOTIFY contentsChanged)
     Q_PROPERTY(QString memo READ getMemo WRITE setMemo NOTIFY memoChanged)
     Q_PROPERTY(com::chancho::qml::Book::TransactionType type READ getType)
+    Q_PROPERTY(bool isRecurrent READ getIsRecurrent WRITE setIsRecurrent NOTIFY isRecurrentChanged)
 
     friend class models::Day;
+    friend class models::GeneratedTransactions;
     friend class qml::Book;
 
  public:
@@ -85,6 +88,9 @@ class Transaction : public QObject {
     QObject* getCategoryModel();
     void setCategoryModel(QObject* category);
 
+    bool getIsRecurrent();
+    void setIsRecurrent(bool recurrent);
+
  signals:
     void accountChanged(QString account);
     void amountChanged(double amount);
@@ -92,6 +98,7 @@ class Transaction : public QObject {
     void dateChanged(QDate date);
     void contentsChanged(QString contents);
     void memoChanged(QString memo);
+    void isRecurrentChanged(bool recurrent);
 
  protected:
     Transaction(TransactionPtr transactionPtr, QObject* parent=0);

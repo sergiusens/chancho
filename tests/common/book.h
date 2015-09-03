@@ -39,6 +39,7 @@ class MockBook: public com::chancho::Book {
     MOCK_METHOD1(store, void(CategoryPtr));
     MOCK_METHOD1(store, void(QList<CategoryPtr>));
     MOCK_METHOD1(store, void(TransactionPtr));
+    MOCK_METHOD1(store, void(RecurrentTransactionPtr));
     MOCK_METHOD1(remove, void(AccountPtr));
     MOCK_METHOD1(remove, void(CategoryPtr));
     MOCK_METHOD1(remove, void(TransactionPtr));
@@ -51,8 +52,10 @@ class MockBook: public com::chancho::Book {
     MOCK_METHOD4(transactions, QList<TransactionPtr>(int, int, int, int));
     MOCK_METHOD3(transactions, QList<TransactionPtr>(int, int, int));
     MOCK_METHOD5(transactions, QList<TransactionPtr>(int, int, int, int, int));
+    MOCK_METHOD3(transactions, QList<TransactionPtr>(com::chancho::RecurrentTransactionPtr, boost::optional<int>, boost::optional<int>));
     MOCK_METHOD2(numberOfTransactions, int(int, int));
     MOCK_METHOD3(numberOfTransactions, int(int, int, int));
+    MOCK_METHOD1(numberOfTransactions, int(com::chancho::RecurrentTransactionPtr));
     MOCK_METHOD3(transactions, QList<TransactionPtr>(CategoryPtr, boost::optional<int>, boost::optional<int>));
     MOCK_METHOD1(transactions, QList<TransactionPtr>(AccountPtr));
     MOCK_METHOD3(monthsWithTransactions, QList<int>(int, boost::optional<int>, boost::optional<int>));
@@ -64,6 +67,12 @@ class MockBook: public com::chancho::Book {
     MOCK_METHOD3(incomeForDay, double(int, int, int));
     MOCK_METHOD3(expenseForDay, double(int, int, int));
     MOCK_METHOD0(generateRecurrentTransactions, void());
+    MOCK_METHOD2(recurrentTransactions, QList<RecurrentTransactionPtr>(boost::optional<int>, boost::optional<int>));
+    MOCK_METHOD3(recurrentTransactions, QList<RecurrentTransactionPtr>(CategoryPtr, boost::optional<int>, boost::optional<int>));
+    MOCK_METHOD0(numberOfRecurrentTransactions, int());
+    MOCK_METHOD1(numberOfRecurrentTransactions, int(CategoryPtr));
+    MOCK_METHOD2(recurrentCategories, QList<CategoryPtr>(boost::optional<int> limit, boost::optional<int> offset));
+    MOCK_METHOD0(numberOfRecurrentCategories, int());
 };
 
 }

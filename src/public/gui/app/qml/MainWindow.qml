@@ -49,7 +49,7 @@ MainView {
         var accounts = Book.accounts()
         if (accounts.length == 0) {
             pagestack.push(tabsComponent);
-            pagestack.push(Qt.resolvedUrl("components/WelcomeWizard.qml"));
+            pagestack.push(Qt.resolvedUrl("components/wizard/WelcomeWizard.qml"));
         } else {
             splashComponent.operationText = i18n.tr("Updating database");
             pagestack.push(tabsComponent);
@@ -119,17 +119,25 @@ MainView {
                 page: Loader {
                     parent: mainTab
                     anchors.fill: parent
-                    source: (tabs.selectedTab === mainTab) ? Qt.resolvedUrl("components/MainPage.qml") : ""
+                    source: (tabs.selectedTab === mainTab) ? Qt.resolvedUrl("components/transactions/Page.qml") : ""
                 }
-            } // tab
-
+            }
+            Tab {
+                id: recurrentTab
+                title: i18n.tr("Recurrent Transactions")
+                page: Loader {
+                    parent: recurrentTab
+                    anchors.fill: parent
+                    source: (tabs.selectedTab === recurrentTab) ? Qt.resolvedUrl("components/recurrent_transactions/Page.qml") : ""
+                }
+            }
             Tab {
                 id: statsTab
                 title: i18n.tr("Stats")
                 page: Loader {
                     parent: statsTab
                     anchors.fill: parent
-                    source: (tabs.selectedTab === statsTab) ? Qt.resolvedUrl("components/CategoryStatsPage.qml") : ""
+                    source: (tabs.selectedTab === statsTab) ? Qt.resolvedUrl("components/categories/StatsPage.qml") : ""
                 }
             }
             Tab {
@@ -138,7 +146,7 @@ MainView {
                 page: Loader {
                     parent: accountsTab
                     anchors.fill: parent
-                    source: (tabs.selectedTab === accountsTab) ? Qt.resolvedUrl("components/AccountsPage.qml") : ""
+                    source: (tabs.selectedTab === accountsTab) ? Qt.resolvedUrl("components/accounts/Page.qml") : ""
                 }
             }
 
@@ -148,7 +156,7 @@ MainView {
                 page: Loader {
                     parent: categoriesTab
                     anchors.fill: parent
-                    source: (tabs.selectedTab === categoriesTab) ? Qt.resolvedUrl("components/CategoriesPage.qml") : ""
+                    source: (tabs.selectedTab === categoriesTab) ? Qt.resolvedUrl("components/categories/Page.qml") : ""
                 }
             }
         }// tabs

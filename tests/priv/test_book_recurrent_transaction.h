@@ -69,6 +69,20 @@ class TestBookRecurrentTransaction : public BaseTestCase {
     void testRemoveStoredTransaction();
     void testRemoveMissingTransaction();
     void testGenerateRecurrentTransactions();
+    void testNumberOfRecurrentTransactions_data();
+    void testNumberOfRecurrentTransactions();
+    void testRecurrentTransactionsForCategory_data();
+    void testRecurrentTransactionsForCategory();
+    void testNumberOfRecurrentTransactionsCategory_data();
+    void testNumberOfRecurrentTransactionsCategory();
+    void testCategoriesWithRecurrent_data();
+    void testCategoriesWithRecurrent();
+    void testCategoriesWithRecurrentLimit_data();
+    void testCategoriesWithRecurrentLimit();
+    void testNumberOfRecurrentCategories_data();
+    void testNumberOfRecurrentCategories();
+    void testTransactionsFromRecurrent();
+    void testTransactionsFromRecurrentCount();
 };
 
 Q_DECLARE_METATYPE(QList<com::chancho::RecurrentTransactionPtr>)

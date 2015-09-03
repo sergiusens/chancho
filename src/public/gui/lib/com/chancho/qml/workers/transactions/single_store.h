@@ -26,6 +26,7 @@
 #include <QObject>
 #include <QString>
 #include <QThread>
+#include <QVariantMap>
 
 #include <com/chancho/book.h>
 
@@ -44,8 +45,12 @@ namespace transactions {
 class SingleStore : public workers::Worker {
  public:
     SingleStore(BookPtr book, chancho::AccountPtr account, chancho::CategoryPtr category, QDate date,
-                                 double amount, QString contents, QString memo);
+                double amount, QString contents, QString memo, QVariantMap recurrence=QVariantMap());
     void run() override;
+
+ private:
+    void storeTransaction();
+    void storeRecurrentTransaction();
 
  private:
     BookPtr _book;
@@ -55,6 +60,7 @@ class SingleStore : public workers::Worker {
     double _amount = 0;
     QString _contents = QString::null;
     QString _memo = QString::null;
+    QVariantMap _recurrence;
 };
 
 }

@@ -34,7 +34,7 @@ namespace sys = com::chancho::system;
 
 namespace {
     const QString SELECT_TRANSACTION_QUERY =
-            "SELECT amount, account, category, day, month, year, contents, memo FROM Transactions WHERE uuid=:uuid";
+            "SELECT amount, account, category, day, month, year, contents, memo, is_recurrent FROM Transactions WHERE uuid=:uuid";
     const QString SELECT_ACCOUNT_QUERY = "SELECT name, amount, memo FROM Accounts WHERE uuid=:uuid";
 }
 
@@ -124,6 +124,7 @@ TestBookTransaction::testStoreTransaction() {
     QCOMPARE(query->value("year").toInt(), date.year());
     QCOMPARE(query->value("contents").toString(), contents);
     QCOMPARE(query->value("memo").toString(), memo);
+    QCOMPARE(query->value("is_recurrent").toInt(), 0);
 
     // do assert that the account was updated
     query->prepare(SELECT_ACCOUNT_QUERY);
@@ -219,6 +220,7 @@ TestBookTransaction::testUpdateTransaction() {
     QCOMPARE(query->value("year").toInt(), date.year());
     QCOMPARE(query->value("contents").toString(), contents);
     QCOMPARE(query->value("memo").toString(), memo);
+    QCOMPARE(query->value("is_recurrent").toInt(), 0);
 
     // do assert that the account was updated
     query->prepare(SELECT_ACCOUNT_QUERY);
@@ -334,6 +336,7 @@ TestBookTransaction::testRemoveTransaction() {
     QCOMPARE(query->value("year").toInt(), date.year());
     QCOMPARE(query->value("contents").toString(), contents);
     QCOMPARE(query->value("memo").toString(), memo);
+    QCOMPARE(query->value("is_recurrent").toInt(), 0);
 
     // do assert that the account was updated
     query->prepare(SELECT_ACCOUNT_QUERY);

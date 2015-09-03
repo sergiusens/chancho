@@ -54,6 +54,16 @@ RecurrentTransaction::Recurrence::Recurrence(Recurrence::Defaults n, QDate s, bo
 
 }
 
+boost::optional<int>
+RecurrentTransaction::Recurrence::numberOfDays() const {
+    return _numberOfDays;
+}
+
+boost::optional<RecurrentTransaction::Recurrence::Defaults>
+RecurrentTransaction::Recurrence::defaults() const {
+    return _defaults;
+}
+
 int
 RecurrentTransaction::Recurrence::ocurrencesPassed() {
     // simply, do the reverse of the generateMissingDate, we go from last to start
@@ -177,6 +187,11 @@ RecurrentTransaction::RecurrentTransaction(TransactionPtr t, RecurrencePtr r)
 bool
 RecurrentTransaction::wasStoredInDb() const {
     return !_dbId.isNull();
+}
+
+QUuid
+RecurrentTransaction::initTransactionId() {
+    return transaction->_dbId;
 }
 
 }

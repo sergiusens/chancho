@@ -25,7 +25,10 @@
 #include "models/accounts.h"
 #include "models/categories.h"
 #include "models/day.h"
+#include "models/generated_transactions.h"
 #include "models/month.h"
+#include "models/recurrent_categories.h"
+#include "models/recurrent_transactions.h"
 
 #include "workers/accounts.h"
 #include "workers/categories.h"
@@ -33,6 +36,7 @@
 
 #include "account.h"
 #include "transaction.h"
+#include "recurrent_transaction.h"
 
 #include "book.h"
 
@@ -154,7 +158,7 @@ Book::generateRecurrentTransactions() {
 
 bool
 Book::storeTransaction(QObject* account, QObject* category, QDate date, double amount, QString contents,
-        QString memo) {
+        QString memo, QVariantMap recurrence) {
     auto acc = qobject_cast<qml::Account*>(account);
     if (acc == nullptr) {
         return false;
@@ -165,9 +169,10 @@ Book::storeTransaction(QObject* account, QObject* category, QDate date, double a
         return false;
     }
 
+    DLOG(INFO) << __PRETTY_FUNCTION__ << " " << acc->getMemo().toStdString() << " " << cat->getName().toStdString()
+        << " " << amount << " " << contents.toStdString() << " " << memo.toStdString();
     auto worker = _transactionWorkersFactory->storeTransaction(this, acc->getAccount(), cat->getCategory(), date,
-                                                               amount, contents, memo);
-    LOG(INFO) << "Run thread";
+                                                               amount, contents, memo, recurrence);
     worker->start();
     return true;
 }
@@ -217,6 +222,38 @@ Book::updateTransaction(QObject* tranObj, QObject* accObj, QObject* catObj, QDat
     auto worker = _transactionWorkersFactory->updateTransaction(this, tran, acc, cat, date, contents, memo, amount);
     worker->start();
     return true;
+}
+
+QObject*
+Book::recurrentTransactionsModel(QObject* category) {
+    CategoryPtr cat;
+
+    auto catModel = qobject_cast<qml::Category*>(category);
+    if (catModel == nullptr) {
+        LOG(ERROR) << "Method called with wrong object type as a category model";
+        return nullptr;
+    }
+    auto model = new models::RecurrentTransactions(catModel, _book);
+    return model;
+}
+
+QObject*
+Book::recurrentCategoriesModel() {
+    auto model = new models::RecurrentCategories(_book);
+    return model;
+}
+
+QObject*
+Book::generatedTransactions(QObject* recurrentTransactionObj) {
+    if (recurrentTransactionObj != nullptr) {
+        auto reccurrentModel = qobject_cast<qml::RecurrentTransaction *>(recurrentTransactionObj);
+        if (reccurrentModel == nullptr) {
+            auto model = new models::GeneratedTransactions(reccurrentModel, _book);
+            return model;
+        }
+    }
+    LOG(INFO) << "Recurrent tran is null";
+    return new models::GeneratedTransactions(new qml::RecurrentTransaction(), _book);
 }
 
 int

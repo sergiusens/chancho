@@ -47,12 +47,13 @@ class WorkerFactory {
     WorkerFactory() = default;
     virtual ~WorkerFactory() = default;
 
-    virtual WorkerThread<SingleStore>* storeTransaction(qml::Book* book, chancho::AccountPtr account, chancho::CategoryPtr category,
-                                          QDate date, double amount, QString contents, QString memo);
+    virtual WorkerThread<SingleStore>* storeTransaction(qml::Book* book, chancho::AccountPtr account,
+                                                        chancho::CategoryPtr category, QDate date, double amount,
+                                                        QString contents, QString memo, QVariantMap recurrence);
     virtual WorkerThread<SingleRemove>* removeTransaction(qml::Book* book, chancho::TransactionPtr trans);
-    virtual WorkerThread<SingleUpdate>* updateTransaction(qml::Book* book, chancho::TransactionPtr trans, chancho::AccountPtr acc,
-                                            chancho::CategoryPtr cat, QDate date, QString contents, QString memo,
-                                            double amount);
+    virtual WorkerThread<SingleUpdate>* updateTransaction(qml::Book* book, chancho::TransactionPtr trans,
+                                                          chancho::AccountPtr acc, chancho::CategoryPtr cat, QDate date,
+                                                          QString contents, QString memo, double amount);
     virtual WorkerThread<GenerateRecurrent>* generateRecurrentTransactions(qml::Book* book);
 };
 

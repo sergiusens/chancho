@@ -1,11 +1,9 @@
 set(PRIVATE_TESTS
     test_account
-    test_accounts_model
     test_book
-    test_categories_model
     test_category
-    test_day_model
-    test_month_model
+    test_recurrent_transaction
+    test_transaction
 )
 
 foreach(test ${PRIVATE_TESTS})
@@ -59,3 +57,4 @@ foreach(test ${PRIVATE_TESTS})
 endforeach(test)
 
 add_subdirectory(workers)
+add_subdirectory(models)

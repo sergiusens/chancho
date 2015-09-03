@@ -101,9 +101,10 @@ class UpdateTransactionExecutor : public QObject {
 
 WorkerThread<SingleStore>*
 WorkerFactory::storeTransaction(qml::Book* book, chancho::AccountPtr account, chancho::CategoryPtr category,
-                                QDate date, double amount, QString contents, QString memo) {
+                                QDate date, double amount, QString contents, QString memo, QVariantMap recurrence) {
 
-    auto worker = new WorkerThread<SingleStore>(new SingleStore(book->_book, account, category, date, amount, contents, memo));
+    auto worker = new WorkerThread<SingleStore>(new SingleStore(book->_book, account, category, date, amount,
+                                                                contents, memo, recurrence));
 
     CHECK(QObject::connect(worker->implementation(), &SingleStore::success, book, &Book::accountUpdated))
           << "Could not connect to the success signal!";

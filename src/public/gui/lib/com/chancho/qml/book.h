@@ -79,6 +79,15 @@ class Book : public QObject {
 
     Q_ENUMS(TransactionType)
 
+    enum RecurrenceType {
+        DAILY,
+        WEEKLY,
+        MONTHLY,
+        OTHER
+    };
+
+    Q_ENUMS(RecurrenceType)
+
     explicit Book(QObject* parent=0);
     Book(BookPtr book, QObject* parent=0);
 
@@ -93,10 +102,13 @@ class Book : public QObject {
     Q_INVOKABLE void generateRecurrentTransactions();
 
     Q_INVOKABLE bool storeTransaction(QObject* account, QObject* category, QDate date, double amount,
-            QString contents, QString memo);
+            QString contents, QString memo, QVariantMap recurrence=QVariantMap());
     Q_INVOKABLE bool removeTransaction(QObject* transaction);
     Q_INVOKABLE bool updateTransaction(QObject* transaction, QObject* accModel, QObject* catModel, QDate date,
                                        QString contents, QString memo, double amount);
+    Q_INVOKABLE QObject* recurrentTransactionsModel(QObject* category);
+    Q_INVOKABLE QObject* recurrentCategoriesModel();
+    Q_INVOKABLE QObject* generatedTransactions(QObject* recurrentTransaction);
 
     Q_INVOKABLE int numberOfCategories(TransactionType type);
     Q_INVOKABLE QObject* categoriesModel();
@@ -146,3 +158,4 @@ class Book : public QObject {
 }
 
 Q_DECLARE_METATYPE(com::chancho::qml::Book::TransactionType)
+Q_DECLARE_METATYPE(com::chancho::qml::Book::RecurrenceType)

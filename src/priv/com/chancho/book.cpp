@@ -65,8 +65,10 @@ namespace {
         "year INT, "\
         "contents TEXT, "\
         "memo TEXT, "\
+        "is_recurrent INT, "\
         "FOREIGN KEY(account) REFERENCES Accounts(uuid), "\
         "FOREIGN KEY(category) REFERENCES Categories(uuid))";  // amounts are stored in text so that we can used the most precise number
+    const QString ALTER_TRANSACTION_TABLE = "ALTER TABLE Transactions ADD COLUMN is_recurrent int";
     const QString RECURRENT_TRANSACTION_TABLE = "CREATE TABLE IF NOT EXISTS RecurrentTransactions("\
         "uuid VARCHAR(40) PRIMARY KEY, "\
         "amount TEXT,"\
@@ -88,6 +90,12 @@ namespace {
         "occurrences INT, "\
         "FOREIGN KEY(account) REFERENCES Accounts(uuid), "\
         "FOREIGN KEY(category) REFERENCES Categories(uuid))";  // amounts are stored in text so that we can used the most precise number
+    const QString RECURRENT_TRANSACTIONS_RELATIONS_TABLE = "CREATE TABLE IF NOT EXISTS RecurrentTransactionRelations("\
+        "recurrent_transaction VARCHAR(40),"\
+        "generated_transaction VARCHAR(40),"\
+        "FOREIGN KEY(recurrent_transaction) REFERENCES RecurrentTransactions(uuid),"\
+        "FOREIGN KEY(generated_transaction) REFERENCES Transactions(uuid),"\
+        "PRIMARY KEY(recurrent_transaction, generated_transaction))";
     const QString TRANSACTION_INSERT_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionInsert AFTER INSERT ON Transactions "\
         "BEGIN "\
         "UPDATE Accounts SET amount=AddStringNumbers(amount, new.amount) WHERE uuid=new.account; "\
@@ -104,6 +112,7 @@ namespace {
     const QString TRANSACTION_DELETE_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionDelete AFTER DELETE ON Transactions "\
         "BEGIN "\
         "UPDATE Accounts SET amount=SubtractStringNumbers(amount, old.amount) WHERE uuid=old.account; "\
+        "DELETE FROM RecurrentTransactionRelations WHERE generated_transaction=old.uuid; "\
         "END";
     const QString ACCOUNT_DELETE_TRIGGER = "CREATE TRIGGER DeleteTransactionsOnAccountDelete BEFORE DELETE ON Accounts "\
         "BEGIN "\
@@ -116,6 +125,14 @@ namespace {
     const QString CATEGORY_UPDATE_DIFF_TYPE_TRIGGER = "CREATE TRIGGER UpdateTransactionsOnCategoryTypeUpdate AFTER UPDATE ON Categories "\
         "WHEN old.type != new.type BEGIN "\
         "UPDATE Transactions SET amount=NegateStringNumber(amount) WHERE category=new.uuid;"
+        "END";
+    const QString RECURRENT_RELATIONS_DELETE_TRIGGER = "CREATE TRIGGER DeleteRecurrentRelationsOnDelete AFTER DELETE ON RecurrentTransactions "\
+        "BEGIN "\
+        "DELETE FROM RecurrentTransactionRelations WHERE recurrent_transaction=old.uuid; "\
+        "END";
+    const QString RECURRENT_RELATIONS_INSERT_TRIGGER = "CREATE TRIGGER UpdateRecurrentRelationsOnInsert AFTER INSERT ON RecurrentTransactionRelations "\
+        "BEGIN "\
+        "UPDATE Transactions SET is_recurrent=1 WHERE uuid=new.generated_transaction; "\
         "END";
     const QString TRANSACTION_MONTH_INDEX = "CREATE INDEX transaction_month_index ON Transactions(year, month);";
     const QString TRANSACTION_DAY_INDEX = "CREATE INDEX transaction_day_index ON Transactions(day, year, month);";
@@ -137,6 +154,8 @@ namespace {
         "endDay, endMonth, endYear, defaultType, numberDays, occurrences) "\
         "VALUES(:uuid, :amount, :account, :category, :contents, :memo, :startDay, :startMonth, :startYear, :lastDay, "\
         ":lastMonth, :lastYear, :endDay, :endMonth, :endYear, :defaultType, :numberDays, :occurrences)";
+    const QString INSERT_UPDATE_RECURRENT_TRANSACTION_RELATION = "INSERT OR REPLACE INTO RecurrentTransactionRelations("\
+        "recurrent_transaction, generated_transaction) VALUES(:recurrent_transaction, :generated_transaction)";
     const QString DELETE_ACCOUNT = "DELETE FROM Accounts WHERE uuid=:uuid";
     const QString DELETE_CHILD_CATEGORIES = "DELETE FROM Categories WHERE parent=:uuid";
     const QString DELETE_CATEGORY = "DELETE FROM Categories WHERE uuid=:uuid";
@@ -155,39 +174,58 @@ namespace {
         "WHERE type=:type ORDER BY name ASC LIMIT :limit OFFSET :offset";
     const QString SELECT_CATEGORIES_COUNT = "SELECT count(*) FROM Categories";
     const QString SELECT_CATEGORIES_COUNT_TYPE = "SELECT count(*) FROM Categories WHERE type=:type";
+    const QString SELECT_CATEGORIES_RECURRENT = "SELECT uuid, parent, name, type, color FROM Categories WHERE uuid IN "\
+        "(SELECT category from RecurrentTransactions GROUP BY category) ORDER BY name";
+    const QString SELECT_CATEGORIES_RECURRENT_LIMIT = "SELECT uuid, parent, name, type, color FROM Categories WHERE uuid IN "\
+        "(SELECT category from RecurrentTransactions GROUP BY category) ORDER BY name LIMIT :limit OFFSET :offset";
+    const QString SELECT_CATEGORIES_RECURRENT_COUNT = "SELECT count(*) FROM (SELECT category FROM "\
+        "RecurrentTransactions GROUP BY category)";
     const QString SELECT_TRANSACTIONS_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.month=:month AND t.year=:year ORDER BY t.year, t.month";
     const QString SELECT_TRANSACTIONS_MONTH_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset" ;
     const QString SELECT_TRANSACTIONS_COUNT = "SELECT count(uuid) FROM Transactions";
     const QString SELECT_TRANSACTIONS_MONTH_COUNT = "SELECT count(uuid) FROM Transactions "\
         "WHERE month=:month AND year=:year";
     const QString SELECT_TRANSACTIONS_DAY = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.day=:day AND t.month=:month AND t.year=:year ORDER BY t.day, t.year, t.month";
     const QString SELECT_TRANSACTIONS_DAY_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.day=:day AND t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset" ;
     const QString SELECT_TRANSACTIONS_DAY_COUNT = "SELECT count(uuid) FROM Transactions "\
         "WHERE day=:day AND month=:month AND year=:year";
     const QString SELECT_TRANSACTIONS_CATEGORY = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.category=:category ORDER BY t.year, t.month";
     const QString SELECT_TRANSACTIONS_CATEGORY_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.category=:category AND t.month=:month AND t.year=:year ORDER BY t.year, t.month";
     const QString SELECT_TRANSACTIONS_ACCOUNT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
-        "t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
         "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
         "WHERE t.account=:account ORDER BY t.year, t.month";
+    const QString SELECT_TRANSACTIONS_RECURRENT =  "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
+        "WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE "\
+        "recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month";
+    const QString SELECT_TRANSACTIONS_RECURRENT_LIMIT =  "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, "\
+        "t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t "\
+        "INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid "\
+        "WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE "\
+        "recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month LIMIT :limit OFFSET :offset";
+    const QString SELECT_RECURRENT_TRANSACTIONS_COUNT = "SELECT count(uuid) FROM RecurrentTransactions";
+    const QString SELECT_RECURRENT_TRANSACTIONS_CATEGORY_COUNT = "SELECT count(uuid) FROM RecurrentTransactions "\
+        "WHERE category=:category";
     const QString SELECT_RECURRENT_TRANSACTIONS = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo, "\
         "t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear, "\
         "t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount "\
@@ -198,6 +236,18 @@ namespace {
         "t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount "\
         "FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON "\
         "t.account = a.uuid LIMIT :limit OFFSET :offset";
+    const QString SELECT_RECURRENT_TRANSACTIONS_CATEGORY = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo, "\
+        "t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear, "\
+        "t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount "\
+        "FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON "\
+        "t.account = a.uuid WHERE t.category=:category";
+    const QString SELECT_RECURRENT_TRANSACTIONS_CATEGORY_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo, "\
+        "t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear, "\
+        "t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount "\
+        "FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON "\
+        "t.account = a.uuid WHERE t.category=:category LIMIT :limit OFFSET :offset";
+    const QString SELECT_GENERATED_TRANSACTIONS_RECURRENT_COUNT = "SELECT count(*) FROM RecurrentTransactionRelations WHERE "\
+        "recurrent_transaction=:recurrent_Transaction";
     const QString SELECT_MONTHS_WITH_TRANSACTIONS = "SELECT DISTINCT month FROM Transactions WHERE year=:year "\
         "ORDER BY month DESC";
     const QString SELECT_MONTHS_WITH_TRANSACTIONS_LIMIT = "SELECT DISTINCT month FROM Transactions WHERE year=:year "\
@@ -293,13 +343,36 @@ Book::initDatabse() {
 
     // all versions of the application do not have the recurrent transactions table
     bool needsRecurrenceUpdate = !tables.contains("recurrenttransactions", Qt::CaseInsensitive);
+    bool needsRecurrenceRelations = !tables.contains("recurrentTransactionrelations", Qt::CaseInsensitive);
 
     if (!hasToBeInit && needsRecurrenceUpdate) {
         db->transaction();
 
         bool success = true;
         auto query = db->createQuery();
+        success &= query->exec(ALTER_TRANSACTION_TABLE);
         success &= query->exec(RECURRENT_TRANSACTION_TABLE);
+        success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
+        success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
+        success &= query->exec(RECURRENT_RELATIONS_INSERT_TRIGGER);
+
+        if (success)
+            db->commit();
+        else
+            db->rollback();
+
+        if (!success)
+            LOG(ERROR) << "Could not update the chancho db " << db->lastError().text().toStdString();
+
+    } else if (!hasToBeInit && needsRecurrenceRelations) {
+        db->transaction();
+
+        bool success = true;
+        auto query = db->createQuery();
+        success &= query->exec(ALTER_TRANSACTION_TABLE);
+        success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
+        success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
+        success &= query->exec(RECURRENT_RELATIONS_INSERT_TRIGGER);
 
         if (success)
             db->commit();
@@ -321,10 +394,13 @@ Book::initDatabse() {
         success &= query->exec(CATEGORIES_TABLE);
         success &= query->exec(TRANSACTION_TABLE);
         success &= query->exec(RECURRENT_TRANSACTION_TABLE);
+        success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
         success &= query->exec(TRANSACTION_INSERT_TRIGGER);
         success &= query->exec(TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER);
         success &= query->exec(TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER);
         success &= query->exec(TRANSACTION_DELETE_TRIGGER);
+        success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
+        success &= query->exec(RECURRENT_RELATIONS_INSERT_TRIGGER);
         success &= query->exec(CATEGORY_DELETE_TRIGGER);
         success &= query->exec(ACCOUNT_DELETE_TRIGGER);
         success &= query->exec(CATEGORY_UPDATE_DIFF_TYPE_TRIGGER);
@@ -588,6 +664,7 @@ Book::store(TransactionPtr tran) {
 
 void
 Book::store(QList<TransactionPtr> trans) {
+    DLOG(INFO) << __PRETTY_FUNCTION__;
     BookLock dbLock(this);
 
     if (!dbLock.opened()) {
@@ -615,7 +692,7 @@ Book::store(QList<TransactionPtr> trans) {
 
 bool
 Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
-
+    DLOG(INFO) << __PRETTY_FUNCTION__;
     // usually accounts and categories must be stored before storing a transactions
     if (recurrent->transaction->account && !recurrent->transaction->account->wasStoredInDb()) {
         _lastError = "An account must be stored before adding a transaction to it.";
@@ -645,9 +722,16 @@ Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
     auto query = _db->createQuery();
     query->prepare(INSERT_UPDATE_RECURRENT_TRANSACTION);
     query->bindValue(":uuid", recurrent->_dbId.toString());
-    query->bindValue(":amount", QString::number(recurrent->transaction->amount));
-    query->bindValue(":account", recurrent->transaction->account->_dbId);
-    query->bindValue(":category", recurrent->transaction->category->_dbId);
+
+    // amounts are positive yet if it is an expense we must multiple by -1 to update the account accordingly
+    if (recurrent->transaction->type() == Category::Type::EXPENSE && recurrent->transaction->amount > 0) {
+        query->bindValue(":amount", QString::number(-1 * recurrent->transaction->amount));
+    } else {
+        query->bindValue(":amount", QString::number(recurrent->transaction->amount));
+    }
+
+    query->bindValue(":account", recurrent->transaction->account->_dbId.toString());
+    query->bindValue(":category", recurrent->transaction->category->_dbId.toString());
     query->bindValue(":contents", recurrent->transaction->contents);
     query->bindValue(":memo", recurrent->transaction->memo);
     query->bindValue(":startDay", recurrent->transaction->date.day());
@@ -705,6 +789,7 @@ Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
 
 void
 Book::store(RecurrentTransactionPtr tran) {
+    LOG(INFO) << __PRETTY_FUNCTION__;
     BookLock dbLock(this);
 
     if (!dbLock.opened()) {
@@ -721,10 +806,31 @@ Book::store(RecurrentTransactionPtr tran) {
         return;
     }
     auto success = storeSingleRecurrentTransactions(tran);
+    LOG(INFO) << "Recurrent transaction stored " << success;
     if (!success) {
         _db->rollback();
-        return;;
+        return;
     }
+
+    success = storeSingleTransactions(tran->transaction);
+    LOG(INFO) << "Single transaction stored " << success;
+    if (!success) {
+        _db->rollback();
+        return;
+    }
+
+    // store the relation between the two
+    auto query = _db->createQuery();
+    query->prepare(INSERT_UPDATE_RECURRENT_TRANSACTION_RELATION);
+    query->bindValue(":recurrent_transaction", tran->_dbId.toString());
+    query->bindValue(":generated_transaction", tran->transaction->_dbId.toString());
+
+    success = query->exec();
+    if (!success) {
+        _db->rollback();
+        return;
+    }
+
     _db->commit();
 }
 
@@ -970,59 +1076,11 @@ Book::numberOfAccounts() {
     return count;
 }
 
-
 QList<CategoryPtr>
-Book::categories(boost::optional<Category::Type> type, boost::optional<int> limit, boost::optional<int> offset) {
+Book::parseCategories(std::shared_ptr<system::Query> query) {
     QMap<QUuid, QList<QUuid>> parentChildMap;
     QMap<QUuid, CategoryPtr> catsMap;
     QList<QUuid> orderedIds;
-
-    BookLock dbLock(this);
-
-    if (!dbLock.opened()) {
-        _lastError = _db->lastError().text();
-        LOG(ERROR) << _lastError.toStdString();
-        QList<CategoryPtr> cats;
-        return cats;
-    }
-
-    auto query = _db->createQuery();
-
-    if (type) {
-        if (limit) {
-            // SELECT_ALL_CATEGORIES_TYPE_LIMIT = "SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
-            //     WHERE type=:type LIMIT :limit OFFSET :offset
-            query->prepare(SELECT_ALL_CATEGORIES_TYPE_LIMIT);
-            query->bindValue(":type", static_cast<int>(*type));
-            query->bindValue(":limit", *limit);
-
-            if (offset) {
-                query->bindValue(":offset", *offset);
-            } else {
-                query->bindValue(":offset", 0);
-            }
-        } else {
-            // SELECT_ALL_CATEGORIES_TYPE = SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
-            // WHERE type=:type
-            query->prepare(SELECT_ALL_CATEGORIES_TYPE);
-            query->bindValue(":type", static_cast<int>(*type));
-        }
-    } else {
-        if (limit) {
-            // SELECT_ALL_CATEGORIES_LIMIT = SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
-            //     LIMIT :limit OFFSET :offset;
-            query->prepare(SELECT_ALL_CATEGORIES_LIMIT);
-            query->bindValue(":limit", *limit);
-
-            if (offset) {
-                query->bindValue(":offset", *offset);
-            } else {
-                query->bindValue(":offset", 0);
-            }
-        } else {
-            query->prepare(SELECT_ALL_CATEGORIES);
-        }
-    }
 
     auto success = query->exec();
 
@@ -1074,13 +1132,13 @@ Book::categories(boost::optional<Category::Type> type, boost::optional<int> limi
     foreach(const QUuid& parentId, parentChildMap.keys()) {
         if (!catsMap.contains(parentId)) {
             LOG(ERROR) << "DB consintency error categori with id '" << parentId.toString().toStdString()
-                    << "' not found.";
+                << "' not found.";
             continue;
         }
         foreach(const QUuid& childId, parentChildMap[parentId]) {
             if (!catsMap.contains(childId)) {
                 LOG(ERROR) << "DB consintency error categori with id '" << parentId.toString().toStdString()
-                        << "' not found.";
+                    << "' not found.";
                 continue;
             }
             // set the parent, do not worry about points since we are using std::shared_ptr
@@ -1092,9 +1150,62 @@ Book::categories(boost::optional<Category::Type> type, boost::optional<int> limi
     // the order that the select returned
     QList<CategoryPtr> orderedCats;
     foreach(const QUuid& id, orderedIds) {
-            orderedCats.append(catsMap[id]);
+        orderedCats.append(catsMap[id]);
     }
     return orderedCats;
+}
+
+QList<CategoryPtr>
+Book::categories(boost::optional<Category::Type> type, boost::optional<int> limit, boost::optional<int> offset) {
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        QList<CategoryPtr> cats;
+        return cats;
+    }
+
+    auto query = _db->createQuery();
+
+    if (type) {
+        if (limit) {
+            // SELECT_ALL_CATEGORIES_TYPE_LIMIT = "SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
+            //     WHERE type=:type LIMIT :limit OFFSET :offset
+            query->prepare(SELECT_ALL_CATEGORIES_TYPE_LIMIT);
+            query->bindValue(":type", static_cast<int>(*type));
+            query->bindValue(":limit", *limit);
+
+            if (offset) {
+                query->bindValue(":offset", *offset);
+            } else {
+                query->bindValue(":offset", 0);
+            }
+        } else {
+            // SELECT_ALL_CATEGORIES_TYPE = SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
+            // WHERE type=:type
+            query->prepare(SELECT_ALL_CATEGORIES_TYPE);
+            query->bindValue(":type", static_cast<int>(*type));
+        }
+    } else {
+        if (limit) {
+            // SELECT_ALL_CATEGORIES_LIMIT = SELECT uuid, parent, name, type FROM Categories ORDER BY name ASC
+            //     LIMIT :limit OFFSET :offset;
+            query->prepare(SELECT_ALL_CATEGORIES_LIMIT);
+            query->bindValue(":limit", *limit);
+
+            if (offset) {
+                query->bindValue(":offset", *offset);
+            } else {
+                query->bindValue(":offset", 0);
+            }
+        } else {
+            query->prepare(SELECT_ALL_CATEGORIES);
+        }
+    }
+
+    auto cats = parseCategories(query);
+    return cats;
 }
 
 int
@@ -1158,6 +1269,7 @@ Book::parseTransactions(std::shared_ptr<system::Query> query) {
         auto transYear = query->value(6).toInt();
         auto transContents = query->value(7).toString();
         auto transMemo = query->value(8).toString();
+        auto transRecurrent = (query->value(9).toInt() == 0)?false:true;
 
         CategoryPtr category;
         if (categories.contains(catUuid)) {
@@ -1165,8 +1277,8 @@ Book::parseTransactions(std::shared_ptr<system::Query> query) {
         } else {
             // ignore the parent
             // auto catParent = query->value(9).toString();
-            auto catName = query->value(10).toString();
-            auto catType = static_cast<Category::Type>(query->value(11).toInt());
+            auto catName = query->value(11).toString();
+            auto catType = static_cast<Category::Type>(query->value(12).toInt());
             category = std::make_shared<Category>(catName, catType);
             category->_dbId = catUuid;
             // add it to be faster with other transactions with the same category
@@ -1177,9 +1289,9 @@ Book::parseTransactions(std::shared_ptr<system::Query> query) {
         if (accounts.contains(accUuid)) {
             account = accounts[accUuid];
         } else {
-            auto accName = query->value(12).toString();
-            auto accMemo = query->value(13).toString();
-            auto accAmount = query->value(14).toString().toDouble();
+            auto accName = query->value(13).toString();
+            auto accMemo = query->value(14).toString();
+            auto accAmount = query->value(15).toString().toDouble();
             account = std::make_shared<Account>(accName, accAmount, accMemo);
             account->_dbId = accUuid;
             accounts[accUuid] = account;
@@ -1188,6 +1300,7 @@ Book::parseTransactions(std::shared_ptr<system::Query> query) {
         auto transaction = std::make_shared<Transaction>(
                 account, transAmount, category, QDate(transYear, transMonth, transDay), transContents, transMemo);
         transaction->_dbId = transUuid;
+        transaction->is_recurrent = transRecurrent;
         trans.append(transaction);
     }
     return trans;
@@ -1209,7 +1322,7 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
     if (day) {
         if (limit) {
             // SELECT_TRANSACTIONS_DAY_LIMIT = SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-            //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+            //     t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
             //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
             //     WHERE t.day=:day AND t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset
             query->prepare(SELECT_TRANSACTIONS_DAY_LIMIT);
@@ -1224,7 +1337,7 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
             }
         } else {
             // SELECT_TRANSACTIONS_DAY = SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-            //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+            //     t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
             //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
             //     WHERE t.day=:day AND t.month=:month AND t.year=:year ORDER BY t.day, t.year, t.month
             query->prepare(SELECT_TRANSACTIONS_DAY);
@@ -1235,7 +1348,7 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
     } else {
         if (limit) {
             // SELECT_TRANSACTIONS_MONTH_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-            //    t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+            //    t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
             //    INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
             //    WHERE t.month=:month AND t.year=:year ORDER BY t.year, t.month LIMIT :limit OFFSET :offset
             query->prepare(SELECT_TRANSACTIONS_MONTH_LIMIT);
@@ -1249,7 +1362,7 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
             }
 
         } else {
-            // SELECT_TRANSACTIONS_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, t.year, t.contents, t.memo,
+            // SELECT_TRANSACTIONS_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month, t.year, t.contents, t.memo, t.is_recurrent,
             //         c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
             //         INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
             //         WHERE t.month=:month AND t.year=:year";
@@ -1261,7 +1374,47 @@ Book::transactions(int year, int month, boost::optional<int> day, boost::optiona
     // executes the query and parses the result
     trans = parseTransactions(query);
     return trans;
+}
 
+QList<TransactionPtr>
+Book::transactions(RecurrentTransactionPtr recurrent, boost::optional<int> limit, boost::optional<int> offset) {
+    QList<TransactionPtr> trans;
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return trans;
+    }
+
+    auto query = _db->createQuery();
+
+    if (limit) {
+        // SELECT_TRANSACTIONS_RECURRENT_LIMIT =  SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
+        //     t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+        //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
+        //     WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE
+        //     recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month LIMIT :limit OFFSET :offset
+        query->prepare(SELECT_TRANSACTIONS_RECURRENT_LIMIT);
+        query->bindValue(":limit", *limit);
+        if (offset) {
+            query->bindValue(":offset", *offset);
+        } else {
+            query->bindValue(":offset", 0);
+        }
+    } else {
+        // SELECT_TRANSACTIONS_RECURRENT =  SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
+        //  t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+        //  INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
+        //  WHERE t.uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE
+        //  recurrent_transaction=:recurrent_Transaction) ORDER BY t.year, t.month
+        query->prepare(SELECT_TRANSACTIONS_RECURRENT);
+    }
+    query->bindValue(":recurrent_Transaction", recurrent->_dbId.toString());
+
+    // executes the query and parses the result
+    trans = parseTransactions(query);
+    return trans;
 }
 
 int
@@ -1347,6 +1500,37 @@ Book::numberOfTransactions(int day, int month, int year) {
     return count;
 }
 
+int
+Book::numberOfTransactions(RecurrentTransactionPtr recurrent) {
+    int count = -1;
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << "Error opening database " << _lastError.toStdString();
+        LOG(ERROR) << QSqlDatabase::drivers().join(" ").toStdString();
+        return count;
+    }
+
+    auto query = _db->createQuery();
+
+    // SELECT_GENERATED_TRANSACTIONS_RECURRENT_COUNT = SELECT count(*) FROM RecurrentTransactionRelations WHERE
+    //     recurrent_transaction=:recurrent_Transaction
+    query->prepare(SELECT_GENERATED_TRANSACTIONS_RECURRENT_COUNT);
+    query->bindValue(":recurrent_Transaction", recurrent->_dbId.toString());
+    auto success = query->exec();
+    DLOG(INFO) << "Recurrent id is "  << recurrent->_dbId.toString().toStdString();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the transactions count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
+}
+
 QList<TransactionPtr>
 Book::transactions(CategoryPtr cat, boost::optional<int> month, boost::optional<int> year) {
     QList<TransactionPtr> trans;
@@ -1367,7 +1551,7 @@ Book::transactions(CategoryPtr cat, boost::optional<int> month, boost::optional<
 
     if (month && year) {
         // SELECT_TRANSACTIONS_CATEGORY_MONTH = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-        //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+        //     t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
         //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
         //     WHERE t.category=:category AND t.month=:month AND t.year=:year
         query->prepare(SELECT_TRANSACTIONS_CATEGORY_MONTH);
@@ -1376,7 +1560,7 @@ Book::transactions(CategoryPtr cat, boost::optional<int> month, boost::optional<
         query->bindValue(":year", *year);
     } else {
         // SELECT_TRANSACTIONS_CATEGORY = SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-        //    t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+        //    t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
         //    INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
         //    WHERE t.category=:category;
         query->prepare(SELECT_TRANSACTIONS_CATEGORY);
@@ -1407,7 +1591,7 @@ Book::transactions(AccountPtr acc) {
 
 
     // SELECT_TRANSACTIONS_ACCOUNT = "SELECT t.uuid, t.amount, t.account, t.category, t.day, t.month,
-    //     t.year, t.contents, t.memo, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
+    //     t.year, t.contents, t.memo, t.is_recurrent, c.parent, c.name, c.type, a.name, a.memo, a.amount FROM Transactions AS t
     //     INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON t.account = a.uuid
     //     WHERE t.account=:account;
     auto query = _db->createQuery();
@@ -1566,41 +1750,8 @@ Book::numberOfDaysWithTransactions(int month, int year) {
 }
 
 QList<RecurrentTransactionPtr>
-Book::recurrentTransactions(boost::optional<int> limit, boost::optional<int> offset) {
+Book::parseRecurrentTransactions(std::shared_ptr<system::Query> query) {
     QList<RecurrentTransactionPtr> result;
-    BookLock dbLock(this);
-
-    if (!dbLock.opened()) {
-        _lastError = _db->lastError().text();
-        LOG(ERROR) << _lastError.toStdString();
-        return result;
-    }
-
-    auto query = _db->createQuery();
-    if (limit) {
-
-        // SELECT_RECURRENT_TRANSACTIONS = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo,
-        //     t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear,
-        //     t.defaultType, t.numberDays, t.occurrences c.parent, c.name, c.type, a.name, a.memo, a.amount
-        //     FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON
-        //     t.account = a.uuid;
-        query->prepare(SELECT_RECURRENT_TRANSACTIONS_LIMIT);
-        query->bindValue(":limit", *limit);
-
-        if (offset) {
-            query->bindValue(":offset", *offset);
-        } else {
-            query->bindValue(":offset", 0);
-        }
-    } else {
-        // SELECT_RECURRENT_TRANSACTIONS_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo,
-        //     t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear,
-        //     t.defaultType, t.numberDays, t.occurrences c.parent, c.name, c.type, a.name, a.memo, a.amount
-        //     FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON
-        //     t.account = a.uuid LIMIT :limit OFFSET :offset;
-        query->prepare(SELECT_RECURRENT_TRANSACTIONS);
-    }
-
     // accounts are categories are usually repeated so we can keep a map to just create them the first time the appear
     // in the inner join
     QMap<QUuid, AccountPtr> accounts;
@@ -1652,6 +1803,8 @@ Book::recurrentTransactions(boost::optional<int> limit, boost::optional<int> off
         if (query->value(9).isNull()) {  // last date is null if any of the members is null
             lastGeneratedDay = QDate();
         } else {
+            DLOG(INFO) << "Setting last generated to " << query->value(11).toInt() << "/"
+                << query->value(10).toInt() << "/" << query->value(9).toInt();
             lastGeneratedDay = QDate(query->value(11).toInt(), query->value(10).toInt(), query->value(9).toInt());
         }
 
@@ -1662,12 +1815,12 @@ Book::recurrentTransactions(boost::optional<int> limit, boost::optional<int> off
             endDate = QDate(query->value(14).toInt(), query->value(13).toInt(), query->value(12).toInt());
         }
 
-        auto defaults = boost::optional<RecurrentTransaction::Recurrence::Defaults>();
+        boost::optional<RecurrentTransaction::Recurrence::Defaults> defaults = boost::none;
         if (!query->value(15).isNull()) {
             defaults = static_cast<RecurrentTransaction::Recurrence::Defaults>(query->value(15).toInt());
         }
 
-        auto numberOfDays = boost::optional<int>();
+        boost::optional<int> numberOfDays = boost::none;
         if (!query->value(16).isNull()) {
             numberOfDays = query->value(16).toInt();
         }
@@ -1711,23 +1864,265 @@ Book::recurrentTransactions(boost::optional<int> limit, boost::optional<int> off
 
         auto transaction = std::make_shared<Transaction>(
                 account, transAmount, category, startDate, transContents, transMemo);
-        transaction->_dbId = transUuid;
         auto recurrentTrans = std::make_shared<RecurrentTransaction>(transaction, recurrence);
+        recurrentTrans->_dbId = transUuid;
         result.append(recurrentTrans);
     }
 
     return result;
 }
 
+QList<RecurrentTransactionPtr>
+Book::recurrentTransactions(boost::optional<int> limit, boost::optional<int> offset) {
+    QList<RecurrentTransactionPtr> result;
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return result;
+    }
+
+    auto query = _db->createQuery();
+    if (limit) {
+
+        // SELECT_RECURRENT_TRANSACTIONS = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo,
+        //     t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear,
+        //     t.defaultType, t.numberDays, t.occurrences c.parent, c.name, c.type, a.name, a.memo, a.amount
+        //     FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON
+        //     t.account = a.uuid;
+        query->prepare(SELECT_RECURRENT_TRANSACTIONS_LIMIT);
+        query->bindValue(":limit", *limit);
+
+        if (offset) {
+            query->bindValue(":offset", *offset);
+        } else {
+            query->bindValue(":offset", 0);
+        }
+    } else {
+        // SELECT_RECURRENT_TRANSACTIONS_LIMIT = "SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo,
+        //     t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear,
+        //     t.defaultType, t.numberDays, t.occurrences c.parent, c.name, c.type, a.name, a.memo, a.amount
+        //     FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON
+        //     t.account = a.uuid LIMIT :limit OFFSET :offset;
+        query->prepare(SELECT_RECURRENT_TRANSACTIONS);
+    }
+
+    return parseRecurrentTransactions(query);
+}
+
+QList<RecurrentTransactionPtr>
+Book::recurrentTransactions(CategoryPtr cat, boost::optional<int> limit, boost::optional<int> offset) {
+    QList<RecurrentTransactionPtr> result;
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return result;
+    }
+
+    auto query = _db->createQuery();
+    if (limit) {
+
+        // SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo,
+        //     t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear,
+        //     t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount
+        //     FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON
+        //     t.account = a.uuid WHERE t.category=:category LIMIT :limit OFFSET :offset
+        query->prepare(SELECT_RECURRENT_TRANSACTIONS_CATEGORY_LIMIT);
+        query->bindValue(":limit", *limit);
+
+        if (offset) {
+            query->bindValue(":offset", *offset);
+        } else {
+            query->bindValue(":offset", 0);
+        }
+    } else {
+
+        // SELECT t.uuid, t.amount, t.account, t.category, t.contents, t.memo,
+        //     t.startDay, t.startMonth, t.startYear, t.lastDay, t.lastMonth, t.lastYear, t.endDay, t.endMonth, t.endYear,
+        //     t.defaultType, t.numberDays, t.occurrences, c.parent, c.name, c.type, a.name, a.memo, a.amount
+        //     FROM RecurrentTransactions AS t INNER JOIN Categories AS c ON t.category = c.uuid INNER JOIN Accounts AS a ON
+        //     t.account = a.uuid WHERE t.category=:category
+        query->prepare(SELECT_RECURRENT_TRANSACTIONS_CATEGORY);
+    }
+    query->bindValue(":category", cat->_dbId.toString());
+
+    return parseRecurrentTransactions(query);
+}
+
+QList<CategoryPtr>
+Book::recurrentCategories(boost::optional<int> limit, boost::optional<int> offset) {
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        QList<CategoryPtr> cats;
+        return cats;
+    }
+
+    auto query = _db->createQuery();
+
+    if (limit) {
+        query->prepare(SELECT_CATEGORIES_RECURRENT_LIMIT);
+        query->bindValue(":limit", *limit);
+
+        if (offset) {
+            query->bindValue(":offset", *offset);
+        } else {
+            query->bindValue(":offset", 0);
+        }
+    } else {
+        query->prepare(SELECT_CATEGORIES_RECURRENT);
+    }
+
+    auto cats = parseCategories(query);
+    return cats;
+}
+
+int
+Book::numberOfRecurrentTransactions() {
+    int count = -1;
+
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return count;
+    }
+
+    auto query = _db->createQuery();
+    query->prepare(SELECT_RECURRENT_TRANSACTIONS_COUNT);
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the transactions count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
+}
+
+int
+Book::numberOfRecurrentTransactions(CategoryPtr cat) {
+    int count = -1;
+
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return count;
+    }
+
+    auto query = _db->createQuery();
+    // SELECT_RECURRENT_TRANSACTIONS_CATEGORY_COUNT = SELECT count(uuid) FROM RecurrentTransactions
+    //     WHERE category=:category
+    query->prepare(SELECT_RECURRENT_TRANSACTIONS_CATEGORY_COUNT);
+    query->bindValue(":category", cat->_dbId.toString());
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the transactions count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
+}
+
+int
+Book::numberOfRecurrentCategories() {
+    int count = -1;
+
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return count;
+    }
+
+    auto query = _db->createQuery();
+    query->prepare(SELECT_CATEGORIES_RECURRENT_COUNT);
+    auto success = query->exec();
+
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << "Error retrieving the transactions count" << _lastError.toStdString();
+    } else if (query->next()) {
+        count = query->value(0).toInt();
+    }
+
+    return count;
+}
+
+void
+Book::storeGeneratedTransactions(QMap<RecurrentTransactionPtr, QList<TransactionPtr>> transMap) {
+    DLOG(INFO) << __PRETTY_FUNCTION__;
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+
+    bool transaction = _db->transaction();
+    if (!transaction) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << "Error creating the transaction " << _lastError.toStdString();
+        return;
+    }
+
+    foreach(const RecurrentTransactionPtr& recurrentTransaction, transMap.keys()) {
+        auto trans = transMap[recurrentTransaction];
+        foreach(const TransactionPtr tran, trans) {
+            auto success = storeSingleTransactions(tran);
+            if (!success) {
+                _db->rollback();
+                return;;
+            }
+        }
+
+        // we need to store the relations between the recurrent transaction and the generated ones
+        auto query = _db->createQuery();
+        query->prepare(INSERT_UPDATE_RECURRENT_TRANSACTION_RELATION);
+
+        foreach(const TransactionPtr tran, trans) {
+            query->bindValue(":recurrent_transaction", recurrentTransaction->_dbId.toString());
+            query->bindValue(":generated_transaction", tran->_dbId.toString());
+            auto success = query->exec();
+            if (!success) {
+                _db->rollback();
+                return;
+            }
+        }
+
+        // we need to update the data in which the last generated transactions was added
+        DLOG(INFO) << "Updating last generated transaction";
+        storeSingleRecurrentTransactions(recurrentTransaction);
+    }
+
+    _db->commit();
+}
+
 void
 Book::generateRecurrentTransactions() {
     // get all the recurrent transactions so that we can calculate the missing recurrent transactiosn
     auto recurrent = recurrentTransactions();
-    QList<TransactionPtr> trans;
+    QMap<RecurrentTransactionPtr, QList<TransactionPtr>> transMap;
 
     foreach(const RecurrentTransactionPtr& recurrentTrans, recurrent) {
         auto missingDates = recurrentTrans->recurrence->generateMissingDates();
-        LOG(INFO) << "There are " << missingDates.count() << " transactions that have to be generated";
+        QList<TransactionPtr> trans;
+        DLOG(INFO) << "There are " << missingDates.count() << " transactions that have to be generated";
         foreach(const QDate& currentDate, missingDates) {
             auto currentTran = std::make_shared<Transaction>(recurrentTrans->transaction->account,
                 recurrentTrans->transaction->amount, recurrentTrans->transaction->category, currentDate,
@@ -1735,14 +2130,12 @@ Book::generateRecurrentTransactions() {
             recurrentTrans->recurrence->lastGenerated = currentDate;
             trans.append(currentTran);
         }
+        transMap[recurrentTrans] = trans;
     }
 
-    LOG(INFO) << "We need to add " << trans.count() << " transactions";
     // store the missing the transactions in the database
-    store(trans);
-    if (!isError()) {
-        store(recurrent);
-    } else {
+    storeGeneratedTransactions(transMap);
+    if (isError()) {
         LOG(INFO) << "Error generating recurrent transactions";
     }
 }
