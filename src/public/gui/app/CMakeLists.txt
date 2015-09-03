@@ -103,6 +103,7 @@ set(QML_SOURCES
     qml/components/categories/StatsPage.qml
     qml/components/categories/js/categories.js
     qml/components/recurrent_transactions/CategoryHeader.qml
+    qml/components/recurrent_transactions/GeneratedTransaction.qml
     qml/components/recurrent_transactions/GeneratedTransactionsPage.qml
     qml/components/recurrent_transactions/RecurrentTransaction.qml
     qml/components/recurrent_transactions/Page.qml

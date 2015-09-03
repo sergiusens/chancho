@@ -1519,7 +1519,7 @@ Book::numberOfTransactions(RecurrentTransactionPtr recurrent) {
     query->prepare(SELECT_GENERATED_TRANSACTIONS_RECURRENT_COUNT);
     query->bindValue(":recurrent_Transaction", recurrent->_dbId.toString());
     auto success = query->exec();
-    LOG(INFO) << "Recurrent id is "  << recurrent->_dbId.toString().toStdString();
+    DLOG(INFO) << "Recurrent id is "  << recurrent->_dbId.toString().toStdString();
 
     if (!success) {
         _lastError = _db->lastError().text();
