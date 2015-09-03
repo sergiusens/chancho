@@ -15,6 +15,7 @@
         <file>qml/components/categories/StatsPage.qml</file>
         <file>qml/components/categories/js/categories.js</file>
         <file>qml/components/recurrent_transactions/CategoryHeader.qml</file>
+        <file>qml/components/recurrent_transactions/GeneratedTransaction.qml</file>
         <file>qml/components/recurrent_transactions/GeneratedTransactionsPage.qml</file>
         <file>qml/components/recurrent_transactions/RecurrentTransaction.qml</file>
         <file>qml/components/recurrent_transactions/Page.qml</file>

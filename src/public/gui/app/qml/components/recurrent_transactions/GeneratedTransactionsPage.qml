@@ -63,8 +63,11 @@ Page {
                clip: true
 
                model: Book.generatedTransactions(recurrentTransaction)
-               delegate: Label {
-                   text: model.display.category
+
+               delegate: GeneratedTransaction {
+                   property var transaction: model.display
+                   property var repeaterIndex: index
+
                }
            }
        } // Sahpe
