@@ -318,10 +318,13 @@ msgstr ""
 msgid "Termination:"
 msgstr ""
 
+<<<<<<< HEAD
 #: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:39
 msgid "Generated Transactions"
 msgstr ""
 
+=======
+>>>>>>> recurrent-transactions
 #: ../qml/components/recurrent_transactions/RecurrentTransaction.qml:57
 msgid "Every "
 msgstr ""
