@@ -692,7 +692,7 @@ Book::store(QList<TransactionPtr> trans) {
 
 bool
 Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
-    LOG(INFO) << __PRETTY_FUNCTION__;
+    DLOG(INFO) << __PRETTY_FUNCTION__;
     // usually accounts and categories must be stored before storing a transactions
     if (recurrent->transaction->account && !recurrent->transaction->account->wasStoredInDb()) {
         _lastError = "An account must be stored before adding a transaction to it.";
@@ -779,7 +779,6 @@ Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
 
     // no need to use a transaction since is a single insert
     auto stored = query->exec();
-    LOG(INFO) << "Executed query";
     if (!stored) {
         _lastError = _db->lastError().text();
         LOG(INFO) << _lastError.toStdString();
@@ -1804,6 +1803,8 @@ Book::parseRecurrentTransactions(std::shared_ptr<system::Query> query) {
         if (query->value(9).isNull()) {  // last date is null if any of the members is null
             lastGeneratedDay = QDate();
         } else {
+            DLOG(INFO) << "Setting last generated to " << query->value(11).toInt() << "/"
+                << query->value(10).toInt() << "/" << query->value(9).toInt();
             lastGeneratedDay = QDate(query->value(11).toInt(), query->value(10).toInt(), query->value(9).toInt());
         }
 
@@ -2103,6 +2104,10 @@ Book::storeGeneratedTransactions(QMap<RecurrentTransactionPtr, QList<Transaction
                 return;
             }
         }
+
+        // we need to update the data in which the last generated transactions was added
+        DLOG(INFO) << "Updating last generated transaction";
+        storeSingleRecurrentTransactions(recurrentTransaction);
     }
 
     _db->commit();

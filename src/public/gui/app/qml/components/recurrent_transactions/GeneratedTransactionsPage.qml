@@ -26,41 +26,47 @@ import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.1
 import Ubuntu.Components.Pickers 0.1
 import Ubuntu.Components.Popups 1.0
+import Ubuntu.Components.ListItems 1.0 as ListItems
+
+import jbQuick.Charts 1.0
 
 import com.chancho 1.0
 
 Page {
-    id: page
+   id: mainPage
+   property var recurrentTransaction
 
-    title: i18n.tr("Add new account")
+   title: i18n.tr("Generated Transactions")
 
-    head.actions: [
-        Action {
-            iconName: "ok"
-            text: i18n.tr("Add")
-            onTriggered: {
-                Qt.inputMethod.commit()
-                console.log("Add account!");
-                var initialAmount = 0;
-                if (form.initialAmount != "") {
-                    initialAmount = form.initialAmount.replace(",", ".")
-                    initialAmount = parseFloat(initialAmount)
-                }
-                var success = Book.storeAccount(form.name, form.memo, form.color, initialAmount);
-                if (success) {
-                    accountsPageStack.pop();
-                } else {
-                    var title = i18n.tr("Internal Error");
-                    var text = i18n.tr("The account could not be stored.");
-                    PopupUtils.open(Qt.resolvedUrl("../dialogs/ErrorDialog.qml"), page, {"title": title, "text": text});
-                }
-            }
-        }
-    ]
+   onRecurrentTransactionChanged: {
+       console.log("New recurrent transaction was set.");
+       generatedList.model.recurrentTransaction = recurrentTransaction;
+       console.log("Transactions must have been updated.");
+   }
 
-    Form {
-        id: form
-        anchors.fill: parent
-        anchors.margins: units.gu(1)
-    }
+   ColumnLayout {
+       anchors.fill: parent
+       anchors.margins: units.gu(2) /* two unit so that we have the same as the main page. */
+       spacing: units.gu(2)
+       UbuntuShape {
+           id: transactionsShape
+           color: "white"
+           Layout.fillHeight: true
+           anchors.left: parent.left
+           anchors.right: parent.right
+
+           UbuntuListView {
+               id: generatedList
+               anchors.fill: parent
+               anchors.margins: units.gu(1)
+               spacing: units.gu(2)
+               clip: true
+
+               model: Book.generatedTransactions(recurrentTransaction)
+               delegate: Label {
+                   text: model.display.category
+               }
+           }
+       } // Sahpe
+   } // Column
 }

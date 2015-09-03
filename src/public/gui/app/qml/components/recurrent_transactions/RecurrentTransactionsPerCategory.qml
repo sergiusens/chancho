@@ -62,9 +62,8 @@ UbuntuShape {
                     anchors.fill: parent
 
                     onClicked: {
-                        parent.selected = !parent.selected;
-                        mainPageStack.push(editTransaction, {"transaction": transaction});
-                        parent.selected = !parent.selected;
+                        console.log("This is a unique recurrent transaction " + transaction.category)
+                        transactionsPageStack.push(Qt.resolvedUrl("GeneratedTransactionsPage.qml"), {"recurrentTransaction": transaction});
                     }
                 }
             }

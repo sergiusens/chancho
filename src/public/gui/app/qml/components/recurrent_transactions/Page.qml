@@ -64,13 +64,6 @@ PageStack {
                    model: Book.recurrentCategoriesModel()
                    delegate: RecurrentTransactionsPerCategory {
                        transactionsModel: Book.recurrentTransactionsModel(model.display)
-
-                       MouseArea {
-                           anchors.fill: parent
-                           onClicked: {
-                               console.log("Recurrent transactions!");
-                           }
-                       }
                    }
                }
            } // Sahpe
