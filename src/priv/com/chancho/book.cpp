@@ -41,6 +41,7 @@ namespace chancho {
 
 namespace {
     const QString DATABASE_NAME = "chancho.db";
+    const QString SELECT_TRIGGERS = "SELECT name FROM sqlite_master WHERE type = 'trigger'";
     const QString ACCOUNTS_TABLE = "CREATE TABLE IF NOT EXISTS Accounts("\
         "uuid VARCHAR(40) PRIMARY KEY, "\
         "name TEXT NOT NULL,"\
@@ -134,6 +135,11 @@ namespace {
         "BEGIN "\
         "UPDATE Transactions SET is_recurrent=1 WHERE uuid=new.generated_transaction; "\
         "END";
+    const QString RECURRENT_RELATIONS_UPDATE_TRIGGER = "CREATE TRIGGER UpdateGeneratedRelationsOnUpdate AFTER UPDATE ON RecurrentTransactions "\
+        "BEGIN "\
+        "UPDATE Transactions SET amount=new.amount, account=new.account, category=new.category, contents=new.contents, memo=new.memo "\
+        "WHERE uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE recurrent_transaction=new.uuid);"\
+        "END";
     const QString TRANSACTION_MONTH_INDEX = "CREATE INDEX transaction_month_index ON Transactions(year, month);";
     const QString TRANSACTION_DAY_INDEX = "CREATE INDEX transaction_day_index ON Transactions(day, year, month);";
     const QString TRANSACTION_CATEGORY_INDEX = "CREATE INDEX transaction_category_index ON Transactions(category);";
@@ -154,6 +160,9 @@ namespace {
         "endDay, endMonth, endYear, defaultType, numberDays, occurrences) "\
         "VALUES(:uuid, :amount, :account, :category, :contents, :memo, :startDay, :startMonth, :startYear, :lastDay, "\
         ":lastMonth, :lastYear, :endDay, :endMonth, :endYear, :defaultType, :numberDays, :occurrences)";
+    const QString UPDATE_RECURRENT_TRANSACTION = "UPDATE RecurrentTransactions SET"
+        "amount=:amount, account=:account, category=:category, contents=:contents, memo=:memo, "\
+        "endDay=:endDay, endMonth=:endMonth, endYear=:endYear WHERE uuid=:uuid";
     const QString INSERT_UPDATE_RECURRENT_TRANSACTION_RELATION = "INSERT OR REPLACE INTO RecurrentTransactionRelations("\
         "recurrent_transaction, generated_transaction) VALUES(:recurrent_transaction, :generated_transaction)";
     const QString DELETE_ACCOUNT = "DELETE FROM Accounts WHERE uuid=:uuid";
@@ -321,6 +330,21 @@ Book::databasePath() {
     return dbPath;
 }
 
+QStringList
+Book::getTriggers(std::shared_ptr<system::Database> db) {
+    QStringList triggers;
+    auto query = db->createQuery();
+    bool success = true;
+    success &= query->exec(SELECT_TRIGGERS);
+    if (success) {
+        while(query->next()){
+            auto name = query->value(0).toString();
+            triggers.append(name);
+        }
+    }
+    return triggers;
+}
+
 void
 Book::initDatabse() {
     // ensure the version of the database and ensure that all the required tables are present
@@ -337,6 +361,7 @@ Book::initDatabse() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
+    auto triggers = getTriggers(db);
 
     // only has to be init those dbs with less than 3 tables, the old versions
     bool hasToBeInit = tables.count() < 3;
@@ -344,6 +369,7 @@ Book::initDatabse() {
     // all versions of the application do not have the recurrent transactions table
     bool needsRecurrenceUpdate = !tables.contains("recurrenttransactions", Qt::CaseInsensitive);
     bool needsRecurrenceRelations = !tables.contains("recurrentTransactionrelations", Qt::CaseInsensitive);
+    bool needsRecurrentUpdateTrigger = !triggers.contains("updateGeneratedRelationsOnUpdate", Qt::CaseInsensitive);
 
     if (!hasToBeInit && needsRecurrenceUpdate) {
         db->transaction();
@@ -355,6 +381,7 @@ Book::initDatabse() {
         success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
         success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
         success &= query->exec(RECURRENT_RELATIONS_INSERT_TRIGGER);
+        success &= query->exec(RECURRENT_RELATIONS_UPDATE_TRIGGER);
 
         if (success)
             db->commit();
@@ -373,11 +400,19 @@ Book::initDatabse() {
         success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
         success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
         success &= query->exec(RECURRENT_RELATIONS_INSERT_TRIGGER);
+        success &= query->exec(RECURRENT_RELATIONS_UPDATE_TRIGGER);
 
         if (success)
             db->commit();
         else
             db->rollback();
+
+        if (!success)
+            LOG(ERROR) << "Could not update the chancho db " << db->lastError().text().toStdString();
+
+    } else if (!hasToBeInit && !needsRecurrenceRelations && needsRecurrentUpdateTrigger) {
+        auto query = db->createQuery();
+        auto success = query->exec(RECURRENT_RELATIONS_UPDATE_TRIGGER);
 
         if (!success)
             LOG(ERROR) << "Could not update the chancho db " << db->lastError().text().toStdString();
@@ -410,6 +445,7 @@ Book::initDatabse() {
         success &= query->exec(TRANSACTION_CATEGORY_MONTH_INDEX);
         success &= query->exec(TRANSACTION_ACCOUNT_INDEX);
         success &= query->exec(ACCOUNT_MONTH_TOTAL_VIEW);
+        success &= query->exec(RECURRENT_RELATIONS_UPDATE_TRIGGER);
 
         if (success)
             db->commit();
@@ -419,6 +455,35 @@ Book::initDatabse() {
         if (!success)
             LOG(ERROR) << "Could not create the chancho db " << db->lastError().text().toStdString();
     }
+}
+
+QStringList
+Book::tables() {
+    static QStringList expected {
+            "Accounts",
+            "Categories",
+            "Transactions",
+            "RecurrentTransactions",
+            "RecurrentTransactionRelations"
+    };
+    return expected;
+}
+
+QStringList
+Book::triggers() {
+    static QStringList expected {
+            "UpdateAccountAmountOnTransactionInsert",
+            "UpdateAccountAmountOnTransactionUpdate",
+            "UpdateMoveAccountAmountOnTransactionUpdate",
+            "UpdateAccountAmountOnTransactionDelete",
+            "DeleteTransactionsOnAccountDelete",
+            "DeleteTransactionsOnCategoryDelete",
+            "UpdateTransactionsOnCategoryTypeUpdate",
+            "DeleteRecurrentRelationsOnDelete",
+            "UpdateRecurrentRelationsOnInsert",
+            "UpdateGeneratedRelationsOnUpdate"
+    };
+    return expected;
 }
 
 Book::Book() {
@@ -788,7 +853,7 @@ Book::storeSingleRecurrentTransactions(RecurrentTransactionPtr recurrent) {
 }
 
 void
-Book::store(RecurrentTransactionPtr tran) {
+Book::storeRecurrentNoUpdates(RecurrentTransactionPtr tran) {
     LOG(INFO) << __PRETTY_FUNCTION__;
     BookLock dbLock(this);
 
@@ -832,6 +897,72 @@ Book::store(RecurrentTransactionPtr tran) {
     }
 
     _db->commit();
+}
+
+void
+Book::storeRecurrentWithUpdate(RecurrentTransactionPtr recurrent) {
+    LOG(INFO) << __PRETTY_FUNCTION__;
+    // usually accounts and categories must be stored before storing a transactions
+    if (recurrent->transaction->account && !recurrent->transaction->account->wasStoredInDb()) {
+        _lastError = "An account must be stored before adding a transaction to it.";
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+
+    if (recurrent->transaction->category && !recurrent->transaction->category->wasStoredInDb()) {
+        _lastError = "A category must be stored before adding a transaction to it.";
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+
+    // store the data for the specific info
+    // UPDATE_RECURRENT_TRANSACTION = UPDATE RecurrentTransactions SET
+    //     amount=:amount, account=:account, category=:category, contents=:contents, memo=:memo,
+    //     endDay=:endDay, endMonth=:endMonth, endYear=:endYear WHERE uuid=:uuid;
+    auto query = _db->createQuery();
+    query->prepare(UPDATE_RECURRENT_TRANSACTION);
+    query->bindValue(":uuid", recurrent->_dbId.toString());
+
+    // amounts are positive yet if it is an expense we must multiple by -1 to update the account accordingly
+    if (recurrent->transaction->type() == Category::Type::EXPENSE && recurrent->transaction->amount > 0) {
+        query->bindValue(":amount", QString::number(-1 * recurrent->transaction->amount));
+    } else {
+        query->bindValue(":amount", QString::number(recurrent->transaction->amount));
+    }
+
+    query->bindValue(":account", recurrent->transaction->account->_dbId.toString());
+    query->bindValue(":category", recurrent->transaction->category->_dbId.toString());
+    query->bindValue(":contents", recurrent->transaction->contents);
+    query->bindValue(":memo", recurrent->transaction->memo);
+
+    if (recurrent->recurrence->endDate.isValid()) {
+        query->bindValue(":endDay", recurrent->recurrence->endDate.day());
+        query->bindValue(":endMonth", recurrent->recurrence->endDate.month());
+        query->bindValue(":endYear", recurrent->recurrence->endDate.year());
+    } else {
+        query->bindValue(":endDay", QVariant());
+        query->bindValue(":endMonth", QVariant());
+        query->bindValue(":endYear", QVariant());
+    }
+
+    // no need to use a transaction since is a single insert
+    auto stored = query->exec();
+    if (!stored) {
+        _lastError = _db->lastError().text();
+        LOG(INFO) << _lastError.toStdString();
+    }
+}
+
+void
+Book::store(RecurrentTransactionPtr tran, bool updatePast) {
+    // the triggers to update the generated transactions are just executed on an update not on an update
+    // insert, therefore we check if we have store the recurrent transactions and we need to update the past
+    // or not
+    if (tran->wasStoredInDb() && updatePast) {
+        storeRecurrentWithUpdate(tran);
+    } else {
+        storeRecurrentNoUpdates(tran);
+    }
 }
 
 void

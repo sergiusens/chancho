@@ -126,6 +126,10 @@ class TestBookMocked : public BaseTestCase {
     void testStoreTransListQueryError();
     void testStoreTransTransactionError();
 
+    void testInitDatabaseMissingRecurrent();
+    void testInitDatabaseMissingRecurrentTrigger_data();
+    void testInitDatabaseMissingRecurrentTrigger();
+
  private:
     tests::MockDatabaseFactory* _dbFactory;
 };

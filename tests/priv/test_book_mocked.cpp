@@ -76,7 +76,8 @@ TestBookMocked::testDatabasePathMissing() {
 void
 TestBookMocked::testInitDatbaseMissingTables() {
     auto db = std::make_shared<tests::MockDatabase>();
-    auto query = std::make_shared<tests::MockQuery>();
+    auto triggersQuery = std::make_shared<tests::MockQuery>();
+    auto createQuery = std::make_shared<tests::MockQuery>();
     QStringList tables;
 
     // set db interaction expectations
@@ -100,11 +101,20 @@ TestBookMocked::testInitDatbaseMissingTables() {
         .WillOnce(Return(true));
 
     EXPECT_CALL(*db.get(), createQuery())
-        .Times(1)
-        .WillOnce(Return(query));
+        .Times(2)
+        .WillOnce(Return(triggersQuery))
+        .WillOnce(Return(createQuery));
 
-    EXPECT_CALL(*query.get(), exec(Matcher<const QString&>(_)))
-        .Times(21)
+    EXPECT_CALL(*triggersQuery.get(), exec(Matcher<const QString&>(_)))
+        .Times(1)
+        .WillRepeatedly(Return(true));
+
+    EXPECT_CALL(*triggersQuery.get(), next())
+        .Times(1)
+        .WillRepeatedly(Return(false));
+
+    EXPECT_CALL(*createQuery.get(), exec(Matcher<const QString&>(_)))
+        .Times(22)
         .WillRepeatedly(Return(true));
 
     EXPECT_CALL(*db.get(), commit())
@@ -119,14 +129,15 @@ TestBookMocked::testInitDatbaseMissingTables() {
     // verify expectations
     QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
     QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
-    QVERIFY(Mock::VerifyAndClearExpectations(query.get()));
+    QVERIFY(Mock::VerifyAndClearExpectations(createQuery.get()));
 }
 
 void
 TestBookMocked::testInitDatbaseMissingTablesError() {
     QStringList tables;
     QSqlError err;
-    auto query = std::make_shared<tests::MockQuery>();
+    auto triggersQuery = std::make_shared<tests::MockQuery>();
+    auto createQuery = std::make_shared<tests::MockQuery>();
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -146,15 +157,25 @@ TestBookMocked::testInitDatbaseMissingTablesError() {
         .WillOnce(Return(tables));
 
     EXPECT_CALL(*db.get(), createQuery())
+        .Times(2)
+        .WillOnce(Return(triggersQuery))
+        .WillOnce(Return(createQuery));
+
+    EXPECT_CALL(*triggersQuery.get(), exec(Matcher<const QString&>(_)))
         .Times(1)
-        .WillOnce(Return(query));
+        .WillRepeatedly(Return(true));
+
+    EXPECT_CALL(*triggersQuery.get(), next())
+        .Times(1)
+        .WillRepeatedly(Return(false));
 
     EXPECT_CALL(*db.get(), transaction())
         .Times(1)
         .WillOnce(Return(true));
 
-    EXPECT_CALL(*query.get(), exec(Matcher<const QString&>(_)))
-        .Times(21)
+    EXPECT_CALL(*createQuery.get(), exec(Matcher<const QString&>(_)))
+        .Times(22)
+        .WillOnce(Return(true))
         .WillOnce(Return(true))
         .WillOnce(Return(true))
         .WillOnce(Return(true))
@@ -196,7 +217,7 @@ TestBookMocked::testInitDatbaseMissingTablesError() {
     // verify expectations
     QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
     QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
-    QVERIFY(Mock::VerifyAndClearExpectations(query.get()));
+    QVERIFY(Mock::VerifyAndClearExpectations(createQuery.get()));
 }
 
 void
@@ -232,6 +253,7 @@ TestBookMocked::testInitDatabasePresentTables_data() {
 void
 TestBookMocked::testInitDatabasePresentTables() {
     QFETCH(QStringList, tables);
+    auto triggersQuery = std::make_shared<tests::MockQuery>();
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -250,6 +272,23 @@ TestBookMocked::testInitDatabasePresentTables() {
         .Times(1)
         .WillOnce(Return(tables));
 
+    EXPECT_CALL(*db.get(), createQuery())
+        .Times(1)
+        .WillOnce(Return(triggersQuery));
+
+    EXPECT_CALL(*triggersQuery.get(), exec(Matcher<const QString&>(_)))
+        .Times(1)
+        .WillRepeatedly(Return(true));
+
+    EXPECT_CALL(*triggersQuery.get(), next())
+        .Times(2)
+        .WillOnce(Return(true))
+        .WillOnce(Return(false));
+
+    EXPECT_CALL(*triggersQuery.get(), value(0))
+        .Times(1)
+        .WillRepeatedly(Return("updateGeneratedRelationsOnUpdate"));
+
     EXPECT_CALL(*db.get(), close())
         .Times(1);
 
@@ -262,7 +301,7 @@ TestBookMocked::testInitDatabasePresentTables() {
 
 void
 TestBookMocked::testStoreCategoryOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -294,7 +333,7 @@ TestBookMocked::testStoreCategoryOpenError() {
 
 void
 TestBookMocked::testStoreCategoryExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -350,7 +389,7 @@ TestBookMocked::testStoreCategoryExecError() {
 
 void
 TestBookMocked::testRemoveCategoryOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -385,7 +424,7 @@ TestBookMocked::testRemoveCategoryOpenError() {
 
 void
 TestBookMocked::testRemoveCategoryChildsExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto deleteChildsQuery = std::make_shared<tests::MockQuery>();
     auto deleteQuery = std::make_shared<tests::MockQuery>();
@@ -471,7 +510,7 @@ TestBookMocked::testRemoveCategoryChildsExecError() {
 
 void
 TestBookMocked::testRemoveCategoryDeleteExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto deleteChildsQuery = std::make_shared<tests::MockQuery>();
     auto deleteQuery = std::make_shared<tests::MockQuery>();
@@ -557,7 +596,7 @@ TestBookMocked::testRemoveCategoryDeleteExecError() {
 
 void
 TestBookMocked::testStoreAccountsOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -589,7 +628,7 @@ TestBookMocked::testStoreAccountsOpenError() {
 
 void
 TestBookMocked::testStoreAccountExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -645,7 +684,7 @@ TestBookMocked::testStoreAccountExecError() {
 
 void
 TestBookMocked::testRemoveAccountOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -679,7 +718,7 @@ TestBookMocked::testRemoveAccountOpenError() {
 
 void
 TestBookMocked::testRemoveAccountExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -738,7 +777,7 @@ TestBookMocked::testRemoveAccountExecError() {
 
 void
 TestBookMocked::testAccountsOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -770,7 +809,7 @@ TestBookMocked::testAccountsOpenError() {
 
 void
 TestBookMocked::testAccountsExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -821,7 +860,7 @@ TestBookMocked::testAccountsExecError() {
 
 void
 TestBookMocked::testCategoriesOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -853,7 +892,7 @@ TestBookMocked::testCategoriesOpenError() {
 
 void
 TestBookMocked::testCategoriesExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -904,7 +943,7 @@ TestBookMocked::testCategoriesExecError() {
 
 void
 TestBookMocked::testStoreTransactionOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -943,7 +982,7 @@ TestBookMocked::testStoreTransactionOpenError() {
 
 void
 TestBookMocked::testStoreTransactionExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -1006,7 +1045,7 @@ TestBookMocked::testStoreTransactionExecError() {
 
 void
 TestBookMocked::testRemoveTransactionOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -1047,7 +1086,7 @@ TestBookMocked::testRemoveTransactionOpenError() {
 
 void
 TestBookMocked::testRemoveTransactionExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -1111,7 +1150,7 @@ TestBookMocked::testRemoveTransactionExecError() {
 
 void
 TestBookMocked::testTransactionsMonthOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -1142,7 +1181,7 @@ TestBookMocked::testTransactionsMonthOpenError() {
 
 void
 TestBookMocked::testTransactionsMonthExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -1197,7 +1236,7 @@ TestBookMocked::testTransactionsMonthExecError() {
 
 void
 TestBookMocked::testTransactionsCategoryOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -1231,7 +1270,7 @@ TestBookMocked::testTransactionsCategoryOpenError() {
 
 void
 TestBookMocked::testTransactionsCategoryExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -1289,7 +1328,7 @@ TestBookMocked::testTransactionsCategoryExecError() {
 
 void
 TestBookMocked::testTransactionsCategoryMonthOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -1323,7 +1362,7 @@ TestBookMocked::testTransactionsCategoryMonthOpenError() {
 
 void
 TestBookMocked::testTransactionsCategoryMonthExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -1381,7 +1420,7 @@ TestBookMocked::testTransactionsCategoryMonthExecError() {
 
 void
 TestBookMocked::testTransactionsAccountOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -1415,7 +1454,7 @@ TestBookMocked::testTransactionsAccountOpenError() {
 
 void
 TestBookMocked::testTransactionsAccountExecError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -1473,7 +1512,7 @@ TestBookMocked::testTransactionsAccountExecError() {
 
 void
 TestBookMocked::testAmountForTypeInDayDbOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -1505,7 +1544,7 @@ TestBookMocked::testAmountForTypeInDayDbOpenError() {
 
 void
 TestBookMocked::testAmountForTypeInDayQueryError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     int day = 1;
     int month = 2;
     int year = 2015;
@@ -1566,7 +1605,7 @@ TestBookMocked::testAmountForTypeInDayQueryError() {
 
 void
 TestBookMocked::testNumberOfDaysWithTransactionsDbOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -1598,7 +1637,7 @@ TestBookMocked::testNumberOfDaysWithTransactionsDbOpenError() {
 
 void
 TestBookMocked::testNumberOfDaysWithTransactionsQueryError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     int month = 2;
     int year = 2015;
 
@@ -1657,7 +1696,7 @@ TestBookMocked::testNumberOfDaysWithTransactionsQueryError() {
 
 void
 TestBookMocked::testDaysWithTransactionsDbOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -1689,7 +1728,7 @@ TestBookMocked::testDaysWithTransactionsDbOpenError() {
 
 void
 TestBookMocked::testDaysWithTransactionsQueryError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     int month = 2;
     int year = 2015;
     int offset = 2;
@@ -1750,7 +1789,7 @@ TestBookMocked::testDaysWithTransactionsQueryError() {
 
 void
 TestBookMocked::testNumberOfMonthsWithTransactionsDbOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -1782,7 +1821,7 @@ TestBookMocked::testNumberOfMonthsWithTransactionsDbOpenError() {
 
 void
 TestBookMocked::testNumberOfMonthsWithTransactionsQueryError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     int year = 2015;
 
     auto db = std::make_shared<tests::MockDatabase>();
@@ -1840,7 +1879,7 @@ TestBookMocked::testNumberOfMonthsWithTransactionsQueryError() {
 
 void
 TestBookMocked::testMonthsWithTransactionsDbOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -1872,7 +1911,7 @@ TestBookMocked::testMonthsWithTransactionsDbOpenError() {
 
 void
 TestBookMocked::testMonthsWithTransactionsQueryError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     int year = 2015;
     int offset = 2;
     int limit = 2;
@@ -1932,7 +1971,7 @@ TestBookMocked::testMonthsWithTransactionsQueryError() {
 
 void
 TestBookMocked::testNumberOfTransactionsDbOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -1964,7 +2003,7 @@ TestBookMocked::testNumberOfTransactionsDbOpenError() {
 
 void
 TestBookMocked::testNumberOfTransactionsQueryError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     int day = 1;
     int month = 2;
     int year = 2012;
@@ -2024,7 +2063,7 @@ TestBookMocked::testNumberOfTransactionsQueryError() {
 
 void
 TestBookMocked::testNumberOfCategoriesDbOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -2056,7 +2095,7 @@ TestBookMocked::testNumberOfCategoriesDbOpenError() {
 
 void
 TestBookMocked::testNumberOfCategoriesQureyError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto type = com::chancho::Category::Type::EXPENSE;
 
     auto db = std::make_shared<tests::MockDatabase>();
@@ -2114,7 +2153,7 @@ TestBookMocked::testNumberOfCategoriesQureyError() {
 
 void
 TestBookMocked::testNumberOfAccountsDbOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -2146,7 +2185,7 @@ TestBookMocked::testNumberOfAccountsDbOpenError() {
 
 void
 TestBookMocked::testNumberOfAccountsQueryError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
 
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
@@ -2203,7 +2242,7 @@ TestBookMocked::testNumberOfAccountsQueryError() {
 
 void
 TestBookMocked::testStoreAccsListDbOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -2238,7 +2277,7 @@ TestBookMocked::testStoreAccsListDbOpenError() {
 
 void
 TestBookMocked::testStoreAccsListQueryError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -2304,7 +2343,7 @@ TestBookMocked::testStoreAccsListQueryError() {
 
 void
 TestBookMocked::testStoreAccsTransactionError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -2346,7 +2385,7 @@ TestBookMocked::testStoreAccsTransactionError() {
 
 void
 TestBookMocked::testStoreCatsListDbOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -2381,7 +2420,7 @@ TestBookMocked::testStoreCatsListDbOpenError() {
 
 void
 TestBookMocked::testStoreCatsListQueryError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -2447,7 +2486,7 @@ TestBookMocked::testStoreCatsListQueryError() {
 
 void
 TestBookMocked::testStoreCatsTransactionError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -2489,7 +2528,7 @@ TestBookMocked::testStoreCatsTransactionError() {
 
 void
 TestBookMocked::testStoreTransListDbOpenError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -2530,7 +2569,7 @@ TestBookMocked::testStoreTransListDbOpenError() {
 
 void
 TestBookMocked::testStoreTransListQueryError() {
-    QSqlError error("Driver error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
     auto query = std::make_shared<tests::MockQuery>();
 
@@ -2602,7 +2641,7 @@ TestBookMocked::testStoreTransListQueryError() {
 
 void
 TestBookMocked::testStoreTransTransactionError() {
-    QSqlError error("Testing driver error", "Text error");
+    QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -2644,6 +2683,153 @@ TestBookMocked::testStoreTransTransactionError() {
     QVERIFY(book.isError());
     QCOMPARE(error.text(), book.lastError());
 
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+}
+
+void
+TestBookMocked::testInitDatabaseMissingRecurrent() {
+    auto db = std::make_shared<tests::MockDatabase>();
+    auto triggersQuery = std::make_shared<tests::MockQuery>();
+    auto createQuery = std::make_shared<tests::MockQuery>();
+    QStringList tables;
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+        .Times(1)
+        .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+        .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+        .Times(1)
+        .WillOnce(Return(true));
+
+    EXPECT_CALL(*db.get(), tables(_))
+        .Times(1)
+        .WillOnce(Return(tables));
+
+    EXPECT_CALL(*db.get(), transaction())
+        .Times(1)
+        .WillOnce(Return(true));
+
+    EXPECT_CALL(*db.get(), createQuery())
+        .Times(2)
+        .WillOnce(Return(triggersQuery))
+        .WillOnce(Return(createQuery));
+
+    EXPECT_CALL(*triggersQuery.get(), exec(Matcher<const QString&>(_)))
+        .Times(1)
+        .WillRepeatedly(Return(true));
+
+    EXPECT_CALL(*triggersQuery.get(), next())
+        .Times(2)
+        .WillOnce(Return(true))
+        .WillOnce(Return(false));
+
+    EXPECT_CALL(*triggersQuery.get(), value(0))
+        .Times(1)
+        .WillRepeatedly(Return(QVariant("updateGeneratedRelationsOnUpdate")));
+
+    EXPECT_CALL(*createQuery.get(), exec(Matcher<const QString&>(_)))
+        .Times(22)
+        .WillRepeatedly(Return(true));
+
+    EXPECT_CALL(*db.get(), commit())
+        .Times(1)
+        .WillOnce(Return(true));
+
+    EXPECT_CALL(*db.get(), close())
+        .Times(1);
+
+    PublicBook::initDatabse();
+
+    // verify expectations
+    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
+    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
+    QVERIFY(Mock::VerifyAndClearExpectations(createQuery.get()));
+}
+
+void
+TestBookMocked::testInitDatabaseMissingRecurrentTrigger_data() {
+    QTest::addColumn<QStringList>("tables");
+
+    QStringList first;
+    first.append("Accounts");
+    first.append("Transactions");
+    first.append("Categories");
+    first.append("recurrenttransactions");
+    first.append("REcurrentTransactionrelations");
+
+    QStringList second;
+    second.append("CATEGORIES");
+    second.append("accounts");
+    second.append("TraNsactions");
+    second.append("ReCurrenttransactions");
+    second.append("recurrentTransactionrelations");
+
+    QStringList third;
+    third.append("accountS");
+    third.append("TraNsacTions");
+    third.append("CateGORIES");
+    third.append("ReCurrentTransactions");
+    third.append("RecurrentTransactionrelations");
+
+    QTest::newRow("first-obj") << first;
+    QTest::newRow("second-obj") << second;
+    QTest::newRow("last-obj") << third;
+}
+
+void
+TestBookMocked::testInitDatabaseMissingRecurrentTrigger() {
+    QFETCH(QStringList, tables);
+    auto createQuery = std::make_shared<tests::MockQuery>();
+    auto triggersQuery = std::make_shared<tests::MockQuery>();
+    auto db = std::make_shared<tests::MockDatabase>();
+
+    // set db interaction expectations
+    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
+        .Times(1)
+        .WillOnce(Return(db));
+
+    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
+        .Times(1);
+
+    EXPECT_CALL(*db.get(), open())
+        .Times(1)
+        .WillOnce(Return(true));
+
+    EXPECT_CALL(*db.get(), tables(_))
+        .Times(1)
+        .WillOnce(Return(tables));
+
+    EXPECT_CALL(*db.get(), createQuery())
+        .Times(2)
+        .WillOnce(Return(triggersQuery))
+        .WillOnce(Return(createQuery));
+
+    EXPECT_CALL(*triggersQuery.get(), exec(Matcher<const QString&>(_)))
+        .Times(1)
+        .WillRepeatedly(Return(true));
+
+    EXPECT_CALL(*triggersQuery.get(), next())
+        .Times(1)
+        .WillOnce(Return(false));
+
+    EXPECT_CALL(*triggersQuery.get(), value(0))
+        .Times(0);
+
+    EXPECT_CALL(*createQuery.get(), exec(Matcher<const QString&>(_)))
+        .Times(1)
+        .WillRepeatedly(Return(true));
+
+    EXPECT_CALL(*db.get(), close())
+        .Times(1);
+
+    PublicBook::initDatabse();
+
+    // verify expectations
     QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
     QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
 }

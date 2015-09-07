@@ -7,6 +7,7 @@ set(SOURCES
     com/chancho/recurrent_transaction.cpp
     com/chancho/stats.cpp
     com/chancho/transaction.cpp
+    com/chancho/updater.cpp
     com/chancho/system/database_factory.cpp
 )
 
@@ -18,6 +19,7 @@ set(HEADERS
     com/chancho/static_init.h
     com/chancho/stats.h
     com/chancho/transaction.h
+    com/chancho/updater.h
     com/chancho/system/database.h
     com/chancho/system/database_factory.h
     com/chancho/system/database_lock.h

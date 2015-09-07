@@ -124,7 +124,7 @@ class Book {
 
         \note When a transaction is newly added to the database a new unique identifier is provided for the account.
     */
-    virtual void store(RecurrentTransactionPtr tran);
+    virtual void store(RecurrentTransactionPtr tran, bool updatePast=false);
 
     /*!
         \fn virtual void store(TransactionPtr tran);
@@ -365,7 +365,7 @@ class Book {
     virtual int numberOfRecurrentCategories();
 
     /*!
-        \fn static void generateRecurrentTransactions();
+        \fn void generateRecurrentTransactions();
 
         Generates the recurrent transactions that have not been added since the last time the
         application was used.
@@ -396,6 +396,20 @@ class Book {
     static void initDatabse();
 
     /*!
+        \fn static QStringList tables();
+
+        Returns the tables that are expected to be present in the database.
+     */
+    static QStringList tables();
+
+    /*!
+        \fn static QStringList triggers();
+
+        Returns the triggers that are expected to be present in the database.
+     */
+    static QStringList triggers();
+
+    /*!
         \fn virtual bool isError();
 
         Returns if there was an error in the execution of a method.
@@ -409,11 +423,17 @@ class Book {
     */
     virtual QString lastError();
 
+    /*!
+        \fn static QString databasePath();
+
+        Returns the path of the database.
+     */
+    static QString databasePath();
+
     static double DB_VERSION;
 
  protected:
     static std::set<QString> TABLES;
-    static QString databasePath();
     double amountForTypeInDay(int day, int month, int year, Category::Type type);
 
  private:
@@ -427,6 +447,10 @@ class Book {
     bool storeSingleTransactions(TransactionPtr ptr);
     bool storeSingleRecurrentTransactions(RecurrentTransactionPtr tran);
     void storeGeneratedTransactions(QMap<RecurrentTransactionPtr, QList<TransactionPtr>> trans);
+    void storeRecurrentNoUpdates(RecurrentTransactionPtr recurrent);
+    void storeRecurrentWithUpdate(RecurrentTransactionPtr recurrent);
+
+    static QStringList getTriggers(std::shared_ptr<system::Database> db);
 
 
  protected:

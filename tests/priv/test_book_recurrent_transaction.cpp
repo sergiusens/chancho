@@ -1857,4 +1857,117 @@ TestBookRecurrentTransaction::testTransactionsFromRecurrentCount() {
     }
 }
 
+void
+TestBookRecurrentTransaction::testUpdateRecurrentTransactions_data() {
+    QTest::addColumn<QPair<double, double>>("amount");
+    QTest::addColumn<QPair<PublicAccountPtr, PublicAccountPtr>>("account");
+    QTest::addColumn<QPair<PublicCategoryPtr, PublicCategoryPtr>>("category");
+    QTest::addColumn<QPair<QString, QString>>("contents");
+    QTest::addColumn<QPair<QString, QString>>("memo");
+
+    QPair<double, double> sameAmount(2.0, 2.0);
+    QPair<double, double> diffAmount(9.4, .8);
+
+    auto firstAcc = std::make_shared<PublicAccount>("Bankia", 23.4);
+    auto secondAcc = std::make_shared<PublicAccount>("HSBC", 23.4);
+
+    QPair<PublicAccountPtr, PublicAccountPtr> sameAccounts(firstAcc, firstAcc);
+    QPair<PublicAccountPtr, PublicAccountPtr> diffAccounts(firstAcc, secondAcc);
+
+    auto firstCat = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    auto secondCat = std::make_shared<PublicCategory>("Food", chancho::Category::Type::EXPENSE);
+
+    QPair<PublicCategoryPtr, PublicCategoryPtr> sameCategory(firstCat, firstCat);
+    QPair<PublicCategoryPtr, PublicCategoryPtr> diffCategory(firstCat, secondCat);
+
+    QString firstContents = "This is a test";
+    QString secondContents = "Sometimes it works";
+
+    QPair<QString, QString> sameContents(firstContents, firstContents);
+    QPair<QString, QString> diffContents(firstContents, secondContents);
+
+    QString firstMemo = "I forgot the tuna";
+    QString secondMemo = "Added extra toppings";
+
+    QPair<QString, QString> sameMemo(firstMemo, firstMemo);
+    QPair<QString, QString> diffMemo(firstMemo, secondMemo);
+
+    QTest::newRow("diff-amount") << diffAmount << sameAccounts << sameCategory << sameContents << sameMemo;
+    QTest::newRow("diff-acc") << sameAmount << diffAccounts << sameCategory << sameContents << sameMemo;
+    QTest::newRow("diff-cat") << sameAmount << sameAccounts << diffCategory << sameContents << sameMemo;
+    QTest::newRow("diff-contents") << sameAmount << sameAccounts << sameCategory << diffContents << sameMemo;
+    QTest::newRow("diff-memo") << sameAmount << sameAccounts << sameCategory << sameContents << diffMemo;
+}
+
+void
+TestBookRecurrentTransaction::testUpdateRecurrentTransactions() {
+    typedef QPair<double, double> DoublePair;
+    typedef QPair<PublicAccountPtr, PublicAccountPtr> AccountPair;
+    typedef QPair<PublicCategoryPtr, PublicCategoryPtr> CategoryPair;
+    typedef QPair<QString, QString> StringPair;
+
+    QFETCH(DoublePair, amount);
+    QFETCH(AccountPair, account);
+    QFETCH(CategoryPair, category);
+    QFETCH(StringPair, contents);
+    QFETCH(StringPair, memo);
+
+    auto currentDate = QDate::currentDate();
+    auto startDate = currentDate.addMonths(-1);
+
+    auto tran = std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(account.first, amount.first, category.first, startDate),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::DAILY, startDate)
+    );
+    tran->transaction->contents = contents.first;
+    tran->transaction->memo = memo.first;
+
+    PublicBook book;
+    account.first->_dbId = QUuid();
+    book.store(account.first);
+    QVERIFY(!book.isError());
+
+    account.second->_dbId = QUuid();
+    book.store(account.second);
+    QVERIFY(!book.isError());
+
+    category.first->_dbId = QUuid();
+    book.store(category.first);
+    QVERIFY(!book.isError());
+
+    category.second->_dbId = QUuid();
+    book.store(category.second);
+    QVERIFY(!book.isError());
+
+    book.store(tran);
+    QVERIFY(!book.isError());
+
+    // generate the transactions and ensure that the data is present
+    book.generateRecurrentTransactions();
+
+    auto public_ptr = std::static_pointer_cast<PublicRecurrence>(tran->recurrence);
+    auto count = public_ptr->generateMissingDates().count() + 1; // the added one is due to the added one in the store
+    auto transCount = book.numberOfTransactions(tran);
+    QCOMPARE(transCount, count);
+
+    // update the recurrent transactions, store it and state that we did change the generated ones
+    tran->transaction->amount = amount.second;
+    tran->transaction->account = account.second;
+    tran->transaction->category = category.second;
+    tran->transaction->contents = contents.second;
+    tran->transaction->memo = memo.second;
+
+    book.store(tran);
+    auto generated = book.transactions(tran);
+    foreach(const chancho::TransactionPtr& generatedTran, generated) {
+        if (amount.first != amount.second)
+            QVERIFY(amount.second != generatedTran->amount);
+        if (contents.first != contents.second)
+            QVERIFY(contents.second != generatedTran->contents);
+        if (memo.first != memo.second)
+            QVERIFY(memo.second != generatedTran->memo);
+    }
+}
+
 QTEST_MAIN(TestBookRecurrentTransaction)
