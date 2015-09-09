@@ -34,112 +34,118 @@
 
 #include "stats.h"
 #include "book.h"
+#include "updater.h"
 
 namespace com {
 
 namespace chancho {
 
+const QString Book::SELECT_TRIGGERS = "SELECT name FROM sqlite_master WHERE type = 'trigger'";
+const QString Book::VERSION_TABLE = "CREATE TABLE IF NOT EXISTS Versions("\
+    "major INT"\
+    "minor INT"\
+    "patch INT)";
+const QString Book::ACCOUNTS_TABLE = "CREATE TABLE IF NOT EXISTS Accounts("\
+    "uuid VARCHAR(40) PRIMARY KEY, "\
+    "name TEXT NOT NULL,"\
+    "memo TEXT,"\
+    "color VARCHAR(7),"\
+    "initialAmount TEXT,"\
+    "amount TEXT)";  // amounts are stored in text so that we can use the most precise number
+const QString Book::CATEGORIES_TABLE = "CREATE TABLE IF NOT EXISTS Categories("\
+    "uuid VARCHAR(40) PRIMARY KEY, "\
+    "parent VARCHAR(40), "\
+    "name TEXT NOT NULL,"\
+    "type INT,"\
+    "color VARCHAR(7),"\
+    "FOREIGN KEY(parent) REFERENCES Categories(uuid))";
+const QString Book::TRANSACTION_TABLE = "CREATE TABLE IF NOT EXISTS Transactions("\
+    "uuid VARCHAR(40) PRIMARY KEY, "\
+    "amount TEXT,"\
+    "account VARCHAR(40) NOT NULL, "\
+    "category VARCHAR(40) NOT NULL, "\
+    "day INT, "\
+    "month INT, "\
+    "year INT, "\
+    "contents TEXT, "\
+    "memo TEXT, "\
+    "is_recurrent INT, "\
+    "FOREIGN KEY(account) REFERENCES Accounts(uuid), "\
+    "FOREIGN KEY(category) REFERENCES Categories(uuid))";  // amounts are stored in text so that we can used the most precise number
+const QString Book::RECURRENT_TRANSACTION_TABLE = "CREATE TABLE IF NOT EXISTS RecurrentTransactions("\
+    "uuid VARCHAR(40) PRIMARY KEY, "\
+    "amount TEXT,"\
+    "account VARCHAR(40) NOT NULL, "\
+    "category VARCHAR(40) NOT NULL, "\
+    "contents TEXT, "\
+    "memo TEXT, "\
+    "startDay INT, "\
+    "startMonth INT, "\
+    "startYear INT, "\
+    "lastDay INT, "\
+    "lastMonth INT, "\
+    "lastYear INT, "\
+    "endDay INT, "\
+    "endMonth INT, "\
+    "endYear INT, "\
+    "defaultType INT, "\
+    "numberDays INT, "\
+    "occurrences INT, "\
+    "FOREIGN KEY(account) REFERENCES Accounts(uuid), "\
+    "FOREIGN KEY(category) REFERENCES Categories(uuid))";  // amounts are stored in text so that we can used the most precise number
+const QString Book::RECURRENT_TRANSACTIONS_RELATIONS_TABLE = "CREATE TABLE IF NOT EXISTS RecurrentTransactionRelations("\
+    "recurrent_transaction VARCHAR(40),"\
+    "generated_transaction VARCHAR(40),"\
+    "FOREIGN KEY(recurrent_transaction) REFERENCES RecurrentTransactions(uuid),"\
+    "FOREIGN KEY(generated_transaction) REFERENCES Transactions(uuid),"\
+    "PRIMARY KEY(recurrent_transaction, generated_transaction))";
+const QString Book::TRANSACTION_INSERT_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionInsert AFTER INSERT ON Transactions "\
+    "BEGIN "\
+    "UPDATE Accounts SET amount=AddStringNumbers(amount, new.amount) WHERE uuid=new.account; "\
+    "END";  // AddStringNumbers is an extension added by the application to the db
+const QString Book::TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionUpdate AFTER UPDATE ON Transactions "\
+    "WHEN old.account = new.account BEGIN "\
+    "UPDATE Accounts SET amount=AddStringNumbers(SubtractStringNumbers(amount, old.amount), new.amount) WHERE uuid=new.account; "\
+    "END";
+const QString Book::TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER = "CREATE TRIGGER UpdateMoveAccountAmountOnTransactionUpdate AFTER UPDATE ON Transactions "\
+    "WHEN old.account != new.account BEGIN "\
+    "UPDATE Accounts SET amount=SubtractStringNumbers(amount, old.amount) WHERE uuid=old.account; "\
+    "UPDATE Accounts SET amount=AddStringNumbers(amount, new.amount) WHERE uuid=new.account; "\
+    "END";
+const QString Book::TRANSACTION_DELETE_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionDelete AFTER DELETE ON Transactions "\
+    "BEGIN "\
+    "UPDATE Accounts SET amount=SubtractStringNumbers(amount, old.amount) WHERE uuid=old.account; "\
+    "DELETE FROM RecurrentTransactionRelations WHERE generated_transaction=old.uuid; "\
+    "END";
+const QString Book::ACCOUNT_DELETE_TRIGGER = "CREATE TRIGGER DeleteTransactionsOnAccountDelete BEFORE DELETE ON Accounts "\
+    "BEGIN "\
+    "DELETE FROM Transactions WHERE account=old.uuid; "\
+    "END";
+const QString Book::CATEGORY_DELETE_TRIGGER = "CREATE TRIGGER DeleteTransactionsOnCategoryDelete BEFORE DELETE ON Categories "\
+    "BEGIN "\
+    "DELETE FROM Transactions WHERE category=old.uuid; "\
+    "END";
+const QString Book::CATEGORY_UPDATE_DIFF_TYPE_TRIGGER = "CREATE TRIGGER UpdateTransactionsOnCategoryTypeUpdate AFTER UPDATE ON Categories "\
+    "WHEN old.type != new.type BEGIN "\
+    "UPDATE Transactions SET amount=NegateStringNumber(amount) WHERE category=new.uuid;"
+        "END";
+const QString Book::RECURRENT_RELATIONS_DELETE_TRIGGER = "CREATE TRIGGER DeleteRecurrentRelationsOnDelete AFTER DELETE ON RecurrentTransactions "\
+    "BEGIN "\
+    "DELETE FROM RecurrentTransactionRelations WHERE recurrent_transaction=old.uuid; "\
+    "END";
+const QString Book::RECURRENT_RELATIONS_INSERT_TRIGGER = "CREATE TRIGGER UpdateRecurrentRelationsOnInsert AFTER INSERT ON RecurrentTransactionRelations "\
+    "BEGIN "\
+    "UPDATE Transactions SET is_recurrent=1 WHERE uuid=new.generated_transaction; "\
+    "END";
+const QString Book::RECURRENT_RELATIONS_UPDATE_TRIGGER = "CREATE TRIGGER UpdateGeneratedRelationsOnUpdate AFTER UPDATE ON RecurrentTransactions "\
+    "BEGIN "\
+    "UPDATE Transactions SET amount=new.amount, account=new.account, category=new.category, contents=new.contents, memo=new.memo "\
+    "WHERE uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE recurrent_transaction=new.uuid);"\
+    "END";
+
 namespace {
     const QString DATABASE_NAME = "chancho.db";
-    const QString SELECT_TRIGGERS = "SELECT name FROM sqlite_master WHERE type = 'trigger'";
-    const QString ACCOUNTS_TABLE = "CREATE TABLE IF NOT EXISTS Accounts("\
-        "uuid VARCHAR(40) PRIMARY KEY, "\
-        "name TEXT NOT NULL,"\
-        "memo TEXT,"\
-        "color VARCHAR(7),"\
-        "initialAmount TEXT,"\
-        "amount TEXT)";  // amounts are stored in text so that we can use the most precise number
-    const QString CATEGORIES_TABLE = "CREATE TABLE IF NOT EXISTS Categories("\
-        "uuid VARCHAR(40) PRIMARY KEY, "\
-        "parent VARCHAR(40), "\
-        "name TEXT NOT NULL,"\
-        "type INT,"\
-        "color VARCHAR(7),"\
-        "FOREIGN KEY(parent) REFERENCES Categories(uuid))";
-    const QString TRANSACTION_TABLE = "CREATE TABLE IF NOT EXISTS Transactions("\
-        "uuid VARCHAR(40) PRIMARY KEY, "\
-        "amount TEXT,"\
-        "account VARCHAR(40) NOT NULL, "\
-        "category VARCHAR(40) NOT NULL, "\
-        "day INT, "\
-        "month INT, "\
-        "year INT, "\
-        "contents TEXT, "\
-        "memo TEXT, "\
-        "is_recurrent INT, "\
-        "FOREIGN KEY(account) REFERENCES Accounts(uuid), "\
-        "FOREIGN KEY(category) REFERENCES Categories(uuid))";  // amounts are stored in text so that we can used the most precise number
     const QString ALTER_TRANSACTION_TABLE = "ALTER TABLE Transactions ADD COLUMN is_recurrent int";
-    const QString RECURRENT_TRANSACTION_TABLE = "CREATE TABLE IF NOT EXISTS RecurrentTransactions("\
-        "uuid VARCHAR(40) PRIMARY KEY, "\
-        "amount TEXT,"\
-        "account VARCHAR(40) NOT NULL, "\
-        "category VARCHAR(40) NOT NULL, "\
-        "contents TEXT, "\
-        "memo TEXT, "\
-        "startDay INT, "\
-        "startMonth INT, "\
-        "startYear INT, "\
-        "lastDay INT, "\
-        "lastMonth INT, "\
-        "lastYear INT, "\
-        "endDay INT, "\
-        "endMonth INT, "\
-        "endYear INT, "\
-        "defaultType INT, "\
-        "numberDays INT, "\
-        "occurrences INT, "\
-        "FOREIGN KEY(account) REFERENCES Accounts(uuid), "\
-        "FOREIGN KEY(category) REFERENCES Categories(uuid))";  // amounts are stored in text so that we can used the most precise number
-    const QString RECURRENT_TRANSACTIONS_RELATIONS_TABLE = "CREATE TABLE IF NOT EXISTS RecurrentTransactionRelations("\
-        "recurrent_transaction VARCHAR(40),"\
-        "generated_transaction VARCHAR(40),"\
-        "FOREIGN KEY(recurrent_transaction) REFERENCES RecurrentTransactions(uuid),"\
-        "FOREIGN KEY(generated_transaction) REFERENCES Transactions(uuid),"\
-        "PRIMARY KEY(recurrent_transaction, generated_transaction))";
-    const QString TRANSACTION_INSERT_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionInsert AFTER INSERT ON Transactions "\
-        "BEGIN "\
-        "UPDATE Accounts SET amount=AddStringNumbers(amount, new.amount) WHERE uuid=new.account; "\
-        "END";  // AddStringNumbers is an extension added by the application to the db
-    const QString TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionUpdate AFTER UPDATE ON Transactions "\
-        "WHEN old.account = new.account BEGIN "\
-        "UPDATE Accounts SET amount=AddStringNumbers(SubtractStringNumbers(amount, old.amount), new.amount) WHERE uuid=new.account; "\
-        "END";
-    const QString TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER = "CREATE TRIGGER UpdateMoveAccountAmountOnTransactionUpdate AFTER UPDATE ON Transactions "\
-        "WHEN old.account != new.account BEGIN "\
-        "UPDATE Accounts SET amount=SubtractStringNumbers(amount, old.amount) WHERE uuid=old.account; "\
-        "UPDATE Accounts SET amount=AddStringNumbers(amount, new.amount) WHERE uuid=new.account; "\
-        "END";
-    const QString TRANSACTION_DELETE_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionDelete AFTER DELETE ON Transactions "\
-        "BEGIN "\
-        "UPDATE Accounts SET amount=SubtractStringNumbers(amount, old.amount) WHERE uuid=old.account; "\
-        "DELETE FROM RecurrentTransactionRelations WHERE generated_transaction=old.uuid; "\
-        "END";
-    const QString ACCOUNT_DELETE_TRIGGER = "CREATE TRIGGER DeleteTransactionsOnAccountDelete BEFORE DELETE ON Accounts "\
-        "BEGIN "\
-        "DELETE FROM Transactions WHERE account=old.uuid; "\
-        "END";
-    const QString CATEGORY_DELETE_TRIGGER = "CREATE TRIGGER DeleteTransactionsOnCategoryDelete BEFORE DELETE ON Categories "\
-        "BEGIN "\
-        "DELETE FROM Transactions WHERE category=old.uuid; "\
-        "END";
-    const QString CATEGORY_UPDATE_DIFF_TYPE_TRIGGER = "CREATE TRIGGER UpdateTransactionsOnCategoryTypeUpdate AFTER UPDATE ON Categories "\
-        "WHEN old.type != new.type BEGIN "\
-        "UPDATE Transactions SET amount=NegateStringNumber(amount) WHERE category=new.uuid;"
-        "END";
-    const QString RECURRENT_RELATIONS_DELETE_TRIGGER = "CREATE TRIGGER DeleteRecurrentRelationsOnDelete AFTER DELETE ON RecurrentTransactions "\
-        "BEGIN "\
-        "DELETE FROM RecurrentTransactionRelations WHERE recurrent_transaction=old.uuid; "\
-        "END";
-    const QString RECURRENT_RELATIONS_INSERT_TRIGGER = "CREATE TRIGGER UpdateRecurrentRelationsOnInsert AFTER INSERT ON RecurrentTransactionRelations "\
-        "BEGIN "\
-        "UPDATE Transactions SET is_recurrent=1 WHERE uuid=new.generated_transaction; "\
-        "END";
-    const QString RECURRENT_RELATIONS_UPDATE_TRIGGER = "CREATE TRIGGER UpdateGeneratedRelationsOnUpdate AFTER UPDATE ON RecurrentTransactions "\
-        "BEGIN "\
-        "UPDATE Transactions SET amount=new.amount, account=new.account, category=new.category, contents=new.contents, memo=new.memo "\
-        "WHERE uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE recurrent_transaction=new.uuid);"\
-        "END";
     const QString TRANSACTION_MONTH_INDEX = "CREATE INDEX transaction_month_index ON Transactions(year, month);";
     const QString TRANSACTION_DAY_INDEX = "CREATE INDEX transaction_day_index ON Transactions(day, year, month);";
     const QString TRANSACTION_CATEGORY_INDEX = "CREATE INDEX transaction_category_index ON Transactions(category);";
@@ -160,7 +166,7 @@ namespace {
         "endDay, endMonth, endYear, defaultType, numberDays, occurrences) "\
         "VALUES(:uuid, :amount, :account, :category, :contents, :memo, :startDay, :startMonth, :startYear, :lastDay, "\
         ":lastMonth, :lastYear, :endDay, :endMonth, :endYear, :defaultType, :numberDays, :occurrences)";
-    const QString UPDATE_RECURRENT_TRANSACTION = "UPDATE RecurrentTransactions SET"
+    const QString UPDATE_RECURRENT_TRANSACTION = "UPDATE RecurrentTransactions SET "\
         "amount=:amount, account=:account, category=:category, contents=:contents, memo=:memo, "\
         "endDay=:endDay, endMonth=:endMonth, endYear=:endYear WHERE uuid=:uuid";
     const QString INSERT_UPDATE_RECURRENT_TRANSACTION_RELATION = "INSERT OR REPLACE INTO RecurrentTransactionRelations("\
@@ -311,6 +317,12 @@ std::set<QString> Book::TABLES {"accounts", "categories", "transactions", "recur
 
 STATIC_INIT(Book) {
     Book::initDatabse();
+    Updater updater;
+    if (updater.needsUpgrade()) {
+        LOG(INFO) << "Database needs to be updated";
+        updater.upgrade();
+    }
+    updater.setDatabaseVersion();
 }
 
 QString
@@ -361,63 +373,11 @@ Book::initDatabse() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
-    auto triggers = getTriggers(db);
 
     // only has to be init those dbs with less than 3 tables, the old versions
     bool hasToBeInit = tables.count() < 3;
 
-    // all versions of the application do not have the recurrent transactions table
-    bool needsRecurrenceUpdate = !tables.contains("recurrenttransactions", Qt::CaseInsensitive);
-    bool needsRecurrenceRelations = !tables.contains("recurrentTransactionrelations", Qt::CaseInsensitive);
-    bool needsRecurrentUpdateTrigger = !triggers.contains("updateGeneratedRelationsOnUpdate", Qt::CaseInsensitive);
-
-    if (!hasToBeInit && needsRecurrenceUpdate) {
-        db->transaction();
-
-        bool success = true;
-        auto query = db->createQuery();
-        success &= query->exec(ALTER_TRANSACTION_TABLE);
-        success &= query->exec(RECURRENT_TRANSACTION_TABLE);
-        success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
-        success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
-        success &= query->exec(RECURRENT_RELATIONS_INSERT_TRIGGER);
-        success &= query->exec(RECURRENT_RELATIONS_UPDATE_TRIGGER);
-
-        if (success)
-            db->commit();
-        else
-            db->rollback();
-
-        if (!success)
-            LOG(ERROR) << "Could not update the chancho db " << db->lastError().text().toStdString();
-
-    } else if (!hasToBeInit && needsRecurrenceRelations) {
-        db->transaction();
-
-        bool success = true;
-        auto query = db->createQuery();
-        success &= query->exec(ALTER_TRANSACTION_TABLE);
-        success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
-        success &= query->exec(RECURRENT_RELATIONS_DELETE_TRIGGER);
-        success &= query->exec(RECURRENT_RELATIONS_INSERT_TRIGGER);
-        success &= query->exec(RECURRENT_RELATIONS_UPDATE_TRIGGER);
-
-        if (success)
-            db->commit();
-        else
-            db->rollback();
-
-        if (!success)
-            LOG(ERROR) << "Could not update the chancho db " << db->lastError().text().toStdString();
-
-    } else if (!hasToBeInit && !needsRecurrenceRelations && needsRecurrentUpdateTrigger) {
-        auto query = db->createQuery();
-        auto success = query->exec(RECURRENT_RELATIONS_UPDATE_TRIGGER);
-
-        if (!success)
-            LOG(ERROR) << "Could not update the chancho db " << db->lastError().text().toStdString();
-
-    } else if (hasToBeInit) {
+    if (hasToBeInit) {
         LOG(INFO) << "The database needs to be init";
         db->transaction();
 
@@ -460,6 +420,7 @@ Book::initDatabse() {
 QStringList
 Book::tables() {
     static QStringList expected {
+            "Versions",
             "Accounts",
             "Categories",
             "Transactions",
@@ -877,11 +838,13 @@ Book::storeRecurrentNoUpdates(RecurrentTransactionPtr tran) {
         return;
     }
 
-    success = storeSingleTransactions(tran->transaction);
-    LOG(INFO) << "Single transaction stored " << success;
-    if (!success) {
-        _db->rollback();
-        return;
+    if (!tran->transaction->wasStoredInDb()) {
+        success = storeSingleTransactions(tran->transaction);
+        LOG(INFO) << "Single transaction stored " << success;
+        if (!success) {
+            _db->rollback();
+            return;
+        }
     }
 
     // store the relation between the two
@@ -915,10 +878,19 @@ Book::storeRecurrentWithUpdate(RecurrentTransactionPtr recurrent) {
         return;
     }
 
+    BookLock dbLock(this);
+
+    if (!dbLock.opened()) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << _lastError.toStdString();
+        return;
+    }
+
     // store the data for the specific info
     // UPDATE_RECURRENT_TRANSACTION = UPDATE RecurrentTransactions SET
     //     amount=:amount, account=:account, category=:category, contents=:contents, memo=:memo,
     //     endDay=:endDay, endMonth=:endMonth, endYear=:endYear WHERE uuid=:uuid;
+    LOG(INFO) << "Updating recurrent transaction.";
     auto query = _db->createQuery();
     query->prepare(UPDATE_RECURRENT_TRANSACTION);
     query->bindValue(":uuid", recurrent->_dbId.toString());
@@ -948,7 +920,7 @@ Book::storeRecurrentWithUpdate(RecurrentTransactionPtr recurrent) {
     // no need to use a transaction since is a single insert
     auto stored = query->exec();
     if (!stored) {
-        _lastError = _db->lastError().text();
+        _lastError = query->lastError().text();
         LOG(INFO) << _lastError.toStdString();
     }
 }

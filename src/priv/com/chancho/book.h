@@ -432,6 +432,25 @@ class Book {
 
     static double DB_VERSION;
 
+ public:
+    static const QString SELECT_TRIGGERS;
+    static const QString VERSION_TABLE;
+    static const QString ACCOUNTS_TABLE;
+    static const QString CATEGORIES_TABLE;
+    static const QString TRANSACTION_TABLE;
+    static const QString RECURRENT_TRANSACTION_TABLE;
+    static const QString RECURRENT_TRANSACTIONS_RELATIONS_TABLE;
+    static const QString TRANSACTION_INSERT_TRIGGER;
+    static const QString TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER;
+    static const QString TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER;
+    static const QString TRANSACTION_DELETE_TRIGGER;
+    static const QString ACCOUNT_DELETE_TRIGGER;
+    static const QString CATEGORY_DELETE_TRIGGER;
+    static const QString CATEGORY_UPDATE_DIFF_TYPE_TRIGGER;
+    static const QString RECURRENT_RELATIONS_DELETE_TRIGGER;
+    static const QString RECURRENT_RELATIONS_INSERT_TRIGGER;
+    static const QString RECURRENT_RELATIONS_UPDATE_TRIGGER;
+
  protected:
     static std::set<QString> TABLES;
     double amountForTypeInDay(int day, int month, int year, Category::Type type);

@@ -20,22 +20,24 @@
  * THE SOFTWARE.
  */
 
+#include <QDebug>
 #include <QFileInfo>
 #include <QSqlDatabase>
 
+#include <com/chancho/updater.h>
 #include <com/chancho/system/database.h>
 #include <com/chancho/system/database_factory.h>
-#include "test_book.h"
+#include "test_upgrader.h"
 
 namespace sys = com::chancho::system;
 
 void
-TestBook::init() {
+TestUpgrader::init() {
     BaseTestCase::init();
 }
 
 void
-TestBook::cleanup() {
+TestUpgrader::cleanup() {
     BaseTestCase::cleanup();
 
     auto dbPath = PublicBook::databasePath();
@@ -45,53 +47,36 @@ TestBook::cleanup() {
 }
 
 void
-TestBook::testInitDatabase() {
+TestUpgrader::testUpgradeNoRecurrence() {
+    // create a database with the basic tables (just the names, no need to add the exact fields)  and make sure it
+    // is added
+    chancho::Updater updater;
     auto dbPath = PublicBook::databasePath();
 
-    // init the database and check that all the tables are present
-    PublicBook::initDatabse();
-
-    QFileInfo fi(dbPath);
-    QVERIFY(fi.exists());
-
-    // use qsql to ensure that the tables are there
-    auto db = com::chancho::system::DatabaseFactory::instance()->addDatabase("QSQLITE", "TESTS");
+    auto db = sys::DatabaseFactory::instance()->addDatabase("QSQLITE", QTest::currentTestFunction());
     db->setDatabaseName(dbPath);
 
     auto opened = db->open();
     QVERIFY(opened);
 
-    // once the db has been created we need to check that it has the correct version and the required tables
-    auto tables = db->tables();
-    QCOMPARE(tables.count(), 5);
-    QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
-    QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
-    QVERIFY(tables.contains("Transactions", Qt::CaseInsensitive));
-    QVERIFY(tables.contains("RecurrentTransactions", Qt::CaseInsensitive));
-    QVERIFY(tables.contains("RecurrentTransactionRelations", Qt::CaseInsensitive));
+    // create the required tables and indexes
+    auto query = db->createQuery();
+
+    auto success = query->exec(chancho::Book::ACCOUNTS_TABLE);
+    QVERIFY(success);
+
+    success &= query->exec(chancho::Book::CATEGORIES_TABLE);
+    QVERIFY(success);
+
+    success &= query->exec(chancho::Book::TRANSACTION_TABLE);
+    QVERIFY(success);
     db->close();
-}
 
-void
-TestBook::testInitDatabaseNoPresentTables() {
-    // create a database with no data, then init the database and ensure that the tables are present
-    auto dbPath = PublicBook::databasePath();
-
-    QFileInfo fi(dbPath);
-    QVERIFY(!fi.exists());
-
-    auto db = com::chancho::system::DatabaseFactory::instance()->addDatabase("QSQLITE", "TESTS");
-    db->setDatabaseName(dbPath);
-
-    auto opened = db->open();
-    QVERIFY(opened);
-
-    db->close();
-    QVERIFY(fi.exists());
-
+    //init the db and test that the recurrence is added
     PublicBook::initDatabse();
+    QVERIFY(updater.needsUpgrade());
+    updater.upgrade();
 
-    // assert that the tables have been created
     opened = db->open();
     QVERIFY(opened);
 
@@ -107,25 +92,46 @@ TestBook::testInitDatabaseNoPresentTables() {
 }
 
 void
-TestBook::testInitDatabasePresentTables() {
-    // simply call init twice and make sure everything goes ok
+TestUpgrader::testUpgradeNoRecurrenceRelations() {
+    // create a database with the basic tables (just the names, no need to add the exact fields)  and make sure it
+    // is added
+    chancho::Updater updater;
     auto dbPath = PublicBook::databasePath();
 
-    PublicBook::initDatabse();
-    PublicBook::initDatabse();
-
-    QFileInfo fi(dbPath);
-    QVERIFY(fi.exists());
-
-    // use qsql to ensure that the tables are there
-    auto db = com::chancho::system::DatabaseFactory::instance()->addDatabase("QSQLITE", "TESTS");
+    auto db = sys::DatabaseFactory::instance()->addDatabase("QSQLITE", QTest::currentTestFunction());
     db->setDatabaseName(dbPath);
 
     auto opened = db->open();
     QVERIFY(opened);
 
+    // create the required tables and indexes
+    auto query = db->createQuery();
+
+    auto success = query->exec(chancho::Book::ACCOUNTS_TABLE);
+    QVERIFY(success);
+
+    success &= query->exec(chancho::Book::CATEGORIES_TABLE);
+    QVERIFY(success);
+
+    success &= query->exec(chancho::Book::TRANSACTION_TABLE);
+    QVERIFY(success);
+
+    success &= query->exec(chancho::Book::RECURRENT_TRANSACTION_TABLE);
+    QVERIFY(success);
+
+    db->close();
+
+    //init the db and test that the recurrence is added
+    PublicBook::initDatabse();
+    QVERIFY(updater.needsUpgrade());
+    updater.upgrade();
+
+    opened = db->open();
+    QVERIFY(opened);
+
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
+    qDebug() << tables;
     QCOMPARE(tables.count(), 5);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
@@ -135,4 +141,5 @@ TestBook::testInitDatabasePresentTables() {
     db->close();
 }
 
-QTEST_MAIN(TestBook)
+
+QTEST_MAIN(TestUpgrader)

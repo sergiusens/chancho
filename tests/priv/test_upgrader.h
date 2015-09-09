@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Manuel de la Peña <mandel@themacaque.com>
+ * Copyright (c) 2015 Manuel de la Peña <mandel@themacaque.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,50 +22,23 @@
 
 #pragma once
 
-#include <memory>
-#include <mutex>
+#include <com/chancho/book.h>
 
-#include <QString>
+#include "public_book.h"
+#include "base_testcase.h"
 
-#include <com/chancho/system/database.h>
-
-namespace com {
-
-namespace chancho {
-
-struct Version {
-    int mayor;
-    int minor;
-    int patch;
-};
-
-class Updater {
-    friend class UpdaterLock;
+class TestUpgrader : public BaseTestCase {
+    Q_OBJECT
 
  public:
-    Updater();
-    virtual ~Updater();
+    explicit TestUpgrader(QObject *parent = 0)
+            : BaseTestCase("TestUpgrader", parent) { }
 
-    virtual QString getDatabaseVersion();
-    virtual void setDatabaseVersion();
+ private slots:
 
-    virtual bool needsUpgrade();
-    virtual void upgrade();
+    void init() override;
+    void cleanup() override;
 
- protected:
-    static QStringList getTriggers(std::shared_ptr<system::Database> db);
-    inline void addRecurrenceTables(std::shared_ptr<system::Database> db);
-    inline void addRecurrenceRelation(std::shared_ptr<system::Database> db);
-    inline void addRecurrenceTrigger(std::shared_ptr<system::Database> db);
-    virtual Version lastVersion();
-
- private:
-    system::DatabasePtr _db;
-    std::mutex _dbMutex;
-
+    void testUpgradeNoRecurrence();
+    void testUpgradeNoRecurrenceRelations();
 };
-
-}
-
-}
-

@@ -76,7 +76,6 @@ TestBookMocked::testDatabasePathMissing() {
 void
 TestBookMocked::testInitDatbaseMissingTables() {
     auto db = std::make_shared<tests::MockDatabase>();
-    auto triggersQuery = std::make_shared<tests::MockQuery>();
     auto createQuery = std::make_shared<tests::MockQuery>();
     QStringList tables;
 
@@ -101,17 +100,8 @@ TestBookMocked::testInitDatbaseMissingTables() {
         .WillOnce(Return(true));
 
     EXPECT_CALL(*db.get(), createQuery())
-        .Times(2)
-        .WillOnce(Return(triggersQuery))
+        .Times(1)
         .WillOnce(Return(createQuery));
-
-    EXPECT_CALL(*triggersQuery.get(), exec(Matcher<const QString&>(_)))
-        .Times(1)
-        .WillRepeatedly(Return(true));
-
-    EXPECT_CALL(*triggersQuery.get(), next())
-        .Times(1)
-        .WillRepeatedly(Return(false));
 
     EXPECT_CALL(*createQuery.get(), exec(Matcher<const QString&>(_)))
         .Times(22)
@@ -136,7 +126,6 @@ void
 TestBookMocked::testInitDatbaseMissingTablesError() {
     QStringList tables;
     QSqlError err;
-    auto triggersQuery = std::make_shared<tests::MockQuery>();
     auto createQuery = std::make_shared<tests::MockQuery>();
     auto db = std::make_shared<tests::MockDatabase>();
 
@@ -157,17 +146,8 @@ TestBookMocked::testInitDatbaseMissingTablesError() {
         .WillOnce(Return(tables));
 
     EXPECT_CALL(*db.get(), createQuery())
-        .Times(2)
-        .WillOnce(Return(triggersQuery))
+        .Times(1)
         .WillOnce(Return(createQuery));
-
-    EXPECT_CALL(*triggersQuery.get(), exec(Matcher<const QString&>(_)))
-        .Times(1)
-        .WillRepeatedly(Return(true));
-
-    EXPECT_CALL(*triggersQuery.get(), next())
-        .Times(1)
-        .WillRepeatedly(Return(false));
 
     EXPECT_CALL(*db.get(), transaction())
         .Times(1)
@@ -253,7 +233,6 @@ TestBookMocked::testInitDatabasePresentTables_data() {
 void
 TestBookMocked::testInitDatabasePresentTables() {
     QFETCH(QStringList, tables);
-    auto triggersQuery = std::make_shared<tests::MockQuery>();
     auto db = std::make_shared<tests::MockDatabase>();
 
     // set db interaction expectations
@@ -271,23 +250,6 @@ TestBookMocked::testInitDatabasePresentTables() {
     EXPECT_CALL(*db.get(), tables(_))
         .Times(1)
         .WillOnce(Return(tables));
-
-    EXPECT_CALL(*db.get(), createQuery())
-        .Times(1)
-        .WillOnce(Return(triggersQuery));
-
-    EXPECT_CALL(*triggersQuery.get(), exec(Matcher<const QString&>(_)))
-        .Times(1)
-        .WillRepeatedly(Return(true));
-
-    EXPECT_CALL(*triggersQuery.get(), next())
-        .Times(2)
-        .WillOnce(Return(true))
-        .WillOnce(Return(false));
-
-    EXPECT_CALL(*triggersQuery.get(), value(0))
-        .Times(1)
-        .WillRepeatedly(Return("updateGeneratedRelationsOnUpdate"));
 
     EXPECT_CALL(*db.get(), close())
         .Times(1);
@@ -2683,153 +2645,6 @@ TestBookMocked::testStoreTransTransactionError() {
     QVERIFY(book.isError());
     QCOMPARE(error.text(), book.lastError());
 
-    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
-    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
-}
-
-void
-TestBookMocked::testInitDatabaseMissingRecurrent() {
-    auto db = std::make_shared<tests::MockDatabase>();
-    auto triggersQuery = std::make_shared<tests::MockQuery>();
-    auto createQuery = std::make_shared<tests::MockQuery>();
-    QStringList tables;
-
-    // set db interaction expectations
-    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
-        .Times(1)
-        .WillOnce(Return(db));
-
-    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
-        .Times(1);
-
-    EXPECT_CALL(*db.get(), open())
-        .Times(1)
-        .WillOnce(Return(true));
-
-    EXPECT_CALL(*db.get(), tables(_))
-        .Times(1)
-        .WillOnce(Return(tables));
-
-    EXPECT_CALL(*db.get(), transaction())
-        .Times(1)
-        .WillOnce(Return(true));
-
-    EXPECT_CALL(*db.get(), createQuery())
-        .Times(2)
-        .WillOnce(Return(triggersQuery))
-        .WillOnce(Return(createQuery));
-
-    EXPECT_CALL(*triggersQuery.get(), exec(Matcher<const QString&>(_)))
-        .Times(1)
-        .WillRepeatedly(Return(true));
-
-    EXPECT_CALL(*triggersQuery.get(), next())
-        .Times(2)
-        .WillOnce(Return(true))
-        .WillOnce(Return(false));
-
-    EXPECT_CALL(*triggersQuery.get(), value(0))
-        .Times(1)
-        .WillRepeatedly(Return(QVariant("updateGeneratedRelationsOnUpdate")));
-
-    EXPECT_CALL(*createQuery.get(), exec(Matcher<const QString&>(_)))
-        .Times(22)
-        .WillRepeatedly(Return(true));
-
-    EXPECT_CALL(*db.get(), commit())
-        .Times(1)
-        .WillOnce(Return(true));
-
-    EXPECT_CALL(*db.get(), close())
-        .Times(1);
-
-    PublicBook::initDatabse();
-
-    // verify expectations
-    QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
-    QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
-    QVERIFY(Mock::VerifyAndClearExpectations(createQuery.get()));
-}
-
-void
-TestBookMocked::testInitDatabaseMissingRecurrentTrigger_data() {
-    QTest::addColumn<QStringList>("tables");
-
-    QStringList first;
-    first.append("Accounts");
-    first.append("Transactions");
-    first.append("Categories");
-    first.append("recurrenttransactions");
-    first.append("REcurrentTransactionrelations");
-
-    QStringList second;
-    second.append("CATEGORIES");
-    second.append("accounts");
-    second.append("TraNsactions");
-    second.append("ReCurrenttransactions");
-    second.append("recurrentTransactionrelations");
-
-    QStringList third;
-    third.append("accountS");
-    third.append("TraNsacTions");
-    third.append("CateGORIES");
-    third.append("ReCurrentTransactions");
-    third.append("RecurrentTransactionrelations");
-
-    QTest::newRow("first-obj") << first;
-    QTest::newRow("second-obj") << second;
-    QTest::newRow("last-obj") << third;
-}
-
-void
-TestBookMocked::testInitDatabaseMissingRecurrentTrigger() {
-    QFETCH(QStringList, tables);
-    auto createQuery = std::make_shared<tests::MockQuery>();
-    auto triggersQuery = std::make_shared<tests::MockQuery>();
-    auto db = std::make_shared<tests::MockDatabase>();
-
-    // set db interaction expectations
-    EXPECT_CALL(*_dbFactory, addDatabase(Matcher<const QString&>(QStringEqual("QSQLITE")), Matcher<const QString&>(QStringEqual("BOOKS"))))
-        .Times(1)
-        .WillOnce(Return(db));
-
-    EXPECT_CALL(*db.get(), setDatabaseName(QStringEqual(PublicBook::databasePath())))
-        .Times(1);
-
-    EXPECT_CALL(*db.get(), open())
-        .Times(1)
-        .WillOnce(Return(true));
-
-    EXPECT_CALL(*db.get(), tables(_))
-        .Times(1)
-        .WillOnce(Return(tables));
-
-    EXPECT_CALL(*db.get(), createQuery())
-        .Times(2)
-        .WillOnce(Return(triggersQuery))
-        .WillOnce(Return(createQuery));
-
-    EXPECT_CALL(*triggersQuery.get(), exec(Matcher<const QString&>(_)))
-        .Times(1)
-        .WillRepeatedly(Return(true));
-
-    EXPECT_CALL(*triggersQuery.get(), next())
-        .Times(1)
-        .WillOnce(Return(false));
-
-    EXPECT_CALL(*triggersQuery.get(), value(0))
-        .Times(0);
-
-    EXPECT_CALL(*createQuery.get(), exec(Matcher<const QString&>(_)))
-        .Times(1)
-        .WillRepeatedly(Return(true));
-
-    EXPECT_CALL(*db.get(), close())
-        .Times(1);
-
-    PublicBook::initDatabse();
-
-    // verify expectations
     QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
     QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
 }
