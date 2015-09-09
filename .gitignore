@@ -40,3 +40,6 @@ build
 # ignore editor files
 *~
 *.swp
+
+# ignore generated files
+src/priv/com/chancho/version.h
