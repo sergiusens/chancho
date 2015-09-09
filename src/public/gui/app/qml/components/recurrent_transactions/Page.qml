@@ -35,7 +35,11 @@ import com.chancho 1.0
 PageStack {
     id: transactionsPageStack
 
+    property var recurrentTransactionModel
+
     Component.onCompleted: {
+        recurrentTransactionModel = Book.recurrentCategoriesModel();
+        console.log("Got model with count " + recurrentTransactionModel.count);
         push(mainPage);
     }
 
@@ -61,10 +65,24 @@ PageStack {
                    spacing: units.gu(2)
                    clip: true
 
-                   model: Book.recurrentCategoriesModel()
+                   model: recurrentTransactionModel
                    delegate: RecurrentTransactionsPerCategory {
                        transactionsModel: Book.recurrentTransactionsModel(model.display)
                    }
+               }
+
+               Label {
+                    id: noResultLabel
+                    anchors.centerIn: parent
+                    anchors.margins: units.gu(1)
+                    width: parent.width
+
+                    text: i18n.tr("No entries were found!")
+                    wrapMode: Text.Wrap
+                    horizontalAlignment: Text.AlignHCenter
+
+                    fontSize: "x-large"
+                    visible: recurrentTransactionModel.count <= 0
                }
            } // Sahpe
        } // Column

@@ -111,6 +111,12 @@ RecurrentCategories::headerData(int section, Qt::Orientation orientation, int ro
         return QString("Row %1").arg(section);
 }
 
+int
+RecurrentCategories::getCount() const {
+    auto count = _book->numberOfRecurrentCategories();
+    return count;
+}
+
 }
 
 }
