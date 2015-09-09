@@ -1,5 +1,8 @@
 set(TARGET chancho-priv)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/com/chancho/version.h.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/com/chancho/version.h @ONLY)
+
 set(SOURCES
     com/chancho/account.cpp
     com/chancho/book.cpp
@@ -18,6 +21,7 @@ set(HEADERS
     com/chancho/static_init.h
     com/chancho/stats.h
     com/chancho/transaction.h
+    com/chancho/version.h
     com/chancho/system/database.h
     com/chancho/system/database_factory.h
     com/chancho/system/database_lock.h
