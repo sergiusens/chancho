@@ -133,6 +133,7 @@ Updater::addRecurrenceTables(std::shared_ptr<system::Database> db) {
         success = true;
     }
 
+    success &= query->exec(Book::VERSION_TABLE);
     success &= query->exec(Book::RECURRENT_TRANSACTION_TABLE);
     success &= query->exec(Book::RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
     success &= query->exec(Book::RECURRENT_RELATIONS_DELETE_TRIGGER);
@@ -160,6 +161,7 @@ Updater::addRecurrenceRelation(std::shared_ptr<system::Database> db) {
         LOG(ERROR) << "Error when upgrading db " << query->lastError().text().toStdString();
         success = true;
     }
+    success &= query->exec(Book::VERSION_TABLE);
     success &= query->exec(Book::RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
     success &= query->exec(Book::RECURRENT_RELATIONS_DELETE_TRIGGER);
     success &= query->exec(Book::RECURRENT_RELATIONS_INSERT_TRIGGER);
@@ -177,10 +179,15 @@ Updater::addRecurrenceRelation(std::shared_ptr<system::Database> db) {
 
 void
 Updater::addRecurrenceTrigger(std::shared_ptr<system::Database> db) {
+    db->transaction();
     auto query = db->createQuery();
     auto success = query->exec(Book::RECURRENT_RELATIONS_UPDATE_TRIGGER);
+    success &= query->exec(Book::VERSION_TABLE);
 
-    if (!success) {
+    if (success) {
+        db->commit();
+    } else {
+        db->rollback();
         LOG(ERROR) << "Could not update the chancho db " << db->lastError().text().toStdString();
     }
 }

@@ -82,12 +82,13 @@ TestUpgrader::testUpgradeNoRecurrence() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
-    QCOMPARE(tables.count(), 5);
+    QCOMPARE(tables.count(), 6);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Transactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactionRelations", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("Versions", Qt::CaseInsensitive));
     db->close();
 }
 
@@ -132,14 +133,14 @@ TestUpgrader::testUpgradeNoRecurrenceRelations() {
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
     qDebug() << tables;
-    QCOMPARE(tables.count(), 5);
+    QCOMPARE(tables.count(), 6);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Transactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactionRelations", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("Versions", Qt::CaseInsensitive));
     db->close();
 }
-
 
 QTEST_MAIN(TestUpgrader)

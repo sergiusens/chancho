@@ -63,12 +63,13 @@ TestBook::testInitDatabase() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
-    QCOMPARE(tables.count(), 5);
+    QCOMPARE(tables.count(), 6);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Transactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactionRelations", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("Versions", Qt::CaseInsensitive));
     db->close();
 }
 
@@ -97,12 +98,13 @@ TestBook::testInitDatabaseNoPresentTables() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
-    QCOMPARE(tables.count(), 5);
+    QCOMPARE(tables.count(), 6);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Transactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactionRelations", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("Versions", Qt::CaseInsensitive));
     db->close();
 }
 
@@ -126,12 +128,13 @@ TestBook::testInitDatabasePresentTables() {
 
     // once the db has been created we need to check that it has the correct version and the required tables
     auto tables = db->tables();
-    QCOMPARE(tables.count(), 5);
+    QCOMPARE(tables.count(), 6);
     QVERIFY(tables.contains("Accounts", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Categories", Qt::CaseInsensitive));
     QVERIFY(tables.contains("Transactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactions", Qt::CaseInsensitive));
     QVERIFY(tables.contains("RecurrentTransactionRelations", Qt::CaseInsensitive));
+    QVERIFY(tables.contains("Versions", Qt::CaseInsensitive));
     db->close();
 }
 

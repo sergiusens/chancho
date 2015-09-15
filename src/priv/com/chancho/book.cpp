@@ -42,9 +42,10 @@ namespace chancho {
 
 const QString Book::SELECT_TRIGGERS = "SELECT name FROM sqlite_master WHERE type = 'trigger'";
 const QString Book::VERSION_TABLE = "CREATE TABLE IF NOT EXISTS Versions("\
-    "major INT"\
-    "minor INT"\
-    "patch INT)";
+    "major INT, "\
+    "minor INT, "\
+    "patch INT, "\
+    "PRIMARY KEY (major, minor, patch))";
 const QString Book::ACCOUNTS_TABLE = "CREATE TABLE IF NOT EXISTS Accounts("\
     "uuid VARCHAR(40) PRIMARY KEY, "\
     "name TEXT NOT NULL,"\
@@ -384,6 +385,7 @@ Book::initDatabse() {
         // create the required tables and indexes
         bool success = true;
         auto query = db->createQuery();
+        success &= query->exec(VERSION_TABLE);
         success &= query->exec(FOREIGN_KEY_SUPPORT);
         success &= query->exec(ACCOUNTS_TABLE);
         success &= query->exec(CATEGORIES_TABLE);
