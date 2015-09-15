@@ -11,6 +11,7 @@ set(PRIVATE_TESTS
     test_recurrence
     test_stats
     test_transaction
+    test_upgrader
 )
 
 foreach(test ${PRIVATE_TESTS})

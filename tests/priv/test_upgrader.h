@@ -27,19 +27,18 @@
 #include "public_book.h"
 #include "base_testcase.h"
 
-class TestBook : public BaseTestCase {
+class TestUpgrader : public BaseTestCase {
     Q_OBJECT
 
  public:
-    explicit TestBook(QObject *parent = 0)
-            : BaseTestCase("TestBook", parent) { }
+    explicit TestUpgrader(QObject *parent = 0)
+            : BaseTestCase("TestUpgrader", parent) { }
 
  private slots:
 
     void init() override;
     void cleanup() override;
 
-    void testInitDatabase();
-    void testInitDatabaseNoPresentTables();
-    void testInitDatabasePresentTables();
+    void testUpgradeNoRecurrence();
+    void testUpgradeNoRecurrenceRelations();
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Manuel de la Peña <mandel@themacaque.com>
+ * Copyright (c) 2014 Manuel de la Peña <mandel@themacaque.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,24 +22,50 @@
 
 #pragma once
 
-#include <com/chancho/book.h>
+#include <memory>
+#include <mutex>
 
-#include "public_book.h"
-#include "base_testcase.h"
+#include <QString>
 
-class TestBook : public BaseTestCase {
-    Q_OBJECT
+#include <com/chancho/system/database.h>
+
+namespace com {
+
+namespace chancho {
+
+struct Version {
+    int mayor;
+    int minor;
+    int patch;
+};
+
+class Updater {
+    friend class UpdaterLock;
 
  public:
-    explicit TestBook(QObject *parent = 0)
-            : BaseTestCase("TestBook", parent) { }
+    Updater();
+    virtual ~Updater();
 
- private slots:
+    virtual QString getDatabaseVersion();
+    virtual void setDatabaseVersion();
 
-    void init() override;
-    void cleanup() override;
+    virtual bool needsUpgrade();
+    virtual void upgrade();
 
-    void testInitDatabase();
-    void testInitDatabaseNoPresentTables();
-    void testInitDatabasePresentTables();
+ protected:
+    static QStringList getTriggers(std::shared_ptr<system::Database> db);
+    inline void addRecurrenceTables(std::shared_ptr<system::Database> db);
+    inline void addRecurrenceRelation(std::shared_ptr<system::Database> db);
+    inline void addRecurrenceTrigger(std::shared_ptr<system::Database> db);
+    virtual Version lastVersion();
+
+ private:
+    system::DatabasePtr _db;
+    std::mutex _dbMutex;
+
 };
+
+}
+
+}
+
