@@ -22,12 +22,11 @@
 
 #pragma once
 
-#include <QAbstractListModel>
-#include <QModelIndex>
+#include <QString>
 
 #include <com/chancho/book.h>
-#include <com/chancho/category.h>
-#include "com/chancho/qml/category.h"
+
+#include "com/chancho/qml/workers/worker.h"
 
 namespace com {
 
@@ -35,44 +34,31 @@ namespace chancho {
 
 namespace qml {
 
-class Book;
+namespace workers {
 
-namespace models {
+namespace transactions {
 
-class RecurrentCategories : public QAbstractListModel {
-    Q_OBJECT
-    Q_PROPERTY(int count READ getCount NOTIFY countChanged)
-
-    friend class com::chancho::qml::Book;
+class SingleRecurrentUpdate : public workers::Worker {
 
  public:
-    explicit RecurrentCategories(QObject* parent = 0);
-    virtual ~RecurrentCategories();
-
-    // methods to override to allow the model to be used from qml
-    Q_INVOKABLE int numberOfCategories() const;
-    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
-    QVariant data(int row, int role) const;
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-
-    int getCount() const;
-
- signals:
-    void countChanged(int);
-
- protected:
-    RecurrentCategories(BookPtr book, QObject* parent = 0);
-    void onRecurrentTransactionUpdated();
+    SingleRecurrentUpdate(BookPtr book, chancho::RecurrentTransactionPtr trans, chancho::AccountPtr acc, chancho::CategoryPtr cat,
+                 QDate date, QString contents, QString memo, double amount, bool updateAll);
+    void run() override;
 
  private:
     BookPtr _book;
+    chancho::RecurrentTransactionPtr _trans;
+    chancho::AccountPtr _acc;
+    chancho::CategoryPtr _cat;
+    QDate _date = QDate();
+    QString _contents = QString::null;
+    QString _memo = QString::null;
+    double _amount = 0;
+    bool _updateAll = false;
 };
 
 }
-
 }
-
 }
-
+}
 }

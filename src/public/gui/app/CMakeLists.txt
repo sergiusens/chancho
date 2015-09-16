@@ -108,6 +108,7 @@ set(QML_SOURCES
     qml/components/recurrent_transactions/RecurrentTransaction.qml
     qml/components/recurrent_transactions/Page.qml
     qml/components/recurrent_transactions/RecurrentTransactionsPerCategory.qml
+    qml/components/recurrent_transactions/UpdateConfirmationDialog.qml
     qml/components/transactions/BillingPerDay.qml
     qml/components/transactions/DateHeader.qml
     qml/components/transactions/Edit.qml

@@ -43,8 +43,10 @@ Page {
             }
 
             form.date = transaction.date
-            form.contents = transaction.contents
-            form.memo = transaction.memo
+            id (transaction.contents !== "")
+                form.contents = transaction.contents
+            if (transaction.memo !== "")
+                form.memo = transaction.memo
             form.amount = transaction.amount
 
             form.accountIndex = form.accountModel.getIndex(transaction.accountModel)
@@ -52,7 +54,7 @@ Page {
         }
     }
 
-    title: "Edit entry"
+    title: i18n.tr("Edit entry")
 
     head.actions: [
         Action {
