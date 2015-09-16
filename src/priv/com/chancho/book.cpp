@@ -1070,7 +1070,7 @@ Book::remove(TransactionPtr tran) {
 }
 
 void
-Book::remove(RecurrentTransactionPtr tran, bool removeGenrated) {
+Book::remove(RecurrentTransactionPtr tran, bool removeGenerated) {
     if (tran->_dbId.isNull()) {
         LOG(ERROR) << "Cannot delete transaction with a NULL id";
         _lastError = "Cannot delete Account that was not added to the db";
@@ -1089,7 +1089,7 @@ Book::remove(RecurrentTransactionPtr tran, bool removeGenrated) {
     _db->transaction();
 
     auto query = _db->createQuery();
-    if (removeGenrated) {
+    if (removeGenerated) {
         // DELETE_RECURRENT_GENERATED = DELETE FROM Transactions WHERE uuid IN (SELECT generated_transaction FROM
         //     RecurrentTransactionRelations WHERE recurrent_transaction=:recurrent_Transaction)
         query->prepare(DELETE_RECURRENT_GENERATED);

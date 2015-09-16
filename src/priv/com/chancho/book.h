@@ -165,7 +165,7 @@ class Book {
         Removes the given \a tran from the database. If true is passed as the second argument all generated
         transactions will be removed.
     */
-    virtual void remove(RecurrentTransactionPtr tran, bool removeGenrated=false);
+    virtual void remove(RecurrentTransactionPtr tran, bool removeGenerated=false);
 
     /*!
         \fn virtual QList<AccountPtr> accounts();

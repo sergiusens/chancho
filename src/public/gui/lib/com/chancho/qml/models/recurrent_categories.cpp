@@ -123,6 +123,12 @@ RecurrentCategories::onRecurrentTransactionUpdated() {
     endResetModel();
 }
 
+void
+RecurrentCategories::onRecurrentTransactionRemoved() {
+    beginResetModel();
+    endResetModel();
+}
+
 }
 
 }

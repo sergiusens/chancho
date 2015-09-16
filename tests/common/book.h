@@ -39,10 +39,11 @@ class MockBook: public com::chancho::Book {
     MOCK_METHOD1(store, void(CategoryPtr));
     MOCK_METHOD1(store, void(QList<CategoryPtr>));
     MOCK_METHOD1(store, void(TransactionPtr));
-    MOCK_METHOD1(store, void(RecurrentTransactionPtr));
+    MOCK_METHOD2(store, void(RecurrentTransactionPtr, bool));
     MOCK_METHOD1(remove, void(AccountPtr));
     MOCK_METHOD1(remove, void(CategoryPtr));
     MOCK_METHOD1(remove, void(TransactionPtr));
+    MOCK_METHOD2(remove, void(RecurrentTransactionPtr, bool));
     MOCK_METHOD2(accounts, QList<AccountPtr>(boost::optional<int>, boost::optional<int>));
     MOCK_METHOD0(numberOfAccounts, int());
     MOCK_METHOD3(categories, QList<CategoryPtr>(boost::optional<com::chancho::Category::Type>,

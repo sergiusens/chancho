@@ -82,8 +82,8 @@ class RecurrentTransaction {
 
     virtual bool wasStoredInDb() const;
 
-    TransactionPtr transaction;  // example transaction to be used to repeat
-    RecurrencePtr recurrence;
+    TransactionPtr transaction = std::make_shared<Transaction>();  // example transaction to be used to repeat
+    RecurrencePtr recurrence = std::make_shared<Recurrence>();
 
  protected:
    // optional so that we know if a category was added to the db or not

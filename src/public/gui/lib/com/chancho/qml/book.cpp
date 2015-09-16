@@ -242,6 +242,8 @@ Book::recurrentCategoriesModel() {
     auto model = new models::RecurrentCategories(_book);
     connect(this, &Book::recurrentTransactionUpdated, model,
             &models::RecurrentCategories::onRecurrentTransactionUpdated);
+    connect(this, &Book::recurrentTransactionRemoved, model,
+            &models::RecurrentCategories::onRecurrentTransactionRemoved);
     return model;
 }
 
@@ -292,6 +294,17 @@ Book::updateRecurrentTransaction(QObject* recurrent, QObject* accObj, QObject* c
     auto worker = _transactionWorkersFactory->updateTransaction(this, tran, acc, cat, date, contents, memo, amount,
                                                                 updateAll);
     LOG(INFO) << "Starting worker thread to do the update.";
+    worker->start();
+    return true;
+}
+
+bool
+Book::removeRecurrentTransaction(QObject* transaction, bool removeGenerated) {
+    auto tran = qobject_cast<qml::RecurrentTransaction*>(transaction);
+    if (tran == nullptr) {
+        return false;
+    }
+    auto worker = _transactionWorkersFactory->removeTransaction(this, tran->getTransaction(), removeGenerated);
     worker->start();
     return true;
 }

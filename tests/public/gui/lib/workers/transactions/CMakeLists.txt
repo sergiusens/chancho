@@ -1,5 +1,7 @@
 set(PRIVATE_TESTS
     test_generate_recurrent
+    test_single_recurrent_remove
+    test_single_recurrent_update
     test_single_remove
     test_single_store
     test_single_update
