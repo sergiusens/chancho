@@ -263,6 +263,7 @@ Page {
                        anchors.right: parent.right
 
                        Layout.fillHeight: true
+                       Layout.minimumHeight: page.height / 3
 
                        width: parent.width
                        autoSize: true
