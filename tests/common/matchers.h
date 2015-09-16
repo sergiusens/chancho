@@ -97,7 +97,7 @@ MATCHER_P(TransactionEquals, value, "Returns if the two categories are equal.") 
            && arg->contents == value->contents && arg->memo == value->memo;
 }
 
-MATCHER_P(RecurrentTransactionEquals, value, "Returns if the two categories are equal.") {
+MATCHER_P(RecurrentTransactionEquals, value, "Returns if the two transactions are equal.") {
     auto argTran = arg->transaction;
     auto valueTran = value->transaction;
     auto transEqual = argTran->account->name == valueTran->account->name && argTran->amount == valueTran->amount

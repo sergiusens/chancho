@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-16 11:01+0200\n"
+"POT-Creation-Date: 2015-09-16 22:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,6 +49,7 @@ msgstr ""
 #: ../qml/components/dialogs/RecurrenceDialog.qml:197
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:94
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:117
+#: ../qml/components/recurrent_transactions/RemoveConfirmationDialog.qml:54
 #: ../qml/components/recurrent_transactions/UpdateConfirmationDialog.qml:72
 msgid "Cancel"
 msgstr ""
@@ -58,6 +59,7 @@ msgstr ""
 #: ../qml/components/dialogs/ErrorDialog.qml:33
 #: ../qml/components/dialogs/RecurrenceDialog.qml:203
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:125
+#: ../qml/components/recurrent_transactions/RemoveConfirmationDialog.qml:60
 #: ../qml/components/recurrent_transactions/UpdateConfirmationDialog.qml:78
 msgid "Ok"
 msgstr ""
@@ -357,6 +359,10 @@ msgstr ""
 
 #: ../qml/components/recurrent_transactions/RecurrentTransaction.qml:57
 msgid " days"
+msgstr ""
+
+#: ../qml/components/recurrent_transactions/RemoveConfirmationDialog.qml:43
+msgid "Remove past transactions."
 msgstr ""
 
 #: ../qml/components/recurrent_transactions/UpdateConfirmationDialog.qml:47

@@ -175,6 +175,16 @@ WorkerFactory::updateTransaction(qml::Book* book, chancho::TransactionPtr trans,
     return worker;
 }
 
+WorkerThread<SingleRecurrentRemove>*
+WorkerFactory::removeTransaction(qml::Book* book, chancho::RecurrentTransactionPtr trans, bool removeGenerated) {
+    auto worker = new WorkerThread<SingleRecurrentRemove>(new SingleRecurrentRemove(book->_book, trans,
+                                                                                    removeGenerated));
+    QObject::connect(worker->implementation(), &SingleRecurrentRemove::success, book,
+                     &Book::recurrentTransactionRemoved);
+    QObject::connect(worker->thread(), &QThread::finished, worker, &QObject::deleteLater);
+    return worker;
+}
+
 WorkerThread<SingleRecurrentUpdate>*
 WorkerFactory::updateTransaction(qml::Book* book, chancho::RecurrentTransactionPtr trans, chancho::AccountPtr acc,
                                  chancho::CategoryPtr cat, QDate date, QString contents, QString memo, double amount,

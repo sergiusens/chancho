@@ -2083,4 +2083,58 @@ TestBookRecurrentTransaction::testUpdateRecurrentTransactionsWithUpdates() {
     }
 }
 
+void
+TestBookRecurrentTransaction::testRemoveGeneratedOnDelete() {
+    // create a list of recurrent transactions wit diff last dates and state that all the required transactions are
+    // generated and the date of the last generate one has been update
+    auto acc = std::make_shared<PublicAccount>("Bankia", 23.4);
+    auto cat = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    auto currentDate = QDate::currentDate();
+    auto startDate = currentDate.addMonths(-1);
+
+    QList<chancho::RecurrentTransactionPtr> trans;
+    trans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(acc, 19, cat, startDate),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::DAILY, startDate)
+    ));
+    trans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(acc, 21, cat, currentDate.addMonths(-1)),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::WEEKLY, startDate)
+    ));
+    trans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(acc, 150, cat, currentDate.addMonths(-1)),
+            std::make_shared<PublicRecurrence>(
+                    chancho::RecurrentTransaction::Recurrence::Defaults::MONTHLY, startDate)
+    ));
+    trans.append(std::make_shared<PublicRecurrentTransaction>(
+            std::make_shared<PublicTransaction>(acc, 150, cat, startDate),
+            std::make_shared<PublicRecurrence>(3, currentDate.addMonths(-1))
+    ));
+
+    PublicBook book;
+    book.store(acc);
+    QVERIFY(!book.isError());
+
+    book.store(cat);
+    QVERIFY(!book.isError());
+
+    book.store(trans);
+    QVERIFY(!book.isError());
+
+    // generate the transactions and ensure that the data is present
+    book.generateRecurrentTransactions();
+
+    foreach(const chancho::RecurrentTransactionPtr& recurrent, trans){
+        auto public_ptr = std::static_pointer_cast<PublicRecurrence>(recurrent->recurrence);
+        auto count = public_ptr->generateMissingDates().count();
+        auto transCount = book.numberOfTransactions(recurrent);
+        QCOMPARE(transCount, count);
+        book.remove(recurrent, true);
+        transCount = book.numberOfTransactions(recurrent);
+        QCOMPARE(transCount, 0);
+    }
+}
+
 QTEST_MAIN(TestBookRecurrentTransaction)

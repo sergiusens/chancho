@@ -111,6 +111,7 @@ class Book : public QObject {
     Q_INVOKABLE QObject* generatedTransactions(QObject* recurrentTransaction);
     Q_INVOKABLE bool updateRecurrentTransaction(QObject* recurrent, QObject* accModel, QObject* catModel, QDate date,
                                        QString contents, QString memo, double amount, bool updateAll=false);
+    Q_INVOKABLE bool removeRecurrentTransaction(QObject* transaction, bool removeGenerated=false);
 
     Q_INVOKABLE int numberOfCategories(TransactionType type);
     Q_INVOKABLE QObject* categoriesModel();
@@ -138,6 +139,7 @@ class Book : public QObject {
     void transactionUpdated(QDate oldDate, QDate newDate);
     void recurrentTransactionsGenerated();
     void recurrentTransactionUpdated();
+    void recurrentTransactionRemoved();
 
  protected:
     // protected for testing purposes

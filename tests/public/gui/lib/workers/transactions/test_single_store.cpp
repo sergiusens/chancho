@@ -156,7 +156,7 @@ TestSingleStore::testRecurrenceStoreTypeMissing() {
     auto book = std::make_shared<c::tests::MockBook>();
 
     EXPECT_CALL(*book.get(),
-                store(Matcher<c::RecurrentTransactionPtr>(_)))
+                store(Matcher<c::RecurrentTransactionPtr>(_), false))
             .Times(0);
 
     auto worker = std::make_shared<c::qml::workers::transactions::SingleStore>(book, tran->account,
@@ -187,7 +187,7 @@ TestSingleStore::testRecurrenceStoreBothEndPresent() {
     auto book = std::make_shared<c::tests::MockBook>();
 
     EXPECT_CALL(*book.get(),
-                store(Matcher<c::RecurrentTransactionPtr>(_)))
+                store(Matcher<c::RecurrentTransactionPtr>(_), false))
             .Times(0);
 
     auto worker = std::make_shared<c::qml::workers::transactions::SingleStore>(book, tran->account,
@@ -282,7 +282,7 @@ TestSingleStore::testRecurrenctStore() {
     auto book = std::make_shared<c::tests::MockBook>();
 
     EXPECT_CALL(*book.get(),
-                store(Matcher<c::RecurrentTransactionPtr>(RecurrentTransactionEquals(recurrentTransaction))))
+                store(Matcher<c::RecurrentTransactionPtr>(RecurrentTransactionEquals(recurrentTransaction)), false))
             .Times(1);
 
     EXPECT_CALL(*book.get(), generateRecurrentTransactions())

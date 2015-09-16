@@ -22,12 +22,10 @@
 
 #pragma once
 
-#include <QAbstractListModel>
-#include <QModelIndex>
-
 #include <com/chancho/book.h>
-#include <com/chancho/category.h>
-#include "com/chancho/qml/category.h"
+#include <com/chancho/recurrent_transaction.h>
+
+#include "com/chancho/qml/workers/worker.h"
 
 namespace com {
 
@@ -35,45 +33,25 @@ namespace chancho {
 
 namespace qml {
 
-class Book;
+namespace workers {
 
-namespace models {
+namespace transactions {
 
-class RecurrentCategories : public QAbstractListModel {
-    Q_OBJECT
-    Q_PROPERTY(int count READ getCount NOTIFY countChanged)
-
-    friend class com::chancho::qml::Book;
+class SingleRecurrentRemove : public workers::Worker {
 
  public:
-    explicit RecurrentCategories(QObject* parent = 0);
-    virtual ~RecurrentCategories();
-
-    // methods to override to allow the model to be used from qml
-    Q_INVOKABLE int numberOfCategories() const;
-    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
-    QVariant data(int row, int role) const;
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-
-    int getCount() const;
-
- signals:
-    void countChanged(int);
-
- protected:
-    RecurrentCategories(BookPtr book, QObject* parent = 0);
-    void onRecurrentTransactionUpdated();
-    void onRecurrentTransactionRemoved();
+    SingleRecurrentRemove(BookPtr book, com::chancho::RecurrentTransactionPtr trans, bool removeGenerated=false);
+    void run() override;
 
  private:
     BookPtr _book;
+    com::chancho::RecurrentTransactionPtr _trans;
+    bool _removeGenerated;
 };
 
 }
-
+}
+}
+}
 }
 
-}
-
-}

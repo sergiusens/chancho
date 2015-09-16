@@ -20,6 +20,7 @@
         <file>qml/components/recurrent_transactions/RecurrentTransaction.qml</file>
         <file>qml/components/recurrent_transactions/Page.qml</file>
         <file>qml/components/recurrent_transactions/RecurrentTransactionsPerCategory.qml</file>
+        <file>qml/components/recurrent_transactions/RemoveConfirmationDialog.qml</file>
         <file>qml/components/recurrent_transactions/UpdateConfirmationDialog.qml</file>
         <file>qml/components/transactions/BillingPerDay.qml</file>
         <file>qml/components/transactions/DateHeader.qml</file>

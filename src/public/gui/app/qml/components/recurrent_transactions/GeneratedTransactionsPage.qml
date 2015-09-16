@@ -71,8 +71,8 @@ Page {
            iconName: "delete"
            text: i18n.tr("Delete")
            onTriggered: {
-               var deleteTransactionsCb = function() {
-                   Book.removeTransaction(transaction);
+               var deleteTransactionsCb = function(removePast) {
+                   Book.removeRecurrentTransaction(recurrentTransaction, removePast);
                    transactionsPageStack.pop();
                };
                var properties = {
@@ -80,7 +80,7 @@ Page {
                    "text": i18n.tr("Do you want to remove this transaction?"),
                    "okCallback": deleteTransactionsCb
                };
-               PopupUtils.open(Qt.resolvedUrl("../dialogs/ConfirmationDialog.qml"), page, properties);
+               PopupUtils.open(Qt.resolvedUrl("RemoveConfirmationDialog.qml"), page, properties);
            }
        }
    ]

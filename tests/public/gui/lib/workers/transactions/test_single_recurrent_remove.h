@@ -22,12 +22,9 @@
 
 #pragma once
 
-#include <QAbstractListModel>
-#include <QModelIndex>
+#include <memory>
 
-#include <com/chancho/book.h>
-#include <com/chancho/category.h>
-#include "com/chancho/qml/category.h"
+#include "base_testcase.h"
 
 namespace com {
 
@@ -35,45 +32,34 @@ namespace chancho {
 
 namespace qml {
 
-class Book;
+namespace workers {
 
-namespace models {
+namespace transactions {
 
-class RecurrentCategories : public QAbstractListModel {
+namespace tests {
+
+class TestSingleRecurrentRemove : public BaseTestCase {
     Q_OBJECT
-    Q_PROPERTY(int count READ getCount NOTIFY countChanged)
-
-    friend class com::chancho::qml::Book;
 
  public:
-    explicit RecurrentCategories(QObject* parent = 0);
-    virtual ~RecurrentCategories();
+    explicit TestSingleRecurrentRemove(QObject *parent = 0)
+            : BaseTestCase("TestSingleRecurrentRemove", parent) { }
 
-    // methods to override to allow the model to be used from qml
-    Q_INVOKABLE int numberOfCategories() const;
-    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
-    QVariant data(int row, int role) const;
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+ private slots:
 
-    int getCount() const;
+    void init() override;
+    void cleanup() override;
 
- signals:
-    void countChanged(int);
+    void testRun_data();
+    void testRun();
 
- protected:
-    RecurrentCategories(BookPtr book, QObject* parent = 0);
-    void onRecurrentTransactionUpdated();
-    void onRecurrentTransactionRemoved();
-
- private:
-    BookPtr _book;
+    void testRunBookError();
 };
 
 }
-
+}
+}
+}
+}
 }
 
-}
-
-}
