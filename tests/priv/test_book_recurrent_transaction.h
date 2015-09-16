@@ -87,6 +87,7 @@ class TestBookRecurrentTransaction : public BaseTestCase {
     void testUpdateRecurrentTransactionsNoUpdates();
     void testUpdateRecurrentTransactionsWithUpdates_data();
     void testUpdateRecurrentTransactionsWithUpdates();
+    void testRemoveGeneratedOnDelete();
 };
 
 Q_DECLARE_METATYPE(QList<com::chancho::RecurrentTransactionPtr>)

@@ -118,9 +118,10 @@ class Book {
     virtual void store(QList<TransactionPtr> trans);
 
     /*!
-        \fn virtual void store(RecurrentTransactionPtr tran);
+        \fn virtual void store(RecurrentTransactionPtr tran, bool updatePast=false);
 
-        Stores or updates the given recurrent \a tran in the database.
+        Stores or updates the given recurrent \a tran in the database. Is trus is passed as the second argument all
+        previosly generated transactions will be updated.
 
         \note When a transaction is newly added to the database a new unique identifier is provided for the account.
     */
@@ -161,9 +162,10 @@ class Book {
     /*!
         \fn virtual void remove(RecurrentTransactionPtr tran);
 
-        Removes the given \a tran from the database.
+        Removes the given \a tran from the database. If true is passed as the second argument all generated
+        transactions will be removed.
     */
-    virtual void remove(RecurrentTransactionPtr tran);
+    virtual void remove(RecurrentTransactionPtr tran, bool removeGenrated=false);
 
     /*!
         \fn virtual QList<AccountPtr> accounts();

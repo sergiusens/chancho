@@ -129,7 +129,7 @@ const QString Book::CATEGORY_DELETE_TRIGGER = "CREATE TRIGGER DeleteTransactions
 const QString Book::CATEGORY_UPDATE_DIFF_TYPE_TRIGGER = "CREATE TRIGGER UpdateTransactionsOnCategoryTypeUpdate AFTER UPDATE ON Categories "\
     "WHEN old.type != new.type BEGIN "\
     "UPDATE Transactions SET amount=NegateStringNumber(amount) WHERE category=new.uuid;"
-        "END";
+    "END";
 const QString Book::RECURRENT_RELATIONS_DELETE_TRIGGER = "CREATE TRIGGER DeleteRecurrentRelationsOnDelete AFTER DELETE ON RecurrentTransactions "\
     "BEGIN "\
     "DELETE FROM RecurrentTransactionRelations WHERE recurrent_transaction=old.uuid; "\
@@ -177,6 +177,8 @@ namespace {
     const QString DELETE_CATEGORY = "DELETE FROM Categories WHERE uuid=:uuid";
     const QString DELETE_TRANSACTION = "DELETE FROM Transactions WHERE uuid=:uuid";
     const QString DELETE_RECURRENT_TRANSACTION = "DELETE FROM RecurrentTransactions WHERE uuid=:uuid";
+    const QString DELETE_RECURRENT_GENERATED = "DELETE FROM Transactions WHERE uuid IN (SELECT generated_transaction FROM "\
+        "RecurrentTransactionRelations WHERE recurrent_transaction=:recurrent_Transaction)";
     const QString SELECT_ALL_ACCOUNTS = "SELECT uuid, name, memo, color, initialAmount, amount FROM Accounts ORDER BY name ASC";
     const QString SELECT_ALL_ACCOUNTS_LIMIT = "SELECT uuid, name, memo, color, initialAmount, amount FROM Accounts ORDER BY name ASC "\
         "LIMIT :limit OFFSET :offset";
@@ -1068,7 +1070,7 @@ Book::remove(TransactionPtr tran) {
 }
 
 void
-Book::remove(RecurrentTransactionPtr tran) {
+Book::remove(RecurrentTransactionPtr tran, bool removeGenrated) {
     if (tran->_dbId.isNull()) {
         LOG(ERROR) << "Cannot delete transaction with a NULL id";
         _lastError = "Cannot delete Account that was not added to the db";
@@ -1083,16 +1085,29 @@ Book::remove(RecurrentTransactionPtr tran) {
         return;
     }
 
+    bool success = true;
+    _db->transaction();
+
     auto query = _db->createQuery();
+    if (removeGenrated) {
+        // DELETE_RECURRENT_GENERATED = DELETE FROM Transactions WHERE uuid IN (SELECT generated_transaction FROM
+        //     RecurrentTransactionRelations WHERE recurrent_transaction=:recurrent_Transaction)
+        query->prepare(DELETE_RECURRENT_GENERATED);
+        query->bindValue(":recurrent_Transaction", tran->_dbId.toString());
+        success &= query->exec();
+    }
+
     query->prepare(DELETE_RECURRENT_TRANSACTION);
     query->bindValue(":uuid", tran->_dbId.toString());
-    auto success = query->exec();
+    success &= query->exec();
 
     if (!success) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
+        _db->rollback();
     }
 
+    _db->commit();
     tran->_dbId = QUuid();
 }
 
