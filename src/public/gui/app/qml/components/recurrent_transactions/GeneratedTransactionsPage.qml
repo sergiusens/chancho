@@ -85,6 +85,13 @@ Page {
        }
    ]
 
+    onHeightChanged : {
+        if (childrenRect.height > flickable.contentHeight) {
+            console.log("Height is " + height + " and children height is " + childrenRect.height + " and content height is " + flickable.contentHeight);
+            flickable.contentHeight = childrenRect.height;
+        }
+    }
+
    onRecurrentTransactionChanged: {
        amountField.text = recurrentTransaction.amount;
        accountSelector.selectedIndex = accountSelector.model.getIndex(recurrentTransaction.accountModel)
