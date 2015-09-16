@@ -66,10 +66,10 @@ void
 SingleStore::run() {
     DLOG(INFO) << __PRETTY_FUNCTION__;
     if (_recurrence.count() > 0) {
-        DLOG(INFO) << "SToring new recurrenct transaction";
+        DLOG(INFO) << "Storing new recurrenct transaction";
         storeRecurrentTransaction();
     } else {
-        DLOG(INFO) << "SToring new transaction";
+        DLOG(INFO) << "Storing new transaction";
         storeTransaction();
     }
 }

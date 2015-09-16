@@ -175,6 +175,22 @@ WorkerFactory::updateTransaction(qml::Book* book, chancho::TransactionPtr trans,
     return worker;
 }
 
+WorkerThread<SingleRecurrentUpdate>*
+WorkerFactory::updateTransaction(qml::Book* book, chancho::RecurrentTransactionPtr trans, chancho::AccountPtr acc,
+                                 chancho::CategoryPtr cat, QDate date, QString contents, QString memo, double amount,
+                                 bool updateAll) {
+    auto worker = new WorkerThread<SingleRecurrentUpdate>(new SingleRecurrentUpdate(book->_book, trans, acc, cat, date,
+            contents, memo, amount, updateAll));
+
+    QObject::connect(worker->implementation(), &SingleRecurrentUpdate::success, book, &Book::accountUpdated);
+    QObject::connect(worker->implementation(), &SingleRecurrentUpdate::success, book,
+                     &Book::recurrentTransactionUpdated);
+
+    QObject::connect(worker->thread(), &QThread::finished, worker, &QObject::deleteLater);
+
+    return worker;
+}
+
 WorkerThread<GenerateRecurrent>*
 WorkerFactory::generateRecurrentTransactions(qml::Book* book) {
     auto worker = new WorkerThread<GenerateRecurrent>(new GenerateRecurrent(book->_book));

@@ -117,6 +117,12 @@ RecurrentCategories::getCount() const {
     return count;
 }
 
+void
+RecurrentCategories::onRecurrentTransactionUpdated() {
+    beginResetModel();
+    endResetModel();
+}
+
 }
 
 }

@@ -33,15 +33,75 @@ import jbQuick.Charts 1.0
 import com.chancho 1.0
 
 Page {
-   id: mainPage
+   id: page
    property var recurrentTransaction
 
-   title: i18n.tr("Generated Transactions")
+   title: i18n.tr("Edit entry")
+
+
+   head.actions: [
+       Action {
+           iconName: "edit"
+           text: i18n.tr("Edit")
+           onTriggered: {
+               Qt.inputMethod.commit()
+               var editTransactionsCb = function(updateAll) {
+                   var accountModel = accountSelector.model.get(accountSelector.selectedIndex);
+                   var categoryModel = categorySelector.model.get(categorySelector.selectedIndex);
+                   var date = datePicker.date;
+                   var contents = contentsField.text;
+                   var memo = memoTextArea.text;
+                   var amount = amountField.text
+                   amount = amount.replace(",", ".");
+                   console.log("New amount is " + amount);
+
+                   Book.updateRecurrentTransaction(recurrentTransaction, accountModel, categoryModel, date, contents,
+                       memo, amount, updateAll);
+                   transactionsPageStack.pop();
+               };
+               var properties = {
+                   "title": i18n.tr("Edit entry"),
+                   "text": i18n.tr("Do you want to update this entry?"),
+                   "okCallback": editTransactionsCb
+               };
+               PopupUtils.open(Qt.resolvedUrl("UpdateConfirmationDialog.qml"), page, properties);
+           }
+       },
+       Action {
+           iconName: "delete"
+           text: i18n.tr("Delete")
+           onTriggered: {
+               var deleteTransactionsCb = function() {
+                   Book.removeTransaction(transaction);
+                   transactionsPageStack.pop();
+               };
+               var properties = {
+                   "title": i18n.tr("Delete transaction"),
+                   "text": i18n.tr("Do you want to remove this transaction?"),
+                   "okCallback": deleteTransactionsCb
+               };
+               PopupUtils.open(Qt.resolvedUrl("../dialogs/ConfirmationDialog.qml"), page, properties);
+           }
+       }
+   ]
 
    onRecurrentTransactionChanged: {
-       console.log("New recurrent transaction was set.");
+       amountField.text = recurrentTransaction.amount;
+       accountSelector.selectedIndex = accountSelector.model.getIndex(recurrentTransaction.accountModel)
+       categorySelector.selectedIndex = categorySelector.model.getIndex(recurrentTransaction.categoryModel)
+
+       if (recurrentTransaction.type == Book.INCOME) {
+           typeSelector.selectedIndex = 1;
+       } else {
+           typeSelector.selectedIndex = 0;
+       }
+
+       if (recurrentTransaction.contents !== "")
+           contentsField.text = recurrentTransaction.contents
+       if (recurrentTransaction.memo !== "")
+           memoTextArea.text = recurrentTransaction.memo;
        generatedList.model.recurrentTransaction = recurrentTransaction;
-       console.log("Transactions must have been updated.");
+       datePicker.date = recurrentTransaction.startDate
    }
 
    ColumnLayout {
@@ -49,9 +109,167 @@ Page {
        anchors.margins: units.gu(2) /* two unit so that we have the same as the main page. */
        spacing: units.gu(2)
        UbuntuShape {
+           id: formShape
+           Layout.fillHeight: true
+           anchors.left: parent.left
+           anchors.right: parent.right
+
+           Flickable {
+               id: flickable
+               anchors {
+                   left: parent.left
+                   right: parent.right
+                   top: parent.top
+                   bottom: parent.bottom
+               }
+               clip: true
+
+
+               ColumnLayout {
+                   id: mainColumn
+                   spacing: units.gu(1)
+                   anchors {
+                       left: parent.left
+                       right: parent.right
+                       top: parent.top
+                       bottom: parent.bottom
+                       margins: units.gu(1)
+                   }
+
+                   Component {
+                       id: typeDelegate
+                       OptionSelectorDelegate {
+                           text: name;
+                       }
+                   }
+
+                   Item{
+                       ListModel {
+                           id: typeModel
+                           dynamicRoles: true
+                       }
+                       Component.onCompleted: {
+                           typeModel.append({
+                               "name": i18n.tr("Expense"),
+                               "enumType": Book.EXPENSE
+                           });
+                           typeModel.append({
+                               "name": i18n.tr("Income"),
+                               "enumType": Book.INCOME
+                           });
+                       }
+                   }
+
+                   OptionSelector {
+                       id: typeSelector
+                       Layout.fillWidth : true
+
+                       model: typeModel
+                       delegate: typeDelegate
+
+                       onSelectedIndexChanged : {
+                           categorySelector.model.categoryType = model.get(selectedIndex).enumType;
+                       }
+                   }
+
+                   Component {
+                       id: accountsDelegate
+                       OptionSelectorDelegate {
+                           text: model.display.name;
+                       }
+                   }
+
+                   OptionSelector {
+                       id: accountSelector
+                       anchors.left: parent.left
+                       anchors.right: parent.right
+
+                       model: Book.accountsModel()
+                       delegate: accountsDelegate
+                   }
+
+                   Component {
+                       id: categoriesDelegate
+                       OptionSelectorDelegate {
+                           text: model.display.name;
+                       }
+                   }
+
+                   OptionSelector {
+                       id: categorySelector
+                       anchors.left: parent.left
+                       anchors.right: parent.right
+
+                       containerHeight: itemHeight * 4
+                       model: Book.categoriesModelForType(Book.EXPENSE)
+                       delegate: categoriesDelegate
+                   }
+
+                   TextField {
+                       id: datePicker
+                       Layout.fillWidth: true
+
+                       property date date: new Date()
+
+                       placeholderText: i18n.tr("Date")
+                       onDateChanged: {
+                           datePicker.text = Qt.formatDateTime(date, "dd/MM/yyyy");
+                       }
+
+                       MouseArea {
+                           anchors.fill: parent
+
+                           onClicked: {
+                               var popup = PickerPanel.openDatePicker(datePicker, "date", "Days|Years|Months");
+                               popup.picker.minimum = new Date(1900, 1, 1);
+                           }
+                       }
+                   }
+
+                   TextField {
+                        id: amountField
+
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        inputMethodHints: Qt.ImhFormattedNumbersOnly
+
+                        validator: DoubleValidator {
+                            id: doubleValidator
+                            locale: "en"
+                        }
+
+                       placeholderText: i18n.tr("Amount")
+                   }
+
+                   TextField {
+                       id: contentsField
+
+                       anchors.left: parent.left
+                       anchors.right: parent.right
+
+                       placeholderText: i18n.tr("Contents")
+                   }
+
+                   TextArea {
+                       id: memoTextArea
+                       anchors.left: parent.left
+                       anchors.right: parent.right
+
+                       Layout.fillHeight: true
+
+                       width: parent.width
+                       autoSize: true
+
+                        placeholderText: i18n.tr("Memo")
+                   }
+              }
+           }
+       }
+       UbuntuShape {
            id: transactionsShape
            color: "white"
            Layout.fillHeight: true
+           Layout.maximumHeight: parent.height/4
            anchors.left: parent.left
            anchors.right: parent.right
 

@@ -37,6 +37,7 @@ set(HEADERS
     com/chancho/qml/workers/categories/single_store.h
     com/chancho/qml/workers/categories/single_update.h
     com/chancho/qml/workers/transactions/generate_recurrent.h
+    com/chancho/qml/workers/transactions/single_recurrent_update.h
     com/chancho/qml/workers/transactions/single_remove.h
     com/chancho/qml/workers/transactions/single_store.h
     com/chancho/qml/workers/transactions/single_update.h
@@ -68,6 +69,7 @@ set(SOURCES
     com/chancho/qml/workers/categories/single_store.cpp
     com/chancho/qml/workers/categories/single_update.cpp
     com/chancho/qml/workers/transactions/generate_recurrent.cpp
+    com/chancho/qml/workers/transactions/single_recurrent_update.cpp
     com/chancho/qml/workers/transactions/single_remove.cpp
     com/chancho/qml/workers/transactions/single_store.cpp
     com/chancho/qml/workers/transactions/single_update.cpp

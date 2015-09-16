@@ -240,6 +240,8 @@ Book::recurrentTransactionsModel(QObject* category) {
 QObject*
 Book::recurrentCategoriesModel() {
     auto model = new models::RecurrentCategories(_book);
+    connect(this, &Book::recurrentTransactionUpdated, model,
+            &models::RecurrentCategories::onRecurrentTransactionUpdated);
     return model;
 }
 
@@ -254,6 +256,44 @@ Book::generatedTransactions(QObject* recurrentTransactionObj) {
     }
     LOG(INFO) << "Recurrent tran is null";
     return new models::GeneratedTransactions(new qml::RecurrentTransaction(), _book);
+}
+
+bool
+Book::updateRecurrentTransaction(QObject* recurrent, QObject* accObj, QObject* catObj, QDate date,
+                                 QString contents, QString memo, double amount, bool updateAll) {
+    RecurrentTransactionPtr tran;
+    AccountPtr acc;
+    CategoryPtr cat;
+
+    auto tranModel = qobject_cast<qml::RecurrentTransaction*>(recurrent);
+    if (tranModel != nullptr) {
+        tran = tranModel->getTransaction();
+    } else {
+        LOG(ERROR) << "Method called with wrong object type as a transaction model";
+        return false;
+    }
+
+    auto accModel = qobject_cast<qml::Account*>(accObj);
+    if (accModel != nullptr) {
+        acc = accModel->getAccount();
+    } else {
+        LOG(ERROR) << "Method called with wrong object type as an account model";
+        return false;
+    }
+
+    auto catModel = qobject_cast<qml::Category*>(catObj);
+    if (catModel != nullptr) {
+        cat = catModel->getCategory();
+    } else {
+        LOG(ERROR) << "Method called with wrong object type as a category model";
+        return false;
+    }
+
+    auto worker = _transactionWorkersFactory->updateTransaction(this, tran, acc, cat, date, contents, memo, amount,
+                                                                updateAll);
+    LOG(INFO) << "Starting worker thread to do the update.";
+    worker->start();
+    return true;
 }
 
 int

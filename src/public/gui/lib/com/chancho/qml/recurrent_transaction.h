@@ -61,6 +61,7 @@ class RecurrentTransaction : public QObject {
 
     friend class models::GeneratedTransactions;
     friend class models::RecurrentTransactions;
+    friend class Book;
 
  public:
     explicit RecurrentTransaction(QObject* parent =0);

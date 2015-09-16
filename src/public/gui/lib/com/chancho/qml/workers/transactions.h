@@ -30,6 +30,7 @@
 #include "transactions/single_remove.h"
 #include "transactions/single_store.h"
 #include "transactions/single_update.h"
+#include "transactions/single_recurrent_update.h"
 
 
 namespace com {
@@ -54,6 +55,9 @@ class WorkerFactory {
     virtual WorkerThread<SingleUpdate>* updateTransaction(qml::Book* book, chancho::TransactionPtr trans,
                                                           chancho::AccountPtr acc, chancho::CategoryPtr cat, QDate date,
                                                           QString contents, QString memo, double amount);
+    virtual WorkerThread<SingleRecurrentUpdate>* updateTransaction(qml::Book* book, chancho::RecurrentTransactionPtr trans,
+                                                          chancho::AccountPtr acc, chancho::CategoryPtr cat, QDate date,
+                                                          QString contents, QString memo, double amount, bool updateAll=false);
     virtual WorkerThread<GenerateRecurrent>* generateRecurrentTransactions(qml::Book* book);
 };
 
