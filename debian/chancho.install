@@ -1,4 +1,4 @@
-usr/local/bin/chancho
-usr/local/share/applications/chancho.desktop
-usr/local/share/chancho/chancho.png
-usr/local/share/locale/*
+usr/bin/chancho
+usr/share/applications/chancho.desktop
+usr/share/chancho/chancho.png
+usr/share/locale/*
