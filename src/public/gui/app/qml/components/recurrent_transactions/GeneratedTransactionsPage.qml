@@ -33,64 +33,67 @@ import jbQuick.Charts 1.0
 import com.chancho 1.0
 
 Page {
-   id: page
-   property var recurrentTransaction
+    id: page
+    property var recurrentTransaction
+    property int minSize
 
-   title: i18n.tr("Edit entry")
+    title: i18n.tr("Edit entry")
 
-
-   head.actions: [
-       Action {
-           iconName: "edit"
-           text: i18n.tr("Edit")
-           onTriggered: {
-               Qt.inputMethod.commit()
-               var editTransactionsCb = function(updateAll) {
-                   var accountModel = accountSelector.model.get(accountSelector.selectedIndex);
-                   var categoryModel = categorySelector.model.get(categorySelector.selectedIndex);
-                   var date = datePicker.date;
-                   var contents = contentsField.text;
-                   var memo = memoTextArea.text;
-                   var amount = amountField.text
-                   amount = amount.replace(",", ".");
-                   console.log("New amount is " + amount);
-
-                   Book.updateRecurrentTransaction(recurrentTransaction, accountModel, categoryModel, date, contents,
-                       memo, amount, updateAll);
-                   transactionsPageStack.pop();
-               };
-               var properties = {
-                   "title": i18n.tr("Edit entry"),
-                   "text": i18n.tr("Do you want to update this entry?"),
-                   "okCallback": editTransactionsCb
-               };
-               PopupUtils.open(Qt.resolvedUrl("UpdateConfirmationDialog.qml"), page, properties);
-           }
-       },
-       Action {
-           iconName: "delete"
-           text: i18n.tr("Delete")
-           onTriggered: {
-               var deleteTransactionsCb = function(removePast) {
-                   Book.removeRecurrentTransaction(recurrentTransaction, removePast);
-                   transactionsPageStack.pop();
-               };
-               var properties = {
-                   "title": i18n.tr("Delete transaction"),
-                   "text": i18n.tr("Do you want to remove this transaction?"),
-                   "okCallback": deleteTransactionsCb
-               };
-               PopupUtils.open(Qt.resolvedUrl("RemoveConfirmationDialog.qml"), page, properties);
-           }
-       }
-   ]
+    Component.onCompleted: {
+        minSize = childrenRect.height;
+        flickable.contentHeight = childrenRect.height;
+    }
 
     onHeightChanged : {
-        if (childrenRect.height > flickable.contentHeight) {
-            console.log("Height is " + height + " and children height is " + childrenRect.height + " and content height is " + flickable.contentHeight);
+        if (height > minSize)
             flickable.contentHeight = childrenRect.height;
-        }
     }
+
+    head.actions: [
+        Action {
+            iconName: "edit"
+            text: i18n.tr("Edit")
+            onTriggered: {
+                Qt.inputMethod.commit()
+                var editTransactionsCb = function(updateAll) {
+                    var accountModel = accountSelector.model.get(accountSelector.selectedIndex);
+                    var categoryModel = categorySelector.model.get(categorySelector.selectedIndex);
+                    var date = datePicker.date;
+                    var contents = contentsField.text;
+                    var memo = memoTextArea.text;
+                    var amount = amountField.text
+                    amount = amount.replace(",", ".");
+                    console.log("New amount is " + amount);
+
+                    Book.updateRecurrentTransaction(recurrentTransaction, accountModel, categoryModel, date, contents,
+                        memo, amount, updateAll);
+                    transactionsPageStack.pop();
+                };
+                var properties = {
+                    "title": i18n.tr("Edit entry"),
+                    "text": i18n.tr("Do you want to update this entry?"),
+                    "okCallback": editTransactionsCb
+                };
+                PopupUtils.open(Qt.resolvedUrl("UpdateConfirmationDialog.qml"), page, properties);
+            }
+        },
+        Action {
+            iconName: "delete"
+            text: i18n.tr("Delete")
+            onTriggered: {
+                var deleteTransactionsCb = function(removePast) {
+                    Book.removeRecurrentTransaction(recurrentTransaction, removePast);
+                    transactionsPageStack.pop();
+                };
+                var properties = {
+                    "title": i18n.tr("Delete transaction"),
+                    "text": i18n.tr("Do you want to remove this transaction?"),
+                    "okCallback": deleteTransactionsCb
+                };
+                PopupUtils.open(Qt.resolvedUrl("RemoveConfirmationDialog.qml"), page, properties);
+            }
+       }
+    ]
 
    onRecurrentTransactionChanged: {
        amountField.text = recurrentTransaction.amount;
@@ -129,6 +132,8 @@ Page {
                    top: parent.top
                    bottom: parent.bottom
                }
+
+               contentHeight: parent.height;
                clip: true
 
 
@@ -259,43 +264,44 @@ Page {
 
                    TextArea {
                        id: memoTextArea
+                       Layout.fillHeight: true
                        anchors.left: parent.left
                        anchors.right: parent.right
-
-                       Layout.fillHeight: true
-                       Layout.minimumHeight: page.height / 3
 
                        width: parent.width
                        autoSize: true
 
-                        placeholderText: i18n.tr("Memo")
+                       placeholderText: i18n.tr("Memo")
                    }
-              }
-           }
-       }
-       UbuntuShape {
-           id: transactionsShape
-           color: "white"
-           Layout.fillHeight: true
-           Layout.maximumHeight: parent.height/4
-           anchors.left: parent.left
-           anchors.right: parent.right
 
-           UbuntuListView {
-               id: generatedList
-               anchors.fill: parent
-               anchors.margins: units.gu(1)
-               spacing: units.gu(2)
-               clip: true
+                   UbuntuShape {
+                       id: transactionsShape
+                       color: "white"
+                       Layout.fillHeight: true
+                       Layout.minimumHeight: page.height / 4
+                       Layout.maximumHeight: parent.height/4
+                       anchors.left: parent.left
+                       anchors.right: parent.right
 
-               model: Book.generatedTransactions(recurrentTransaction)
+                       UbuntuListView {
+                           id: generatedList
+                           anchors.fill: parent
+                           anchors.margins: units.gu(1)
+                           spacing: units.gu(2)
+                           clip: true
 
-               delegate: GeneratedTransaction {
-                   property var transaction: model.display
-                   property var repeaterIndex: index
+                           model: Book.generatedTransactions(recurrentTransaction)
 
+                           delegate: GeneratedTransaction {
+                               property var transaction: model.display
+                               property var repeaterIndex: index
+
+                           }
+                       }
+                   } // Sahpe
                }
-           }
-       } // Sahpe
+
+           } // flickable
+       }
    } // Column
 }
