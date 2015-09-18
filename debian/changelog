@@ -2,4 +2,4 @@ chancho (0.2-0ubuntu1) saucy; urgency=low
 
   * Initial release for chancho as a debian package.
 
- -- Manuel de la Pena <mandel@mark-II>  Fri, 18 Sep 2015 12:56:21 +0200
+ -- Manuel de la Pena <manuel.delapena@canonical.com>  Fri, 18 Sep 2015 12:56:21 +0200
