@@ -44,12 +44,16 @@ UbuntuShape {
     property alias amount: amountField.text;
     property bool showRecurrence
     property var recurrence
+    property int minSize
+
+    Component.onCompleted: {
+        minSize = childrenRect.height;
+        flickable.contentHeight = childrenRect.height;
+    }
 
     onHeightChanged : {
-        if (childrenRect.height > flickable.contentHeight) {
-            console.log("Height is " + height + " and children height is " + childrenRect.height + " and content height is " + flickable.contentHeight);
+        if (height > minSize)
             flickable.contentHeight = childrenRect.height;
-        }
     }
 
     Flickable {
@@ -234,6 +238,6 @@ UbuntuShape {
 
                 placeholderText: i18n.tr("Memo")
             }
-        }
-    }
+        } // column
+    } // flickable
 }

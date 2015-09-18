@@ -43,7 +43,7 @@ Page {
             }
 
             form.date = transaction.date
-            id (transaction.contents !== "")
+            if (transaction.contents !== "")
                 form.contents = transaction.contents
             if (transaction.memo !== "")
                 form.memo = transaction.memo

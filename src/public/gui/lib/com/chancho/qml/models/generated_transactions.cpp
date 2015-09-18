@@ -66,10 +66,10 @@ GeneratedTransactions::numberOfTransactions() const {
         if (_book->isError()) {
             return 0;
         }
-        LOG(INFO) << "Number of transactions " << count;
+        DLOG(INFO) << "Number of transactions " << count;
         return count;
     }
-    LOG(INFO) << "0 transactions";
+    DLOG(INFO) << "0 transactions";
     return 0;
 }
 

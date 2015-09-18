@@ -39,7 +39,6 @@ PageStack {
 
     Component.onCompleted: {
         recurrentTransactionModel = Book.recurrentCategoriesModel();
-        console.log("Got model with count " + recurrentTransactionModel.count);
         push(mainPage);
     }
 
