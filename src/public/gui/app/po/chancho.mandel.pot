@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chancho.mandel\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-17 10:15+0200\n"
+"POT-Creation-Date: 2015-09-18 12:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgid "Bills"
 msgstr ""
 
 #: ../qml/MainWindow.qml:127
-#: ../qml/components/recurrent_transactions/Page.qml:48
+#: ../qml/components/recurrent_transactions/Page.qml:47
 msgid "Recurrent Transactions"
 msgstr ""
 
@@ -66,29 +66,29 @@ msgstr ""
 
 #: ../qml/components/accounts/Edit.qml:51
 #: ../qml/components/categories/Edit.qml:78
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:45
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:55
 #: ../qml/components/transactions/Edit.qml:62
 msgid "Edit"
 msgstr ""
 
 #: ../qml/components/accounts/Edit.qml:59
 #: ../qml/components/categories/Edit.qml:88
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:39
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:63
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:40
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:73
 #: ../qml/components/transactions/Edit.qml:57
 #: ../qml/components/transactions/Edit.qml:78
 msgid "Edit entry"
 msgstr ""
 
 #: ../qml/components/accounts/Edit.qml:60
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:64
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:74
 #: ../qml/components/transactions/Edit.qml:79
 msgid "Do you want to update this entry?"
 msgstr ""
 
 #: ../qml/components/accounts/Edit.qml:69
 #: ../qml/components/categories/Edit.qml:97
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:72
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:82
 #: ../qml/components/transactions/Edit.qml:87
 msgid "Delete"
 msgstr ""
@@ -183,8 +183,8 @@ msgstr ""
 
 #: ../qml/components/accounts/Form.qml:212
 #: ../qml/components/dialogs/WizardNewAccountDialog.qml:65
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:271
-#: ../qml/components/transactions/Form.qml:235
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:274
+#: ../qml/components/transactions/Form.qml:239
 msgid "Memo"
 msgstr ""
 
@@ -237,15 +237,15 @@ msgstr ""
 
 #: ../qml/components/categories/Form.qml:187
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:55
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:160
-#: ../qml/components/transactions/Form.qml:91
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:165
+#: ../qml/components/transactions/Form.qml:95
 msgid "Expense"
 msgstr ""
 
 #: ../qml/components/categories/Form.qml:191
 #: ../qml/components/dialogs/WizardNewCategoryDialog.qml:59
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:164
-#: ../qml/components/transactions/Form.qml:95
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:169
+#: ../qml/components/transactions/Form.qml:99
 msgid "Income"
 msgstr ""
 
@@ -271,7 +271,7 @@ msgid "Expense categories:"
 msgstr ""
 
 #: ../qml/components/categories/StatsPage.qml:126
-#: ../qml/components/recurrent_transactions/Page.qml:80
+#: ../qml/components/recurrent_transactions/Page.qml:79
 #: ../qml/components/transactions/Page.qml:139
 msgid "No entries were found!"
 msgstr ""
@@ -319,8 +319,8 @@ msgstr ""
 
 #: ../qml/components/dialogs/RecurrenceDialog.qml:123
 #: ../qml/components/dialogs/RecurrenceDialog.qml:148
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:221
-#: ../qml/components/transactions/Form.qml:156
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:226
+#: ../qml/components/transactions/Form.qml:160
 msgid "Date"
 msgstr ""
 
@@ -333,23 +333,23 @@ msgstr ""
 msgid "Termination:"
 msgstr ""
 
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:79
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:89
 #: ../qml/components/transactions/Edit.qml:94
 msgid "Delete transaction"
 msgstr ""
 
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:80
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:90
 #: ../qml/components/transactions/Edit.qml:95
 msgid "Do you want to remove this transaction?"
 msgstr ""
 
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:248
-#: ../qml/components/transactions/Form.qml:213
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:253
+#: ../qml/components/transactions/Form.qml:217
 msgid "Amount"
 msgstr ""
 
-#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:257
-#: ../qml/components/transactions/Form.qml:222
+#: ../qml/components/recurrent_transactions/GeneratedTransactionsPage.qml:262
+#: ../qml/components/transactions/Form.qml:226
 msgid "Contents"
 msgstr ""
 
@@ -373,7 +373,7 @@ msgstr ""
 msgid "All transactions."
 msgstr ""
 
-#: ../qml/components/transactions/Form.qml:173
+#: ../qml/components/transactions/Form.qml:177
 msgid "Repeat:"
 msgstr ""
 
