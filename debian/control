@@ -1,0 +1,37 @@
+Source: chancho
+Section: gnome
+Priority: extra
+Build-Depends: cmake,
+               debhelper (>= 9),
+               dbus-test-runner,
+               google-mock,
+               qt5-default,
+               qtbase5-dev,
+               libqt5sql5,
+               libqt5sql5-sqlite,
+               libboost-dev,
+               libboost-program-options-dev,
+               libgoogle-glog-dev,
+               qtdeclarative5-dev,
+               qtdeclarative5-dev-tools,
+               qtdeclarative5-test-plugin,
+               gcc,
+               g++,
+               libsqlite3-dev,
+               gettext,
+               intltool,
+               intltool-debian
+Maintainer: Manuel de la Peña <manuel.delapena@canonical.com>
+Standards-Version: 3.9.5
+Homepage: https://github.com/mandel-macaque/chancho
+Vcs-Git: https://github.com/mandel-macaque/chancho.git
+
+Package: chancho
+Section: gnome
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Description: Chancho
+ Personal money manager written for Ubuntu Touch
+ .
+ This package includes full application that can be used to track expenses.
