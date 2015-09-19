@@ -1,4 +1,4 @@
-chancho (0.2-0ubuntu1) saucy; urgency=low
+chancho (0.2.5-0ubuntu1) saucy; urgency=low
 
   * Initial release for chancho as a debian package.
 
