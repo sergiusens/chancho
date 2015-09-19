@@ -24,7 +24,9 @@
 
 #include <memory>
 
+#include <QByteArray>
 #include <QDate>
+#include <QMap>
 #include <QMetaType>
 #include <QString>
 
@@ -41,6 +43,28 @@ class Transaction {
  friend class RecurrentTransaction;
 
  public:
+
+    class Attachment {
+        friend class Transaction;
+
+     public:
+        Attachment() = default;
+        Attachment(QString attachmentName, QByteArray attachmentData);
+
+        virtual ~Attachment() = default;
+
+        virtual bool isValid();
+
+        QString name = QString::null;
+        QByteArray data = QByteArray();
+
+     protected:
+        static std::shared_ptr<Attachment> fromFile(QString file);
+
+     protected:
+        QUuid _dbId;
+    };
+
     Transaction() = default;
     Transaction(const AccountPtr& acc,
             double amount,
@@ -69,12 +93,49 @@ class Transaction {
 
     virtual bool wasStoredInDb() const;
 
+    /*!
+        \fn virtual QList<std::shared_ptr<Attachment>> attachments();
+
+        Returns all the attachments related with this transaction.
+     */
+    virtual QList<std::shared_ptr<Attachment>> attachments();
+
+    /*!
+        \fn virtual void attach(std::shared_ptr<Attachment> attachment);
+
+        Adds a new attachment to the transaction.
+     */
+    virtual void attach(std::shared_ptr<Attachment> attachment);
+
+    /*!
+        \fn virtual void attach(QString attachmentPath);
+
+        Adds a new attachment to the transaction which contains the data of the provided path.
+     */
+    virtual void attach(QString attachmentPath);
+
+    /*!
+        \fn virtual void detach(std::shared_ptr<Attachment> attachment);
+
+        Removes the given attachment from the transaction.
+     */
+    virtual void detach(std::shared_ptr<Attachment> attachment);
+
+    /*!
+        \fn virtual void detach(QString attachmentName);
+
+        Removes the given attachment from the transaction with the given name.
+     */
+    virtual void detach(QString attachmentId);
+
  protected:
     // optional so that we know if a category was added to the db or not
     QUuid _dbId;
+    QMap<QString, std::shared_ptr<Attachment>> _attachments;
 };
 
 typedef std::shared_ptr<Transaction> TransactionPtr;
+typedef std::shared_ptr<Transaction::Attachment> AttachmentPtr;
 
 }
 

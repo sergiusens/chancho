@@ -24,36 +24,16 @@
 
 #include <com/chancho/transaction.h>
 
-#include "base_testcase.h"
-
-class TestTransaction : public BaseTestCase {
-    Q_OBJECT
-
+class PublicAttachment : public com::chancho::Transaction::Attachment {
  public:
-    explicit TestTransaction(QObject *parent = 0)
-            : BaseTestCase("TestTransaction", parent) { }
+    PublicAttachment() : com::chancho::Transaction::Attachment() {}
 
- private slots:
+    PublicAttachment(QString attachmentName, QByteArray attachmentData)
+            : com::chancho::Transaction::Attachment(attachmentName, attachmentData) {}
 
-    void init() override;
-    void cleanup() override;
-
-    void testConstructorWithDate_data();
-    void testConstructorWithDate();
-    void testContrutorCurrentDate_data();
-    void testContrutorCurrentDate();
-
-    void testWasDbStored_data();
-    void testWasDbStored();
-
-    void testType_data();
-    void testType();
-
-    void testTypeMissingCat_data();
-    void testTypeMissingCat();
-
-    void testAddAttachment_data();
-    void testAddAttachment();
-    void testRemoveAttachment();
-    void testRemoveAttachmentName();
+    using com::chancho::Transaction::Attachment::_dbId;
+    using com::chancho::Transaction::Attachment::fromFile;
 };
+
+
+

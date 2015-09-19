@@ -22,38 +22,24 @@
 
 #pragma once
 
-#include <com/chancho/transaction.h>
 
 #include "base_testcase.h"
+#include "public_attachment.h"
 
-class TestTransaction : public BaseTestCase {
+class TestAttachment : public BaseTestCase {
     Q_OBJECT
 
  public:
-    explicit TestTransaction(QObject *parent = 0)
-            : BaseTestCase("TestTransaction", parent) { }
+    explicit TestAttachment(QObject *parent = 0)
+            : BaseTestCase("TestAttachment", parent) { }
 
  private slots:
 
     void init() override;
     void cleanup() override;
 
-    void testConstructorWithDate_data();
-    void testConstructorWithDate();
-    void testContrutorCurrentDate_data();
-    void testContrutorCurrentDate();
-
-    void testWasDbStored_data();
-    void testWasDbStored();
-
-    void testType_data();
-    void testType();
-
-    void testTypeMissingCat_data();
-    void testTypeMissingCat();
-
-    void testAddAttachment_data();
-    void testAddAttachment();
-    void testRemoveAttachment();
-    void testRemoveAttachmentName();
+    void testDefaultConstructor();
+    void testIsValid();
+    void testFromFile();
 };
+

@@ -11,6 +11,7 @@ set(HEADERS
         database_factory.h
         matchers.h
         public_account.h
+        public_attachment.h
         public_book.h
         public_category.h
         public_recurrence.h

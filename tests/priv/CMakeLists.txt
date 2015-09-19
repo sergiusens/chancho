@@ -1,5 +1,6 @@
 set(PRIVATE_TESTS
     test_account
+    test_attachment
     test_book
     test_book_account
     test_book_category

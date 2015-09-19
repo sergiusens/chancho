@@ -20,11 +20,43 @@
  * THE SOFTWARE.
  */
 
+#include <QFile>
+#include <QFileInfo>
+#include <glog/logging.h>
+
 #include "transaction.h"
 
 namespace com {
 
 namespace chancho {
+
+Transaction::Attachment::Attachment(QString attachmentName, QByteArray attachmentData)
+        : name(attachmentName),
+          data(attachmentData),
+          _dbId(QUuid::createUuid()){
+}
+
+bool
+Transaction::Attachment::isValid() {
+    return !_dbId.isNull();
+}
+
+std::shared_ptr<Transaction::Attachment>
+Transaction::Attachment::fromFile(QString file) {
+    QFileInfo info(file);
+    if (info.exists()) {
+        QScopedPointer<QFile, QScopedPointerDeleteLater> fd(new QFile(file));
+        fd->open(QFile::ReadOnly);
+        if (fd->error() == QFile::NoError) {
+            auto data = fd->readAll();
+            fd->close();
+            return std::make_shared<Attachment>(file, data);
+        } else {
+            LOG(WARNING) << "Could not open file.";
+        }
+    }
+    return std::make_shared<Attachment>();
+}
 
 Transaction::Transaction(const AccountPtr& acc,
         double a,
@@ -64,6 +96,34 @@ Transaction::type() const {
 bool
 Transaction::wasStoredInDb() const {
     return !_dbId.isNull();
+}
+
+QList<std::shared_ptr<Transaction::Attachment>>
+Transaction::attachments() {
+    return _attachments.values();
+}
+
+void
+Transaction::attach(std::shared_ptr<Transaction::Attachment> attachment) {
+    _attachments[attachment->_dbId.toString()] = attachment;
+}
+
+void
+Transaction::attach(QString attachmentPath) {
+    auto attachment = Attachment::fromFile(attachmentPath);
+    if (attachment->isValid()) {
+        _attachments[attachment->_dbId.toString()] = attachment;
+    }
+}
+
+void
+Transaction::detach(std::shared_ptr<Transaction::Attachment> attachment) {
+    _attachments.remove(attachment->_dbId.toString());
+}
+
+void
+Transaction::detach(QString attachmentId) {
+    _attachments.remove(attachmentId);
 }
 
 }

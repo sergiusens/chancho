@@ -22,6 +22,7 @@
 
 #include <QVariant>
 
+#include "public_attachment.h"
 #include "public_transaction.h"
 #include "test_transaction.h"
 
@@ -205,6 +206,82 @@ TestTransaction::testTypeMissingCat() {
 
     auto transaction = std::make_shared<PublicTransaction>(account, amount, category, content, memo);
     QCOMPARE(chancho::Category::Type::EXPENSE, transaction->type());
+}
+
+void
+TestTransaction::testAddAttachment_data() {
+    QTest::addColumn<QString>("name");
+    QTest::addColumn<QByteArray>("data");
+
+    QTest::newRow("first-obj") << "first attachment" << QByteArray();
+    QTest::newRow("second-obj") << "second attachment" << QByteArray(80, 'g');
+    QTest::newRow("third-obj") << "third attachment" << QByteArray(90, 'a');
+    QTest::newRow("fourth-obj") << "fourth attachment" << QByteArray(12, 'r');
+    QTest::newRow("last-obj") << "last attachment" << QByteArray(1, 't');
+}
+
+void
+TestTransaction::testAddAttachment() {
+    QFETCH(QString , name);
+    QFETCH(QByteArray, data);
+
+    auto account = std::make_shared<chancho::Account>("Bankia", 23.4);
+    auto category = std::make_shared<com::chancho::Category>();
+    auto transaction = std::make_shared<PublicTransaction>(account, 2.3, category, "", "");
+    auto attachment = std::make_shared<com::chancho::Transaction::Attachment>(name, data);
+    transaction->attach(attachment);
+    QVERIFY(transaction->attachments().count() == 1);
+    auto result = transaction->attachments().at(0);
+    QCOMPARE(name, result->name);
+    QCOMPARE(data, result->data);
+}
+
+void
+TestTransaction::testRemoveAttachment() {
+    QString name("Foo");
+    QByteArray data(23, 't');
+
+    auto account = std::make_shared<chancho::Account>("Bankia", 23.4);
+    auto category = std::make_shared<com::chancho::Category>();
+    auto transaction = std::make_shared<PublicTransaction>(account, 2.3, category, "", "");
+    auto attachment = std::make_shared<com::chancho::Transaction::Attachment>(name, data);
+    transaction->attach(attachment);
+
+    QVERIFY(transaction->attachments().count() == 1);
+    auto result = transaction->attachments().at(0);
+
+    QCOMPARE(name, result->name);
+    QCOMPARE(data, result->data);
+
+    transaction->detach(attachment);
+    QVERIFY(transaction->attachments().count() == 0);
+
+    transaction->detach(attachment);
+    QVERIFY(transaction->attachments().count() == 0);
+}
+
+void
+TestTransaction::testRemoveAttachmentName() {
+    QString name("Foo");
+    QByteArray data(23, 't');
+
+    auto account = std::make_shared<chancho::Account>("Bankia", 23.4);
+    auto category = std::make_shared<com::chancho::Category>();
+    auto transaction = std::make_shared<PublicTransaction>(account, 2.3, category, "", "");
+    auto attachment = std::make_shared<PublicAttachment>(name, data);
+    transaction->attach(attachment);
+
+    QVERIFY(transaction->attachments().count() == 1);
+    auto result = transaction->attachments().at(0);
+
+    QCOMPARE(name, result->name);
+    QCOMPARE(data, result->data);
+
+    transaction->detach(attachment->_dbId.toString());
+    QVERIFY(transaction->attachments().count() == 0);
+
+    transaction->detach(attachment->_dbId.toString());
+    QVERIFY(transaction->attachments().count() == 0);
 }
 
 QTEST_MAIN(TestTransaction)
