@@ -100,6 +100,16 @@ const QString Book::RECURRENT_TRANSACTIONS_RELATIONS_TABLE = "CREATE TABLE IF NO
     "FOREIGN KEY(recurrent_transaction) REFERENCES RecurrentTransactions(uuid),"\
     "FOREIGN KEY(generated_transaction) REFERENCES Transactions(uuid),"\
     "PRIMARY KEY(recurrent_transaction, generated_transaction))";
+const QString Book::ATTACHMENT_TABLE = "CREATE TABLE IF NOT EXISTS Attachments("\
+    "uuid VARCHAR(40) PRIMARY KEY, "\
+    "name TEXT, "\
+    "data TEXT)";
+const QString Book::ATTACHMENT_RELATION_TABLE = "CREATE TABLE IF NOT EXISTS AttachmentTransactionRelations("\
+    "transaction VARCHAR(40),"\
+    "attachment VARCHAR(40),"\
+    "FOREIGN KEY(transaction) REFERENCES Transactions(uuid),"\
+    "FOREIGN KEY(attachment) REFERENCES Attachment(uuid),"\
+    "PRIMARY KEY(transaction, attachment))";
 const QString Book::TRANSACTION_INSERT_TRIGGER = "CREATE TRIGGER UpdateAccountAmountOnTransactionInsert AFTER INSERT ON Transactions "\
     "BEGIN "\
     "UPDATE Accounts SET amount=AddStringNumbers(amount, new.amount) WHERE uuid=new.account; "\
@@ -117,6 +127,7 @@ const QString Book::TRANSACTION_DELETE_TRIGGER = "CREATE TRIGGER UpdateAccountAm
     "BEGIN "\
     "UPDATE Accounts SET amount=SubtractStringNumbers(amount, old.amount) WHERE uuid=old.account; "\
     "DELETE FROM RecurrentTransactionRelations WHERE generated_transaction=old.uuid; "\
+    "DELETE FROM AttachmentTransactionRelations WHERE transaction=old.uuid; "\
     "END";
 const QString Book::ACCOUNT_DELETE_TRIGGER = "CREATE TRIGGER DeleteTransactionsOnAccountDelete BEFORE DELETE ON Accounts "\
     "BEGIN "\
@@ -142,6 +153,10 @@ const QString Book::RECURRENT_RELATIONS_UPDATE_TRIGGER = "CREATE TRIGGER UpdateG
     "BEGIN "\
     "UPDATE Transactions SET amount=new.amount, account=new.account, category=new.category, contents=new.contents, memo=new.memo "\
     "WHERE uuid IN (SELECT generated_transaction FROM RecurrentTransactionRelations WHERE recurrent_transaction=new.uuid);"\
+    "END";
+const QString Book::ATTACHMENT_DELETE_TRIGGER = "CREATE TRIGGER DeleteAttachmentRelatioOnAttachmentDelete AFTER DELETE ON Attachments "\
+    "BEGIN "\
+    "DELETE FROM AttachmentTransactionRelations WHERE transaction=old.uuid; "\
     "END";
 
 namespace {
@@ -387,6 +402,7 @@ Book::initDatabse() {
         // create the required tables and indexes
         bool success = true;
         auto query = db->createQuery();
+        // tables
         success &= query->exec(VERSION_TABLE);
         success &= query->exec(FOREIGN_KEY_SUPPORT);
         success &= query->exec(ACCOUNTS_TABLE);
@@ -394,6 +410,10 @@ Book::initDatabse() {
         success &= query->exec(TRANSACTION_TABLE);
         success &= query->exec(RECURRENT_TRANSACTION_TABLE);
         success &= query->exec(RECURRENT_TRANSACTIONS_RELATIONS_TABLE);
+        success &= query->exec(ATTACHMENT_TABLE);
+        success &= query->exec(ATTACHMENT_RELATION_TABLE);
+
+        // triggers
         success &= query->exec(TRANSACTION_INSERT_TRIGGER);
         success &= query->exec(TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER);
         success &= query->exec(TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER);
@@ -410,6 +430,7 @@ Book::initDatabse() {
         success &= query->exec(TRANSACTION_ACCOUNT_INDEX);
         success &= query->exec(ACCOUNT_MONTH_TOTAL_VIEW);
         success &= query->exec(RECURRENT_RELATIONS_UPDATE_TRIGGER);
+        success &= query->exec(ATTACHMENT_DELETE_TRIGGER);
 
         if (success)
             db->commit();

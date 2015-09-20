@@ -442,6 +442,8 @@ class Book {
     static const QString TRANSACTION_TABLE;
     static const QString RECURRENT_TRANSACTION_TABLE;
     static const QString RECURRENT_TRANSACTIONS_RELATIONS_TABLE;
+    static const QString ATTACHMENT_TABLE;
+    static const QString ATTACHMENT_RELATION_TABLE;
     static const QString TRANSACTION_INSERT_TRIGGER;
     static const QString TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER;
     static const QString TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER;
@@ -452,6 +454,7 @@ class Book {
     static const QString RECURRENT_RELATIONS_DELETE_TRIGGER;
     static const QString RECURRENT_RELATIONS_INSERT_TRIGGER;
     static const QString RECURRENT_RELATIONS_UPDATE_TRIGGER;
+    static const QString ATTACHMENT_DELETE_TRIGGER;
 
  protected:
     static std::set<QString> TABLES;
