@@ -32,9 +32,16 @@ namespace com {
 
 namespace chancho {
 
+namespace book {
+class Accounts;
+class Transactions;
+}
+
 class Account {
     friend class Book;
     friend class Stats;
+    friend class book::Accounts;
+    friend class book::Transactions;
 
  public:
     Account() = default;

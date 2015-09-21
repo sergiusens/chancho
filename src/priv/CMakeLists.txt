@@ -4,6 +4,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/com/chancho/version.h.in
         ${CMAKE_CURRENT_SOURCE_DIR}/com/chancho/version.h @ONLY)
 
 set(SOURCES
+    com/chancho/book/accounts.cpp
+    com/chancho/book/categories.cpp
+    com/chancho/book/transactions.cpp
     com/chancho/account.cpp
     com/chancho/book.cpp
     com/chancho/category.cpp
@@ -15,6 +18,9 @@ set(SOURCES
 )
 
 set(HEADERS
+    com/chancho/book/accounts.h
+    com/chancho/book/categories.h
+    com/chancho/book/transactions.h
     com/chancho/account.h
     com/chancho/book.h
     com/chancho/category.h

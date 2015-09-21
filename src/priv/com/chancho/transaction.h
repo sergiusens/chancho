@@ -37,15 +37,24 @@ namespace com {
 
 namespace chancho {
 
+namespace book {
+class Transactions;
+}
+
 class Transaction {
 
  friend class Book;
  friend class RecurrentTransaction;
+ friend class book::Transactions;
 
  public:
 
+    friend class Book;
+
     class Attachment {
+        friend class Book;
         friend class Transaction;
+        friend class book::Transactions;
 
      public:
         Attachment() = default;
@@ -53,7 +62,8 @@ class Transaction {
 
         virtual ~Attachment() = default;
 
-        virtual bool isValid();
+        virtual bool isValid() const;
+        virtual bool wasStoredInDb() const;
 
         QString name = QString::null;
         QByteArray data = QByteArray();
@@ -62,6 +72,7 @@ class Transaction {
         static std::shared_ptr<Attachment> fromFile(QString file);
 
      protected:
+        QUuid _id;
         QUuid _dbId;
     };
 

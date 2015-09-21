@@ -31,6 +31,7 @@ class PublicAttachment : public com::chancho::Transaction::Attachment {
     PublicAttachment(QString attachmentName, QByteArray attachmentData)
             : com::chancho::Transaction::Attachment(attachmentName, attachmentData) {}
 
+    using com::chancho::Transaction::Attachment::_id;
     using com::chancho::Transaction::Attachment::_dbId;
     using com::chancho::Transaction::Attachment::fromFile;
 };

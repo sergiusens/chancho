@@ -32,12 +32,19 @@ namespace com {
 
 namespace chancho {
 
+namespace book {
+class Categories;
+class Transactions;
+}
+
 class Book;
 
 class Category {
 
  friend class Book;
  friend class Stats;
+ friend class book::Categories;
+ friend class book::Transactions;
 
  public:
     enum class Type {
