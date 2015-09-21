@@ -45,11 +45,19 @@ std::shared_ptr<Transaction::Attachment>
 Transaction::Attachment::fromFile(QString file) {
     QFileInfo info(file);
     if (info.exists()) {
+
+#if QT_VERSION >= 0x050300
         QScopedPointer<QFile, QScopedPointerDeleteLater> fd(new QFile(file));
+#else
+        auto file = new QFile(file);
+#endif
         fd->open(QFile::ReadOnly);
         if (fd->error() == QFile::NoError) {
             auto data = fd->readAll();
             fd->close();
+#if QT_VERSION >= 0x050300
+            fd->deleteLater();
+#endif
             return std::make_shared<Attachment>(file, data);
         } else {
             LOG(WARNING) << "Could not open file.";
