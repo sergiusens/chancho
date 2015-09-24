@@ -2132,4 +2132,66 @@ TestBookTransaction::testCategoryTypeChanged() {
     db->close();
 }
 
+void
+TestBookTransaction::testStoreSingleAttachment() {
+    auto account = std::make_shared<PublicAccount>("BBVA", 23.45);
+    auto category = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    auto amount = 2000.23;
+    auto date = QDate::fromString("1999-10-15", "yyyy-MM-dd");
+    QString contents("Canonical salary");
+    QString memo("August");
+
+    PublicBook book;
+
+    book.store(account);
+    QVERIFY(account->wasStoredInDb());
+
+    book.store(category);
+    QVERIFY(category->wasStoredInDb());
+
+    auto transaction = std::make_shared<PublicTransaction>(account, amount, category, date, contents, memo);
+
+    QString name("Image");
+    QByteArray data(90, 'r');
+
+    auto attachment = std::make_shared<com::chancho::Transaction::Attachment>(name, data);
+    transaction->attach(attachment);
+    book.store(transaction);
+    QVERIFY(!book.isError());
+    QVERIFY(transaction->wasStoredInDb());
+    QVERIFY(attachment->wasStoredInDb());
+}
+
+void
+TestBookTransaction::testStoreSeveralAttachments() {
+    auto account = std::make_shared<PublicAccount>("BBVA", 23.45);
+    auto category = std::make_shared<PublicCategory>("Salary", chancho::Category::Type::INCOME);
+    auto amount = 2000.23;
+    auto date = QDate::fromString("1999-10-15", "yyyy-MM-dd");
+    QString contents("Canonical salary");
+    QString memo("August");
+
+    PublicBook book;
+
+    book.store(account);
+    QVERIFY(account->wasStoredInDb());
+
+    book.store(category);
+    QVERIFY(category->wasStoredInDb());
+
+    auto transaction = std::make_shared<PublicTransaction>(account, amount, category, date, contents, memo);
+
+    auto first = std::make_shared<com::chancho::Transaction::Attachment>("first", QByteArray(90, 'x'));
+    transaction->attach(first);
+
+    auto second = std::make_shared<com::chancho::Transaction::Attachment>("second", QByteArray(190, 'r'));
+    transaction->attach(second);
+
+    book.store(transaction);
+    QVERIFY(!book.isError());
+    QVERIFY(transaction->wasStoredInDb());
+    QVERIFY(first->wasStoredInDb());
+    QVERIFY(second->wasStoredInDb());
+}
+
 QTEST_MAIN(TestBookTransaction)

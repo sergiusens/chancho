@@ -277,10 +277,10 @@ TestTransaction::testRemoveAttachmentName() {
     QCOMPARE(name, result->name);
     QCOMPARE(data, result->data);
 
-    transaction->detach(attachment->_dbId.toString());
+    transaction->detach(attachment->_id.toString());
     QVERIFY(transaction->attachments().count() == 0);
 
-    transaction->detach(attachment->_dbId.toString());
+    transaction->detach(attachment->_id.toString());
     QVERIFY(transaction->attachments().count() == 0);
 }
 

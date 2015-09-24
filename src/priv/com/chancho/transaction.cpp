@@ -33,11 +33,16 @@ namespace chancho {
 Transaction::Attachment::Attachment(QString attachmentName, QByteArray attachmentData)
         : name(attachmentName),
           data(attachmentData),
-          _dbId(QUuid::createUuid()){
+          _id(QUuid::createUuid()){
 }
 
 bool
-Transaction::Attachment::isValid() {
+Transaction::Attachment::isValid() const {
+    return !_id.isNull();
+}
+
+bool
+Transaction::Attachment::wasStoredInDb() const {
     return !_dbId.isNull();
 }
 
@@ -113,20 +118,20 @@ Transaction::attachments() {
 
 void
 Transaction::attach(std::shared_ptr<Transaction::Attachment> attachment) {
-    _attachments[attachment->_dbId.toString()] = attachment;
+    _attachments[attachment->_id.toString()] = attachment;
 }
 
 void
 Transaction::attach(QString attachmentPath) {
     auto attachment = Attachment::fromFile(attachmentPath);
     if (attachment->isValid()) {
-        _attachments[attachment->_dbId.toString()] = attachment;
+        _attachments[attachment->_id.toString()] = attachment;
     }
 }
 
 void
 Transaction::detach(std::shared_ptr<Transaction::Attachment> attachment) {
-    _attachments.remove(attachment->_dbId.toString());
+    _attachments.remove(attachment->_id.toString());
 }
 
 void

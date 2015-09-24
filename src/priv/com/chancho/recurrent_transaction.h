@@ -33,14 +33,20 @@ namespace com {
 
 namespace chancho {
 
+namespace book {
+class Transactions;
+}
+
 class RecurrentTransaction {
 
    friend class Book;
+   friend class book::Transactions;
 
  public:
     class Recurrence {
 
        friend class Book;
+       friend class book::Transactions;
 
      public:
         enum class Defaults {
