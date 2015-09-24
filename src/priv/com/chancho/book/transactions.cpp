@@ -451,7 +451,7 @@ Transactions::storeSingleAttachment(const TransactionPtr& tran, const Attachment
     query->prepare(INSERT_UPDATE_ATTACHMENT);
     query->bindValue(":uuid", attachment->_dbId.toString());
     query->bindValue(":name", attachment->name);
-    query->bindValue("data", QString::fromUtf8(attachment->data.toBase64().toStdString().c_str()));
+    query->bindValue("data", QString(attachment->data.toBase64()));
 
     auto success = query->exec();
     if (!success) {
@@ -582,7 +582,7 @@ Transactions::parseTransactions(std::shared_ptr<system::Query> query) {
         auto transYear = query->value(6).toInt();
         auto transContents = query->value(7).toString();
         auto transMemo = query->value(8).toString();
-        auto transRecurrent = (query->value(9).toInt() == 0)?false:true;
+        auto transRecurrent = query->value(9).toInt() != 0;
 
         CategoryPtr category;
         if (categories.contains(catUuid)) {
