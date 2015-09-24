@@ -49,8 +49,6 @@ class Transaction {
 
  public:
 
-    friend class Book;
-
     class Attachment {
         friend class Book;
         friend class Transaction;
