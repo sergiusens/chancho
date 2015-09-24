@@ -33,7 +33,6 @@ namespace {
         "VALUES (:uuid, :parent, :name, :type, :color)";
     const QString UPDATE_CATEGORY = "UPDATE Categories SET parent=:parent, name=:name, type=:type, color=:color " \
         "WHERE uuid=:uuid";
-    const QString DELETE_CHILD_CATEGORIES = "DELETE FROM Categories WHERE parent=:uuid";
     const QString DELETE_CATEGORY = "DELETE FROM Categories WHERE uuid=:uuid";
     const QString SELECT_ALL_CATEGORIES = "SELECT uuid, parent, name, type, color FROM Categories ORDER BY name ASC";
     const QString SELECT_ALL_CATEGORIES_LIMIT = "SELECT uuid, parent, name, type, color FROM Categories ORDER BY name ASC "\
@@ -147,12 +146,12 @@ Categories::remove(CategoryPtr cat) {
     }
 
     // ensure that we have a transaction so that we do not have the db in a non stable state
-    _db->transaction();
-
-    auto deleteChildCats = _db->createQuery();
-    deleteChildCats->prepare(DELETE_CHILD_CATEGORIES);
-    deleteChildCats->bindValue(":uuid", cat->_dbId.toString());
-    auto success = deleteChildCats->exec();
+    auto success = _db->transaction();
+    if (!success) {
+        _lastError = _db->lastError().text();
+        LOG(ERROR) << "Error creating the transaction " << _lastError.toStdString();
+        return;
+    }
 
     auto deleteCat = _db->createQuery();
     deleteCat->prepare(DELETE_CATEGORY);

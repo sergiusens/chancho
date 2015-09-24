@@ -54,7 +54,7 @@ Transaction::Attachment::fromFile(QString file) {
 #if QT_VERSION >= 0x050300
         QScopedPointer<QFile, QScopedPointerDeleteLater> fd(new QFile(file));
 #else
-        auto file = new QFile(file);
+        auto fd = new QFile(file);
 #endif
         fd->open(QFile::ReadOnly);
         if (fd->error() == QFile::NoError) {

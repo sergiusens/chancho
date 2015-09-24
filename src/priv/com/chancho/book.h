@@ -75,7 +75,7 @@ class Book {
 
         \note When an account is newly added to the database a new unique identifier is provided for the account.
     */
-    virtual void store(AccountPtr acc);  // TODO: use accounts
+    virtual void store(AccountPtr acc);
 
     /*!
 
@@ -85,7 +85,7 @@ class Book {
 
         \note When an account is newly added to the database a new unique identifier is provided for the account.
      */
-    virtual void store(QList<AccountPtr> accs); // TODO: use accounts
+    virtual void store(QList<AccountPtr> accs);
 
     /*!
         \fn virtual void store(CategoryPtr cat);
@@ -94,7 +94,7 @@ class Book {
 
         \note When a category is newly added to the database a new unique identifier is provided for the account.
     */
-    virtual void store(CategoryPtr cat) ; // TODO: use categories
+    virtual void store(CategoryPtr cat);
 
     /*!
         \fn virtual void store(CategoryPtr cat);
@@ -103,7 +103,7 @@ class Book {
 
         \note When a category is newly added to the database a new unique identifier is provided for the account.
      */
-    virtual void store(QList<CategoryPtr> cats); // TODO: use categories
+    virtual void store(QList<CategoryPtr> cats);
 
     /*!
         \fn virtual void store(TransactionPtr tran);
@@ -112,7 +112,7 @@ class Book {
 
         \note When a transaction is newly added to the database a new unique identifier is provided for the account.
     */
-    virtual void store(TransactionPtr tran); // TODO: use trans
+    virtual void store(TransactionPtr tran);
 
     /*!
         \fn virtual void store(TransactionPtr tran);
@@ -121,7 +121,7 @@ class Book {
 
         \note When a transaction is newly added to the database a new unique identifier is provided for the account.
     */
-    virtual void store(QList<TransactionPtr> trans); // TODO: use trans
+    virtual void store(QList<TransactionPtr> trans);
 
     /*!
         \fn virtual void store(RecurrentTransactionPtr tran, bool updatePast=false);
@@ -131,7 +131,7 @@ class Book {
 
         \note When a transaction is newly added to the database a new unique identifier is provided for the account.
     */
-    virtual void store(RecurrentTransactionPtr tran, bool updatePast=false); // TODO: use trans
+    virtual void store(RecurrentTransactionPtr tran, bool updatePast=false);
 
     /*!
         \fn virtual void store(TransactionPtr tran);
@@ -140,14 +140,14 @@ class Book {
 
         \note When a transaction is newly added to the database a new unique identifier is provided for the account.
     */
-    virtual void store(QList<RecurrentTransactionPtr> trans); // TODO: use trans
+    virtual void store(QList<RecurrentTransactionPtr> trans);
 
     /*!
         \fn virtual void remove(AccountPtr acc);
 
         Removes the given \a acc from the database.
     */
-    virtual void remove(AccountPtr acc); // TODO: use accounts
+    virtual void remove(AccountPtr acc);
 
     /*!
         \fn virtual void remove(CategoryPtr cat);
@@ -156,14 +156,14 @@ class Book {
 
         \note If the remove category is a parent category all of its children will be also removed.
     */
-    virtual void remove(CategoryPtr cat);  // TODO: use categories
+    virtual void remove(CategoryPtr cat);
 
     /*!
         \fn virtual void remove(TransactionPtr tran);
 
         Removes the given \a tran from the database.
     */
-    virtual void remove(TransactionPtr tran);  // TODO: use trans
+    virtual void remove(TransactionPtr tran);
 
     /*!
         \fn virtual void remove(RecurrentTransactionPtr tran);
@@ -171,7 +171,7 @@ class Book {
         Removes the given \a tran from the database. If true is passed as the second argument all generated
         transactions will be removed.
     */
-    virtual void remove(RecurrentTransactionPtr tran, bool removeGenerated=false);  // TODO: use trans
+    virtual void remove(RecurrentTransactionPtr tran, bool removeGenerated=false);
 
     /*!
         \fn virtual QList<AccountPtr> accounts();
@@ -179,14 +179,14 @@ class Book {
         Returns all the accounts that can be found in the database.
     */
     virtual QList<AccountPtr> accounts(boost::optional<int> limit=boost::optional<int>(),
-            boost::optional<int> offset=boost::optional<int>()); // TODO: use accounts
+            boost::optional<int> offset=boost::optional<int>());
 
     /*!
         \fn virtual int numberOfAccounts();
 
         Returns the number of accounts that have been added so far to the system.
     */
-    virtual int numberOfAccounts(); // TODO: use accounts
+    virtual int numberOfAccounts();
 
     /*!
         \fn virtual QList<CategoryPtr> categories();
@@ -195,14 +195,14 @@ class Book {
         those will be found in the parent object.
     */
     virtual QList<CategoryPtr> categories(boost::optional<Category::Type> type=boost::optional<Category::Type>(),
-            boost::optional<int> linit=boost::optional<int>(), boost::optional<int> offset=boost::optional<int>()); // TODO: use cats
+            boost::optional<int> linit=boost::optional<int>(), boost::optional<int> offset=boost::optional<int>());
 
     /*!
         \fn virtual int numberOfCategories();
 
         Returns the number of categories that have been added so far to the system.
     */
-    virtual int numberOfCategories(boost::optional<Category::Type> type = boost::optional<Category::Type>()); // TODO: use cats
+    virtual int numberOfCategories(boost::optional<Category::Type> type = boost::optional<Category::Type>());
 
     /*!
         \fn virtual QList<TransactionPtr> transactions(int month, int year)
@@ -252,35 +252,35 @@ class Book {
     */
     virtual QList<TransactionPtr> transactions(RecurrentTransactionPtr recurrent,
                                                boost::optional<int> limit = boost::optional<int>(),
-                                               boost::optional<int> offset = boost::optional<int>()); // TODO: use trans
+                                               boost::optional<int> offset = boost::optional<int>());
 
     /*!
         \fn virtual int numberOfTransactions();
 
         Returns the number of all transactions that have been stored in the database.
     */
-    virtual int numberOfTransactions(); // TODO: use trans
+    virtual int numberOfTransactions();
 
     /*!
         \fn virtual int numberOfTransactions(int month, int year);
 
         Returns the number of transactions that have been stored in an specific month.
     */
-    virtual int numberOfTransactions(int month, int year); // TODO: use trans
+    virtual int numberOfTransactions(int month, int year);
 
     /*!
         \fn virtual int numberOfTransactions(int day, int month, int year);
 
         Returns the number of transactions that have been stored in an specific day.
     */
-    virtual int numberOfTransactions(int day, int month, int year); // TODO: use trans
+    virtual int numberOfTransactions(int day, int month, int year);
 
     /*!
         \fn virtual int numberOfTransactions(RecurrentTransactionPtr recurrent);
 
         Returns the number of transactions that have been generated by the given recurrent transactions.
     */
-    virtual int numberOfTransactions(RecurrentTransactionPtr recurrent); // TODO: use trans
+    virtual int numberOfTransactions(RecurrentTransactionPtr recurrent);
 
     /*!
         \fn virtual QList<TransactionPtr> transactions(CategoryPtr cat, int month, int year);
@@ -288,14 +288,14 @@ class Book {
         Returns all the transactions that have be registered with the given category in a specific month.
     */
     virtual QList<TransactionPtr> transactions(CategoryPtr cat, boost::optional<int> month=boost::optional<int>(),
-                                               boost::optional<int> year=boost::optional<int>()); // TODO: use trans
+                                               boost::optional<int> year=boost::optional<int>());
 
     /*!
         \fn virtual QList<TransactionPtr> transactions(AccountPtr acc);
 
         Returns all the transactions that have be registered to the given account.
     */
-    virtual QList<TransactionPtr> transactions(AccountPtr acc); // TODO: use trans
+    virtual QList<TransactionPtr> transactions(AccountPtr acc);
 
     /*!
         \fn virtual QList<int> monthsWithTransactions(int year, int limit, int offset);
@@ -304,14 +304,14 @@ class Book {
         given offset from the top result.
     */
     virtual QList<int> monthsWithTransactions(int year, boost::optional<int> limit=boost::optional<int>(),
-                                              boost::optional<int> offset=boost::optional<int>()); // TODO: use trans
+                                              boost::optional<int> offset=boost::optional<int>());
 
     /*!
         \fn virtual int numberOfMonthsWithTransactions(int year);
 
         Returns the number of months that have transactions in the database for the given year.
     */
-    virtual int numberOfMonthsWithTransactions(int year); // TODO: use trans
+    virtual int numberOfMonthsWithTransactions(int year);
 
     /*!
         \fn virtual QList<int> daysWithTransactions(int month, int year, int limit, int offset);
@@ -320,14 +320,14 @@ class Book {
         given offset from the top result.
     */
     virtual QList<int> daysWithTransactions(int month, int year, boost::optional<int> limit=boost::optional<int>(),
-                                            boost::optional<int> offset=boost::optional<int>()); // TODO: use trans
+                                            boost::optional<int> offset=boost::optional<int>());
 
     /*!
         \fn virtual int numberOfDaysWithTransactions(int month, int year);
 
         Returns the number of days in a month that have registered transactions.
     */
-    virtual int numberOfDaysWithTransactions(int month, int year); // TODO: use trans
+    virtual int numberOfDaysWithTransactions(int month, int year);
 
     /*!
         \fn virtual QList<RecurrentTransactionPtr> recurrent_transactions(
@@ -336,7 +336,7 @@ class Book {
         Returns a list with all the recurrent transactions that have been created in the system.
      */
     virtual QList<RecurrentTransactionPtr> recurrentTransactions(boost::optional<int> limit = boost::optional<int>(),
-                                                                 boost::optional<int> offset = boost::optional<int>()); // TODO: use trans
+                                                                 boost::optional<int> offset = boost::optional<int>());
 
     /*!
         \fn virtual QList<RecurrentTransactionPtr> recurrentTransactions(CategoryPtr cat,
@@ -347,7 +347,7 @@ class Book {
      */
     virtual QList<RecurrentTransactionPtr> recurrentTransactions(CategoryPtr cat,
                                                                  boost::optional<int> limit = boost::optional<int>(),
-                                                                 boost::optional<int> offset = boost::optional<int>()); // TODO: use trans
+                                                                 boost::optional<int> offset = boost::optional<int>());
 
     /*!
         \fn virtual QList<CategoryPtr> recurrentCategories(boost::optional<int> limit = boost::optional<int>(),
@@ -363,21 +363,21 @@ class Book {
 
         Returns the number of recurrent transactions in the system.
     */
-    virtual int numberOfRecurrentTransactions(); // TODO: use trans
+    virtual int numberOfRecurrentTransactions();
 
     /*!
         \fn virtual int numberOfRecurrentTransactions(CategoryPtr cat);
 
         Returns the number of recurrent transactions in the system with the given category.
     */
-    virtual int numberOfRecurrentTransactions(CategoryPtr cat); // TODO: use trans
+    virtual int numberOfRecurrentTransactions(CategoryPtr cat);
 
     /*!
         \fn virtual int numberOfRecurrentCategories();
 
         Returns the number of categories that have recurrent transactions.
     */
-    virtual int numberOfRecurrentCategories(); // TODO: use cats
+    virtual int numberOfRecurrentCategories();
 
     /*!
         \fn void generateRecurrentTransactions();
@@ -460,9 +460,9 @@ class Book {
     static const QString TRANSACTION_INSERT_TRIGGER;
     static const QString TRANSACTION_UPDATE_SAME_ACCOUNT_TRIGGER;
     static const QString TRANSACTION_UPDATE_DIFF_ACCOUNT_TRIGGER;
-    static const QString TRANSACTION_DELETE_TRIGGER;
+    static const QString TRANSACTION_DELETE_TRIGGER; // TODO: updates should drop and create the trigger
     static const QString ACCOUNT_DELETE_TRIGGER;
-    static const QString CATEGORY_DELETE_TRIGGER;
+    static const QString CATEGORY_DELETE_TRIGGER;  // TODO: updates should drop and recreate the trigger
     static const QString CATEGORY_UPDATE_DIFF_TYPE_TRIGGER;
     static const QString RECURRENT_RELATIONS_DELETE_TRIGGER;
     static const QString RECURRENT_RELATIONS_INSERT_TRIGGER;
