@@ -111,6 +111,7 @@ Accounts::remove(AccountPtr acc) {
     if (!success) {
         _lastError = _db->lastError().text();
         LOG(ERROR) << _lastError.toStdString();
+        return;
     }
 
     acc->_dbId = QUuid();

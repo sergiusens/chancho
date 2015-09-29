@@ -27,8 +27,6 @@
 #include <QStandardPaths>
 
 #include <com/chancho/category.h>
-#include <QtSql/qsqlquerymodel.h>
-#include <QtSql/qsqltablemodel.h>
 
 #include "matchers.h"
 #include "public_account.h"
@@ -392,7 +390,6 @@ void
 TestBookMocked::testRemoveCategoryChildsExecError() {
     QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
-    auto deleteChildsQuery = std::make_shared<tests::MockQuery>();
     auto deleteQuery = std::make_shared<tests::MockQuery>();
 
     // set db interaction expectations
@@ -413,23 +410,8 @@ TestBookMocked::testRemoveCategoryChildsExecError() {
         .WillOnce(Return(true));
 
     EXPECT_CALL(*db.get(), createQuery())
-        .Times(2)
-        .WillOnce(Return(deleteChildsQuery))
+        .Times(1)
         .WillOnce(Return(deleteQuery));
-
-    // child query expectations
-    EXPECT_CALL(*deleteChildsQuery.get(), prepare(_))
-        .Times(1)
-        .WillOnce(Return(true));
-
-    EXPECT_CALL(*deleteChildsQuery.get(),
-            bindValue(Matcher<const QString&>(_), Matcher<const QVariant&>(_), Matcher<QFlags<QSql::ParamTypeFlag>>(_)))
-        .Times(AnyNumber());
-
-
-    EXPECT_CALL(*deleteChildsQuery.get(), exec())
-        .Times(1)
-        .WillOnce(Return(false));
 
     // delete query expectations
     EXPECT_CALL(*deleteQuery.get(), prepare(_))
@@ -443,7 +425,7 @@ TestBookMocked::testRemoveCategoryChildsExecError() {
 
     EXPECT_CALL(*deleteQuery.get(), exec())
         .Times(1)
-        .WillOnce(Return(true));  // should not matter since the error is comming from a previous query
+        .WillOnce(Return(false));
 
     EXPECT_CALL(*db.get(), lastError())
         .Times(1)
@@ -470,7 +452,6 @@ TestBookMocked::testRemoveCategoryChildsExecError() {
     // verify expectations
     QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
     QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
-    QVERIFY(Mock::VerifyAndClearExpectations(deleteChildsQuery.get()));
     QVERIFY(Mock::VerifyAndClearExpectations(deleteQuery.get()));
 }
 
@@ -478,7 +459,6 @@ void
 TestBookMocked::testRemoveCategoryDeleteExecError() {
     QSqlError error(QString(QTest::currentTestFunction()), "Test Error");
     auto db = std::make_shared<tests::MockDatabase>();
-    auto deleteChildsQuery = std::make_shared<tests::MockQuery>();
     auto deleteQuery = std::make_shared<tests::MockQuery>();
 
     // set db interaction expectations
@@ -499,23 +479,8 @@ TestBookMocked::testRemoveCategoryDeleteExecError() {
             .WillOnce(Return(true));
 
     EXPECT_CALL(*db.get(), createQuery())
-            .Times(2)
-            .WillOnce(Return(deleteChildsQuery))
+            .Times(1)
             .WillOnce(Return(deleteQuery));
-
-    // child query expectations
-    EXPECT_CALL(*deleteChildsQuery.get(), prepare(_))
-            .Times(1)
-            .WillOnce(Return(true));
-
-    EXPECT_CALL(*deleteChildsQuery.get(),
-            bindValue(Matcher<const QString&>(_), Matcher<const QVariant&>(_), Matcher<QFlags<QSql::ParamTypeFlag>>(_)))
-            .Times(AnyNumber());
-
-
-    EXPECT_CALL(*deleteChildsQuery.get(), exec())
-            .Times(1)
-            .WillOnce(Return(true));  // testing the error with the other query
 
     // delete query expectations
     EXPECT_CALL(*deleteQuery.get(), prepare(_))
@@ -525,7 +490,6 @@ TestBookMocked::testRemoveCategoryDeleteExecError() {
     EXPECT_CALL(*deleteQuery.get(),
             bindValue(Matcher<const QString&>(_), Matcher<const QVariant&>(_), Matcher<QFlags<QSql::ParamTypeFlag>>(_)))
             .Times(AnyNumber());
-
 
     EXPECT_CALL(*deleteQuery.get(), exec())
             .Times(1)
@@ -556,7 +520,6 @@ TestBookMocked::testRemoveCategoryDeleteExecError() {
     // verify expectations
     QVERIFY(Mock::VerifyAndClearExpectations(_dbFactory));
     QVERIFY(Mock::VerifyAndClearExpectations(db.get()));
-    QVERIFY(Mock::VerifyAndClearExpectations(deleteChildsQuery.get()));
     QVERIFY(Mock::VerifyAndClearExpectations(deleteQuery.get()));
 }
 

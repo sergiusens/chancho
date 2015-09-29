@@ -140,6 +140,7 @@ const QString Book::ACCOUNT_DELETE_TRIGGER = "CREATE TRIGGER DeleteTransactionsO
 const QString Book::CATEGORY_DELETE_TRIGGER = "CREATE TRIGGER DeleteTransactionsOnCategoryDelete BEFORE DELETE ON Categories "\
     "BEGIN "\
     "DELETE FROM Transactions WHERE category=old.uuid; "\
+    "DELETE FROM Categories WHERE parent=old.uuid; "\
     "END";
 const QString Book::CATEGORY_UPDATE_DIFF_TYPE_TRIGGER = "CREATE TRIGGER UpdateTransactionsOnCategoryTypeUpdate AFTER UPDATE ON Categories "\
     "WHEN old.type != new.type BEGIN "\
@@ -378,6 +379,9 @@ Book::store(AccountPtr acc) {
 
 void
 Book::store(QList<AccountPtr> accs) {
+    if  (accs.count() == 0)
+        return;
+
     relay([&]() {
         _accs->store(accs);
         if (_accs->isError()) {
@@ -400,6 +404,9 @@ Book::store(CategoryPtr cat) {
 
 void
 Book::store(QList<CategoryPtr> cats) {
+    if (cats.count() == 0)
+        return;
+
     relay([&, this]() {
         _cats->store(cats);
         if (_cats->isError()) {
@@ -421,6 +428,8 @@ Book::store(TransactionPtr tran) {
 
 void
 Book::store(QList<TransactionPtr> trans) {
+    if (trans.count() == 0)
+        return;
     relay([&, this]() {
         _trans->store(trans);
         if (_trans->isError()) {
@@ -441,6 +450,9 @@ Book::store(RecurrentTransactionPtr tran, bool updatePast) {
 
 void
 Book::store(QList<RecurrentTransactionPtr> trans) {
+    if (trans.count() == 0)
+        return;
+
     relay([&, this]() {
         _trans->store(trans);
         if (_trans->isError()) {

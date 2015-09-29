@@ -1,21 +1,20 @@
 set(PRIVATE_TESTS
-    test_account
-    test_attachment
-    test_category
-    test_recurrence
-    test_stats
-    test_transaction
-    test_upgrader
+    test_book
+    test_book_account
+    test_book_category
+    test_book_recurrent_transaction
+    test_book_transaction
+    test_book_threading
 )
 
 foreach(test ${PRIVATE_TESTS})
     # set the sources per test
     set(${test}_PRIVATE_SOURCES
-            ${test}.cpp
+        ${test}.cpp
     )
 
     set(${test}_PRIVATE_HEADERS
-            ${test}.h
+        ${test}.h
     )
 
 endforeach(test)
@@ -55,5 +54,3 @@ foreach(test ${PRIVATE_TESTS})
     ADD_TEST(NAME private_lib_${test} COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${test})
 
 endforeach(test)
-
-add_subdirectory(book)
