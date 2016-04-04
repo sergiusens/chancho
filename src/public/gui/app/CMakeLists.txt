@@ -78,9 +78,6 @@ include_directories(${Qt5Sql_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/src/priv)
 include_directories(${CMAKE_SOURCE_DIR}/src/public/gui/lib)
 
-set(HEADERS
-)
-
 set(SOURCES
     main.cpp
 )
@@ -144,13 +141,12 @@ set(QML_SOURCES
     qml/components/models/DefaultIncomeModel.qml
 )
 
-qt5_add_resources(chancho-app-resources ui.qrc)
+set(RESOURCE ${CMAKE_CURRENT_SOURCE_DIR}/ui.qrc)
+qt5_add_resources(RESOURCE_ADDED ${RESOURCE})
 
 add_executable(${TARGET}
-    ${HEADERS}
     ${SOURCES}
-    ${QML_SOURCES}
-    ${chancho-app-resources}
+    ${RESOURCE_ADDED}
 )
 
 add_dependencies(${TARGET} chancho-app-priv)

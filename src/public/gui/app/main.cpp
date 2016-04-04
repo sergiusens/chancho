@@ -27,7 +27,7 @@
 
 #include "com/chancho/chancho_app.h"
 
-int main(int argc, char** argv) {
+int main(int argc, char* argv[]) {
     com::chancho::ChanchoApp application(argc, argv);
 
     if (!application.setup()) {
@@ -42,4 +42,3 @@ int main(int argc, char** argv) {
 
     return application.exec();
 }
-

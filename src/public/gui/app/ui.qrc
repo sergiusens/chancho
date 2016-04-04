@@ -55,8 +55,8 @@
         <file>qml/components/models/DefaultIncomeModel.qml</file>
     </qresource>
     <qresource prefix="/imports">
-        <file alias="jbQuick/Charts/qmldir">qml/components/jbQuick/Chart/qmldir</file>
-        <file alias="jbQuick/Charts/QChart.js">qml/components/jbQuick/Chart/QChart.js</file>
-        <file alias="jbQuick/Charts/QChart.qml">qml/components/jbQuick/Chart/QChart.qml</file>
+        <file alias="jbQuick/Charts/qmldir">qml/components/jbQuick/Charts/qmldir</file>
+        <file alias="jbQuick/Charts/QChart.js">qml/components/jbQuick/Charts/QChart.js</file>
+        <file alias="jbQuick/Charts/QChart.qml">qml/components/jbQuick/Charts/QChart.qml</file>
     </qresource>
 </RCC>

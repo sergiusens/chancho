@@ -1,3 +1,6 @@
 [submodule "src/public/gui/app/qml/components/jbQuick/Chart"]
 	path = src/public/gui/app/qml/components/jbQuick/Chart
 	url = https://github.com/checkbox/qchart.js.git
+[submodule "src/public/gui/app/qml/components/jbQuick/Charts"]
+	path = src/public/gui/app/qml/components/jbQuick/Charts
+	url = https://github.com/jwintz/qchart.js
